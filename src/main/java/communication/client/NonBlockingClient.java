@@ -123,7 +123,7 @@ public class NonBlockingClient implements Client, Disconnectable {
         }
     }
 
-    private Remote connect(SocketChannel channel, Swapper swapper) throws IOException {
+    private Remote connect(SocketChannel channel, final Swapper swapper) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerHost, mServerPort);
         channel.connect(address);
 
@@ -144,8 +144,13 @@ public class NonBlockingClient implements Client, Disconnectable {
     public static void main(String... args) {
 
         Client client = new NonBlockingClient("localhost", 6200);
-        client.addOnReceiveListener(
-                (address, size, rec) -> System.out.println("on receive"));
+        client.addOnReceiveListener( new OnReceiveListener() {
+
+            @Override
+            public void onReceive(String fromAddress, int readByte, Receiver receiver) {
+                System.out.println("on receive");
+            }
+        });
         try {
             Receiver result = client.start(new RepeatSwapper() {
                 private int i = 0;
