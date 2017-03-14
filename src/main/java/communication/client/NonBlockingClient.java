@@ -127,7 +127,7 @@ public class NonBlockingClient implements Client, Disconnectable {
         InetSocketAddress address = new InetSocketAddress(mServerHost, mServerPort);
         channel.connect(address);
 
-        String remoteAddress = channel.getRemoteAddress().toString();
+        String remoteAddress = channel.socket().getInetAddress().toString();
         Swapper.SwapperFactory swapperFactory = new Swapper.SwapperFactory() {
 
             @Override
