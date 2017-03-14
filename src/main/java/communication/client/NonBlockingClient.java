@@ -1,6 +1,7 @@
 package communication.client;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -53,7 +54,7 @@ public class NonBlockingClient implements Client, Disconnectable {
      * このオブジェクトをRunnableとして扱う際のコンストラクター
      * @param serverHost
      * @param serverPort
-     * @param sender
+     * @param swapperFactory
      */
     public NonBlockingClient(String serverHost, int serverPort,
             Swapper.SwapperFactory swapperFactory) {
@@ -89,7 +90,6 @@ public class NonBlockingClient implements Client, Disconnectable {
     }
 
     /**
-     * @return
      * @throws ConnectException 接続に失敗した場合
      * @throws IOException その他入出力エラーが発生した場合。接続がタイムアウトした場合も含まれます。
      */
