@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -96,10 +94,6 @@ public class MultiDataSender implements Sender {
     @Override
     public Sender put(String str) {
         return put(str.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public Sender put(Path filePath) throws IOException {
-        return put(Files.readAllBytes(filePath));
     }
 
     @Override

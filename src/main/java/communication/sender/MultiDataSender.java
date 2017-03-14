@@ -13,8 +13,6 @@ import java.util.Arrays;
 import java.util.Deque;
 
 import jp.gr.java_conf.falius.communication.Header;
-import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.sender.Sender;
 
 /**
  * 複数データを送信する際に利用するクラスです。

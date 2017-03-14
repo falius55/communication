@@ -5,9 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import jp.gr.java_conf.falius.communication.sender.ExtendableSender;
-import jp.gr.java_conf.falius.communication.sender.Sender;
-
 public class FileSender extends ExtendableSender {
 
     public FileSender(Sender sender) {

@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import jp.gr.java_conf.falius.communication.receiver.ExtendableReceiver;
-
 public class FileReceiver extends ExtendableReceiver {
 
 
