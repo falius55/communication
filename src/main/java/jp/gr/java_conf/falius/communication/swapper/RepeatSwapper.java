@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication;
+package jp.gr.java_conf.falius.communication.swapper;
 
 /**
  * 一度の接続で複数回の送受信を行う際に利用するSwapperです。

@@ -12,8 +12,6 @@ import java.util.concurrent.TimeoutException;
 
 import jp.gr.java_conf.falius.communication.Disconnectable;
 import jp.gr.java_conf.falius.communication.Remote;
-import jp.gr.java_conf.falius.communication.RepeatSwapper;
-import jp.gr.java_conf.falius.communication.Swapper;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
@@ -21,6 +19,8 @@ import jp.gr.java_conf.falius.communication.receiver.Receiver;
 import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.Sender;
+import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
+import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
  * ノンブロックな通信を行うクラスです

@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication;
+package jp.gr.java_conf.falius.communication.swapper;
 
 import jp.gr.java_conf.falius.communication.receiver.Receiver;
 import jp.gr.java_conf.falius.communication.sender.Sender;

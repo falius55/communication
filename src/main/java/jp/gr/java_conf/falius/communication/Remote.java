@@ -1,12 +1,13 @@
 package jp.gr.java_conf.falius.communication;
 
-import jp.gr.java_conf.falius.communication.Swapper.SwapperFactory;
 import jp.gr.java_conf.falius.communication.receiver.MultiDataReceiver;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.receiver.Receiver;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.Sender;
 import jp.gr.java_conf.falius.communication.server.Server.OnAcceptListener;
+import jp.gr.java_conf.falius.communication.swapper.Swapper;
+import jp.gr.java_conf.falius.communication.swapper.Swapper.SwapperFactory;
 
 /**
  * 接続先に関する情報を管理するクラス

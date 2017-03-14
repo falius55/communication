@@ -7,11 +7,11 @@ import java.nio.channels.SocketChannel;
 
 import jp.gr.java_conf.falius.communication.Disconnectable;
 import jp.gr.java_conf.falius.communication.Remote;
-import jp.gr.java_conf.falius.communication.Swapper;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.ReadingHandler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
  *  リスナーはいつでも変更することが可能ですが、新しいリスナーは変更後に開始された接続から有効になります。
