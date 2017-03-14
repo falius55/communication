@@ -10,7 +10,7 @@ targetCompatibility = 1.7
 javadoc {
 	destinationDir = file 'doc/javadoc'
 	options.encoding = defaultEncoding
-	options.links << 'http://docs.oracle.com/javase/jp/8/api'
+	options.links << 'http://docs.oracle.com/javase/jp/7/api'
 }
 
 repositories {
