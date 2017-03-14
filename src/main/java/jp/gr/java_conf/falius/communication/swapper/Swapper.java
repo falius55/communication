@@ -1,7 +1,7 @@
-package communication;
+package jp.gr.java_conf.falius.communication.swapper;
 
-import communication.receiver.Receiver;
-import communication.sender.Sender;
+import jp.gr.java_conf.falius.communication.receiver.Receiver;
+import jp.gr.java_conf.falius.communication.sender.Sender;
 
 /**
  * <p>

@@ -1,4 +1,4 @@
-package communication.receiver;
+package jp.gr.java_conf.falius.communication.receiver;
 
 public interface OnReceiveListener {
 

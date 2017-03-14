@@ -1,4 +1,4 @@
-package communication;
+package jp.gr.java_conf.falius.communication;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

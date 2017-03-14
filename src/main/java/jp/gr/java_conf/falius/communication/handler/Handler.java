@@ -1,4 +1,4 @@
-package communication.handler;
+package jp.gr.java_conf.falius.communication.handler;
 
 import java.nio.channels.SelectionKey;
 

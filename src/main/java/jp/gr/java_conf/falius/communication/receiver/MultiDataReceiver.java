@@ -1,4 +1,4 @@
-package communication.receiver;
+package jp.gr.java_conf.falius.communication.receiver;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import communication.Header;
+import jp.gr.java_conf.falius.communication.Header;
 
 /**
  * 複数データの受信を管理するクラスです

@@ -1,4 +1,4 @@
-package communication.sender;
+package jp.gr.java_conf.falius.communication.sender;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,13 +8,13 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 
 import jp.gr.java_conf.falius.communication.Header;
-import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.sender.Sender;
 
 /**
  * 複数データを送信する際に利用するクラスです。
@@ -96,6 +96,10 @@ public class MultiDataSender implements Sender {
     @Override
     public Sender put(String str) {
         return put(str.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public Sender put(Path filePath) throws IOException {
+        return put(Files.readAllBytes(filePath));
     }
 
     @Override

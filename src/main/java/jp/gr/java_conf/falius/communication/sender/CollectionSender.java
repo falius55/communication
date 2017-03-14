@@ -1,4 +1,4 @@
-package communication.sender;
+package jp.gr.java_conf.falius.communication.sender;
 
 import java.util.List;
 

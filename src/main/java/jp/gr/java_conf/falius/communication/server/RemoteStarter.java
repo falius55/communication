@@ -1,17 +1,17 @@
-package communication.server;
+package jp.gr.java_conf.falius.communication.server;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-import communication.Disconnectable;
-import communication.Remote;
-import communication.Swapper;
-import communication.handler.Handler;
-import communication.handler.ReadingHandler;
-import communication.receiver.OnReceiveListener;
-import communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.Disconnectable;
+import jp.gr.java_conf.falius.communication.Remote;
+import jp.gr.java_conf.falius.communication.handler.Handler;
+import jp.gr.java_conf.falius.communication.handler.ReadingHandler;
+import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
  *  リスナーはいつでも変更することが可能ですが、新しいリスナーは変更後に開始された接続から有効になります。

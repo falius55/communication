@@ -1,11 +1,11 @@
-package communication.server;
+package jp.gr.java_conf.falius.communication.server;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import communication.receiver.OnReceiveListener;
-import communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 
 public interface Server extends Callable<Throwable>, AutoCloseable {
 

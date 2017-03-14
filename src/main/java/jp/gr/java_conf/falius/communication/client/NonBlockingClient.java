@@ -1,4 +1,4 @@
-package communication.client;
+package jp.gr.java_conf.falius.communication.client;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -12,7 +12,6 @@ import java.util.concurrent.TimeoutException;
 
 import jp.gr.java_conf.falius.communication.Disconnectable;
 import jp.gr.java_conf.falius.communication.Remote;
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
@@ -128,7 +127,7 @@ public class NonBlockingClient implements Client, Disconnectable {
         InetSocketAddress address = new InetSocketAddress(mServerHost, mServerPort);
         channel.connect(address);
 
-        String remoteAddress = channel.getRemoteAddress().toString();
+        String remoteAddress = channel.socket().getInetAddress().toString();
         Swapper.SwapperFactory swapperFactory = new Swapper.SwapperFactory() {
 
             @Override
@@ -151,6 +150,7 @@ public class NonBlockingClient implements Client, Disconnectable {
             public void onReceive(String fromAddress, int readByte, Receiver receiver) {
                 System.out.println("on receive");
             }
+
         });
         try {
             Receiver result = client.start(new RepeatSwapper() {

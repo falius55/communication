@@ -1,9 +1,11 @@
-package communication.receiver;
+package jp.gr.java_conf.falius.communication.receiver;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+
+import jp.gr.java_conf.falius.communication.receiver.Receiver.Result;
 
 public abstract class ExtendableReceiver implements Receiver {
     private final Receiver mSource;

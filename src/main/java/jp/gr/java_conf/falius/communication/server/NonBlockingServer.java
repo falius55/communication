@@ -1,4 +1,4 @@
-package communication.server;
+package jp.gr.java_conf.falius.communication.server;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -13,11 +13,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import communication.Disconnectable;
-import communication.Swapper;
-import communication.handler.Handler;
-import communication.receiver.OnReceiveListener;
-import communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.Disconnectable;
+import jp.gr.java_conf.falius.communication.handler.Handler;
+import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 public class NonBlockingServer implements Server, Disconnectable {
 

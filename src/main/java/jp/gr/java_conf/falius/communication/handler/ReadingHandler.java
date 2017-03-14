@@ -1,12 +1,12 @@
-package communication.handler;
+package jp.gr.java_conf.falius.communication.handler;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import communication.Disconnectable;
-import communication.Remote;
-import communication.receiver.Receiver;
+import jp.gr.java_conf.falius.communication.Disconnectable;
+import jp.gr.java_conf.falius.communication.Remote;
+import jp.gr.java_conf.falius.communication.receiver.Receiver;
 
 public class ReadingHandler implements Handler {
     private final Disconnectable mDisconnectable;
