@@ -7,6 +7,12 @@ compileJava.options.encoding = defaultEncoding
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+javadoc {
+	destinationDir = file 'doc/javadoc'
+	options.encoding = defaultEncoding
+	options.links << 'http://docs.oracle.com/javase/jp/8/api'
+}
+
 repositories {
 	mavenCentral()
 }
