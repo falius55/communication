@@ -1,7 +1,5 @@
 apply plugin: 'java'
-apply plugin: 'application'
-
-defaultTasks 'run'
+apply plugin: 'maven'
 
 def defaultEncoding = 'UTF-8'
 compileJava.options.encoding = defaultEncoding
@@ -16,11 +14,4 @@ repositories {
 dependencies {
 	compile  'net.sf.json-lib:json-lib:2.4:jdk15@jar'
     testCompile 'junit:junit:4.12i'
-}
-
-mainClassName = 'tundokumanager.MainServer'
-applicationName = 'MainServer'
-
-run {
-	standardInput = System.in
 }
