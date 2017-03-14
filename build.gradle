@@ -4,8 +4,8 @@ apply plugin: 'maven'
 def defaultEncoding = 'UTF-8'
 compileJava.options.encoding = defaultEncoding
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 javadoc {
 	destinationDir = file 'doc/javadoc'

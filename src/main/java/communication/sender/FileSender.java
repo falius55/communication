@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class FileSender extends ExtendableSender {
 
@@ -14,16 +11,12 @@ public class FileSender extends ExtendableSender {
         super(sender);
     }
 
-    public Sender put(Path filePath) throws IOException {
-        return put(Files.readAllBytes(filePath));
-    }
-
     public Sender put(File file) throws FileNotFoundException, IOException {
         return put(new FileInputStream(file));
     }
 
-    public Sender putFile(String firstPathName, String... morePathName) throws IOException {
-        Path path = Paths.get(firstPathName, morePathName);
-        return put(path);
+    public Sender putFile(String filePath) throws IOException {
+        File file = new File(filePath);
+        return put(file);
     }
 }
