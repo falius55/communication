@@ -1,0 +1,20 @@
+package jp.gr.java_conf.falius.communication.client;
+
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeoutException;
+
+import jp.gr.java_conf.falius.communication.Swapper;
+import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.receiver.Receiver;
+import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+
+public interface Client extends Callable<Receiver> {
+
+    Receiver start(Swapper sender) throws IOException, TimeoutException;
+
+    void addOnSendListener(OnSendListener listener);
+
+    void addOnReceiveListener(OnReceiveListener listener);
+
+}
