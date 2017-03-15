@@ -1,6 +1,7 @@
-communication
-communication.client
-communication.handler
-communication.receiver
-communication.sender
-communication.server
+jp.gr.java_conf.falius.communication
+jp.gr.java_conf.falius.communication.client
+jp.gr.java_conf.falius.communication.handler
+jp.gr.java_conf.falius.communication.receiver
+jp.gr.java_conf.falius.communication.sender
+jp.gr.java_conf.falius.communication.server
+jp.gr.java_conf.falius.communication.swapper
