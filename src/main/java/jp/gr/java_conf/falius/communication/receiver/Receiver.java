@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
+ * @author "ymiyauchi"
+ *
  * 同じ接続では同じReceiverオブジェクトが利用されます。
  * そのため、同じ接続で何度も送受信を繰り返す場合、新たに受信したデータは以前に受信して消費しなかったデータに
  * 追記されることになります。
@@ -13,7 +15,9 @@ import java.nio.channels.SocketChannel;
  *<p>
  * このオブジェクトはまずOnReceiveListener#onReceiveメソッドの引数に渡され、その後Swapper#swapメソッド
  * の引数に渡されます。クライアントに限り、最後にClient#startメソッドの戻り値として取得できます。
- * @author "ymiyauchi"
+ *
+ * <p>
+ * getXXXメソッドの実行によって例外が発生した場合、取得しようとしたデータは失われます。
  *
  */
 public interface Receiver {

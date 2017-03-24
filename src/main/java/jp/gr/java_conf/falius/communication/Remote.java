@@ -7,7 +7,6 @@ import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.Sender;
 import jp.gr.java_conf.falius.communication.server.Server.OnAcceptListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
-import jp.gr.java_conf.falius.communication.swapper.Swapper.SwapperFactory;
 
 /**
  * 接続先に関する情報を管理するクラス

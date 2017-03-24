@@ -8,16 +8,18 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 javadoc {
-	destinationDir = file 'doc/javadoc'
-	options.encoding = defaultEncoding
-	options.links << 'http://docs.oracle.com/javase/jp/8/api'
+    destinationDir = file 'doc/javadoc'
+    options.encoding = defaultEncoding
+    options.links << 'http://docs.oracle.com/javase/jp/8/api'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-	compile  'net.sf.json-lib:json-lib:2.4:jdk15@jar'
-    testCompile 'junit:junit:4.12i'
+    compile  "org.json:json:20160810"
+    compile 'com.github.falius55:java-util:1.1.1'
+    testCompile 'junit:junit:4.12'
 }
