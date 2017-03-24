@@ -43,6 +43,11 @@ public abstract class ExtendableSender implements Sender {
     }
 
     @Override
+    public Sender put(boolean bl) {
+        return mSource.put(bl);
+    }
+
+    @Override
     public Sender put(String msg) {
         return mSource.put(msg);
     }

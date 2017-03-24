@@ -49,6 +49,8 @@ public interface Receiver {
 
     int getInt();
 
+    boolean getBoolean();
+
     void getAndOutput(OutputStream os) throws IOException;
 
     void clear();

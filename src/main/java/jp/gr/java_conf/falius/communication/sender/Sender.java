@@ -29,6 +29,8 @@ public interface Sender {
 
     Sender put(int num);
 
+    Sender put(boolean bl);
+
     Sender put(String msg);
 
     Sender put(InputStream in) throws IOException;

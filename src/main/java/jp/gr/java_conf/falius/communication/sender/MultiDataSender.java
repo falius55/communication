@@ -111,6 +111,11 @@ public class MultiDataSender implements Sender {
     }
 
     @Override
+    public Sender put(boolean bl) {
+        return put(bl ? 1 : 0);
+    }
+
+    @Override
     public Sender put(InputStream is) throws IOException {
         final int READ_SIZE = 4096 * 2;
         int size = READ_SIZE;

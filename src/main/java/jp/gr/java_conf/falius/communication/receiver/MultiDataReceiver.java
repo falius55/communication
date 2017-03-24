@@ -185,6 +185,11 @@ public class MultiDataReceiver implements Receiver {
     }
 
     @Override
+    public boolean getBoolean() {
+        return getInt() == 1;
+    }
+
+    @Override
     public void getAndOutput(OutputStream os) throws IOException {
         System.out.println("get and output");
         ByteBuffer buf = get();
