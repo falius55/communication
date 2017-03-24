@@ -67,7 +67,15 @@ public class MultiDataSender implements Sender {
         }
     }
 
+    /**
+     * 書き込みが一度で終わらなかったときのために
+     * 各情報を保持する
+     * @author "ymiyauchi"
+     *
+     */
     private static class State {
+        // 一度で最後までヘッダーを書き込めなかったときのために
+        // 以前読み込んだデータの状態を覚えておくためのクラス
         private Header header;
         private ByteBuffer headerBuffer;
         private int writeSize = 0;
@@ -108,6 +116,11 @@ public class MultiDataSender implements Sender {
         buf.putInt(num);
         buf.flip();
         return put(buf);
+    }
+
+    @Override
+    public Sender put(boolean bl) {
+        return put(bl ? 1 : 0);
     }
 
     @Override

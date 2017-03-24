@@ -48,6 +48,11 @@ public abstract class ExtendableReceiver implements Receiver {
     }
 
     @Override
+    public boolean getBoolean() {
+        return mSource.getBoolean();
+    }
+
+    @Override
     public void getAndOutput(OutputStream os) throws IOException {
         mSource.getAndOutput(os);
     }

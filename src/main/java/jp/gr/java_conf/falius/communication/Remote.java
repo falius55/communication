@@ -9,7 +9,8 @@ import jp.gr.java_conf.falius.communication.server.Server.OnAcceptListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
- * 接続先に関する情報を管理するクラス
+ * 接続先に関する情報を管理するクラスです。
+ * 一度の接続を通して共有されます。
  * @author "ymiyauchi"
  *
  */

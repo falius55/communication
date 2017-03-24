@@ -14,6 +14,8 @@ import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
+ *  接続要求を受入れ、Remoteオブジェクトを作成して続く処理を別のハンドラに委譲します。
+ *
  *  リスナーはいつでも変更することが可能ですが、新しいリスナーは変更後に開始された接続から有効になります。
  * @author "ymiyauchi"
  *

@@ -13,13 +13,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import jp.gr.java_conf.falius.communication.Disconnectable;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
-public class NonBlockingServer implements Server, Disconnectable {
+/**
+ * {@inheritDoc}
+ *
+ * <p/>
+ * startOnNewThreadメソッドの呼び出し一回につき、ひとつのスレッドで起動します。
+ *
+ * <p/>
+ * Timeoutの設定はなく、別のスレッドからshutdownメソッドあるいはcloseメソッドが実行されるまで起動を
+ * 続けます。
+ */
+public class NonBlockingServer implements Server {
 
     private final int mServerPort;
 
@@ -31,6 +40,7 @@ public class NonBlockingServer implements Server, Disconnectable {
     private final RemoteStarter mRemoteStarter;
 
     private Server.OnShutdownCallback mOnShutdownCallback = null;
+    private OnDisconnectCallback mOnDisconnectCallback = null;
 
     private volatile boolean mIsShutdowned = false;
 
@@ -57,6 +67,11 @@ public class NonBlockingServer implements Server, Disconnectable {
     @Override
     public void addOnShutdownCallback(Server.OnShutdownCallback callback) {
         mOnShutdownCallback = callback;
+    }
+
+    @Override
+    public void addOnDisconnectCallback(OnDisconnectCallback callback) {
+        mOnDisconnectCallback = callback;
     }
 
     /**
@@ -146,10 +161,16 @@ public class NonBlockingServer implements Server, Disconnectable {
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) {
         try {
+            String remote = channel.socket().getRemoteSocketAddress().toString();
+
             if (channel != null) {
                 channel.close();
             }
             key.cancel();
+
+            if (mOnDisconnectCallback != null) {
+                mOnDisconnectCallback.onDissconnect(remote, cause);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
