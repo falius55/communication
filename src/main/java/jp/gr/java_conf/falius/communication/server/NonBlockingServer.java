@@ -31,6 +31,7 @@ public class NonBlockingServer implements Server, Disconnectable {
     private final RemoteStarter mRemoteStarter;
 
     private Server.OnShutdownCallback mOnShutdownCallback = null;
+    private OnDisconnectCallback mOnDisconnectCallback = null;
 
     private volatile boolean mIsShutdowned = false;
 
@@ -57,6 +58,11 @@ public class NonBlockingServer implements Server, Disconnectable {
     @Override
     public void addOnShutdownCallback(Server.OnShutdownCallback callback) {
         mOnShutdownCallback = callback;
+    }
+
+    @Override
+    public void addOnDisconnectCallback(OnDisconnectCallback callback) {
+        mOnDisconnectCallback = callback;
     }
 
     /**
@@ -146,10 +152,16 @@ public class NonBlockingServer implements Server, Disconnectable {
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) {
         try {
+            String remote = channel.socket().getRemoteSocketAddress().toString();
+
             if (channel != null) {
                 channel.close();
             }
             key.cancel();
+
+            if (mOnDisconnectCallback != null) {
+                mOnDisconnectCallback.onDissconnect(remote, cause);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
