@@ -8,6 +8,8 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import jp.gr.java_conf.falius.util.range.IntRange;
+
 public class CollectionReceiver extends ExtendableReceiver {
 
     public CollectionReceiver(Receiver receiver) {
@@ -19,7 +21,9 @@ public class CollectionReceiver extends ExtendableReceiver {
         JSONArray json = new JSONArray(jsonString);
         List<String> ret = new ArrayList<>();
 
-        json.forEach(value -> ret.add(value.toString()));
+        for (int i : new IntRange(json.length())) {
+            ret.add(json.getString(i));
+        }
         return ret;
     }
 
