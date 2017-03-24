@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication.server;
+package jp.gr.java_conf.falius.communication;
 
 public interface OnDisconnectCallback {
 

@@ -7,7 +7,7 @@ import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Queue;
 
 import jp.gr.java_conf.falius.communication.Header;
 
@@ -24,7 +24,7 @@ import jp.gr.java_conf.falius.communication.Header;
  *
  */
 public class MultiDataReceiver implements Receiver {
-    private final Deque<ByteBuffer> mReceivedData = new ArrayDeque<>();
+    private final Queue<ByteBuffer> mReceivedData = new ArrayDeque<>();
     private Entry mNonFinishedEntry = null;
 
     private OnReceiveListener mListener = null;
@@ -85,7 +85,7 @@ public class MultiDataReceiver implements Receiver {
     private static class Entry {
         private final Header mHeader;
         private int mRemain;
-        private final Deque<ByteBuffer> mItemData;
+        private final Queue<ByteBuffer> mItemData;
 
         private Entry(Header header) {
             mHeader = header;
@@ -119,7 +119,7 @@ public class MultiDataReceiver implements Receiver {
             return readed;
         }
 
-        private void add(Deque<ByteBuffer> dst) {
+        private void add(Queue<ByteBuffer> dst) {
             if (!isFinished()) {
                 return;
             }

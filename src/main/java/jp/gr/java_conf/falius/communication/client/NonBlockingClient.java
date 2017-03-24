@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
-import jp.gr.java_conf.falius.communication.Disconnectable;
+import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.Remote;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
@@ -32,7 +32,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  * @author "ymiyauchi"
  *
  */
-public class NonBlockingClient implements Client, Disconnectable {
+public class NonBlockingClient implements Client {
     private static final long POLL_TIMEOUT = 5000L;
 
     private final String mServerHost;
@@ -40,6 +40,7 @@ public class NonBlockingClient implements Client, Disconnectable {
 
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
+    private OnDisconnectCallback mOnDisconnectCallback = null;
 
     private Swapper.SwapperFactory mSwapperFactory;
 
@@ -73,6 +74,11 @@ public class NonBlockingClient implements Client, Disconnectable {
         mOnReceiveListener = listener;
     }
 
+    @Override
+    public void addOnDisconnectCallback(OnDisconnectCallback callback) {
+        mOnDisconnectCallback = callback;
+    }
+
     /**
      * @throws IOException
      */
@@ -84,8 +90,13 @@ public class NonBlockingClient implements Client, Disconnectable {
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) {
         mIsExit = true;
+        String remote = channel.socket().getInetAddress().toString();
         if (mSelector != null) {
             mSelector.wakeup();
+        }
+
+        if (mOnDisconnectCallback != null) {
+            mOnDisconnectCallback.onDissconnect(remote, cause);
         }
     }
 
