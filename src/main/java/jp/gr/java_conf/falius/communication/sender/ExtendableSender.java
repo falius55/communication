@@ -5,6 +5,11 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+/**
+ * Senderを拡張する場合、このクラスを継承してください
+ * @author "ymiyauchi"
+ *
+ */
 public abstract class ExtendableSender implements Sender {
     private final Sender mSource;
 

@@ -7,6 +7,9 @@ import jp.gr.java_conf.falius.communication.sender.Sender;
  * <p>
  * 受信内容を受け取り、送信内容を格納したSenderオブジェクトを作成するクラスのインターフェースです。
  *
+ * <p/>
+ * Senderが一度の送信ごとに使い捨てられるのに対し、Swapperは一つの接続に対して一つのオブジェクトがあてられます。
+ *
  *<p>
  * 受信内容をもとに送信内容を決定するためにReceiverオブジェクトを引数に受け取りますが、
  * クライアントにおいては最初の一度はreceiverにnullが入り、最後の受信内容はswap()メソッドで
@@ -17,6 +20,9 @@ import jp.gr.java_conf.falius.communication.sender.Sender;
  *<p>
  * サーバーとクライアントが同じ回数だけswapメソッドが呼ばれるようにisContinueメソッドがfalseを返すように調整する
  * ことで、お互いに受信失敗が発生せず自然に通信を終えることができます。
+ *
+ *<p>
+ * 具象クラスは、一度の送受信であればOnceSwapper、送受信を繰り返す場合はRepeatSwapperが利用できます。
  *
  * @author "ymiyauchi"
  *
@@ -52,6 +58,9 @@ public interface Swapper {
      */
     boolean doContinue();
 
+    /**
+     * Swapperを生成するファクトリメソッドを持つインターフェースです。
+     */
     interface SwapperFactory {
 
         Swapper get();
