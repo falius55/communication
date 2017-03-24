@@ -1,8 +1,10 @@
 package jp.gr.java_conf.falius.communication.sender;
 
 import java.util.List;
+import java.util.Map;
 
-import net.sf.json.JSONArray;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class CollectionSender extends ExtendableSender {
 
@@ -11,7 +13,12 @@ public class CollectionSender extends ExtendableSender {
     }
 
     public Sender put(List<String> list) {
-        JSONArray json = JSONArray.fromObject(list);
+        JSONArray json = new JSONArray(list);
+        return put(json.toString());
+    }
+
+    public Sender pub(Map<String, String> map) {
+        JSONObject json = new JSONObject(map);
         return put(json.toString());
     }
 }

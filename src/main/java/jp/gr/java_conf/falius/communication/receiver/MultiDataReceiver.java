@@ -162,6 +162,9 @@ public class MultiDataReceiver implements Receiver {
         mReceivedData.clear();
     }
 
+    /**
+     * @throws CharcterCodingException
+     */
     @Override
     public String getString() {
         System.out.println("MULTI_DATA_RECEIVER > getString()");
