@@ -123,7 +123,9 @@ public class NonBlockingServer implements Server {
 
         mSelector.wakeup();
         mServerSocketChannel.close();
-        mExecutor.shutdown();
+        if (mExecutor != null) {
+            mExecutor.shutdown();
+        }
 
         if (mOnShutdownCallback != null) {
             mOnShutdownCallback.onShutdown();

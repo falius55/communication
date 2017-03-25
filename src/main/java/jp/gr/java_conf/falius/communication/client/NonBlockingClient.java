@@ -138,6 +138,14 @@ public class NonBlockingClient implements Client {
         }
     }
 
+    /**
+     *
+     * @param channel
+     * @param swapper
+     * @return
+     * @throws IOException
+     * @throws ConnectException 接続に失敗した場合
+     */
     private Remote connect(SocketChannel channel, Swapper swapper) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerHost, mServerPort);
         channel.connect(address);
