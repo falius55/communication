@@ -14,6 +14,9 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.Header;
 
 /**
@@ -25,6 +28,7 @@ import jp.gr.java_conf.falius.communication.Header;
  *
  */
 public class MultiDataSender implements Sender {
+    private static final Logger log = LoggerFactory.getLogger(MultiDataSender.class);
     private OnSendListener mListener = null;
     private final Deque<ByteBuffer> mData = new ArrayDeque<>();
     private State mState = null;
@@ -54,15 +58,15 @@ public class MultiDataSender implements Sender {
             state.writeSize += channel.write(item);
         }
 
-        System.out.println("state.writeSize" + state.writeSize);
-        System.out.println("header.allDataSize():" + state.header.allDataSize());
+        log.debug("state.writeSize: {}", state.writeSize);
+        log.debug("header.allDataSize(): {}", state.header.allDataSize());
         if (state.writeSize == state.header.allDataSize()) {
             if (mListener != null) {
                 mListener.onSend(state.writeSize);
             }
             return Result.FINISHED;
         } else {
-            System.out.println("written is not finished");
+            log.debug("written is not finished");
             return Result.UNFINISHED;
         }
     }

@@ -6,7 +6,11 @@ import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Header {
+    private static final Logger log = LoggerFactory.getLogger(Header.class);
     // ヘッダーのサイズ(自身を含む), 全データのサイズ(ヘッダーを含む), データ１のサイズ, データ２のサイズ...
     private final int mHeaderSize;
     private final int mAllDataSize;  // ヘッダー含む
@@ -26,7 +30,7 @@ public class Header {
             int size = elem.limit();
             dataSize += size;
             buf.put(size);
-            System.out.println("data size:" + size);
+            log.debug("data size: {}", size);
         }
         buf.flip();
         return new Header(headerSize, dataSize, buf);
@@ -75,7 +79,7 @@ public class Header {
 
     public int itemDataSize(int index) {
         int size = mItemDataSizes.get(index);
-        System.out.println("data size:" + size);
+        log.debug("data size: {}", size);
         return size;
     }
 

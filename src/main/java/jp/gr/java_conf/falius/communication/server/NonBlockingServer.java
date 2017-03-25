@@ -209,7 +209,7 @@ public class NonBlockingServer implements Server {
                     public Sender swap(String remoteAddress, Receiver receiver) {
                         Sender sender = new MultiDataSender();
                         sender.put(receiver.getAll());
-                        System.out.println("server swapper");
+                        log.info("server swapper");
                         return sender;
                     }
 
@@ -222,7 +222,7 @@ public class NonBlockingServer implements Server {
 
                 @Override
                 public void onDissconnect(String remote, Throwable cause) {
-                    System.out.println("server disconnect with " + remote);
+                    log.info("server disconnect with {}", remote);
                 }
 
             });
@@ -231,7 +231,7 @@ public class NonBlockingServer implements Server {
 
                 @Override
                 public void onShutdown() {
-                    System.out.println("server shutdown");
+                    log.info("server shutdown");
                 }
 
             });
@@ -240,7 +240,7 @@ public class NonBlockingServer implements Server {
 
                 @Override
                 public void onAccept(String remoteAddress) {
-                    System.out.println("server accept from " + remoteAddress);
+                    log.info("server accept from ", remoteAddress);
                 }
             });
 
