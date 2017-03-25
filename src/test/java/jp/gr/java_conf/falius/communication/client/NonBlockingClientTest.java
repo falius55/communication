@@ -173,7 +173,7 @@ public class NonBlockingClientTest {
 
             @Override
             public void onReceive(String fromAddress, int readByte, Receiver receiver) {
-                log.debug("readByte : {}", readByte);
+                log.debug("much data readByte : {}", readByte);
 
             }
         });

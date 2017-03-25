@@ -56,7 +56,7 @@ public class UnFinishedHeader implements Header {
 
     @Override
     public int itemDataSize(int index) {
-        throw new UnsupportedOperationException();
+        throw new IllegalStateException();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class UnFinishedHeader implements Header {
 
     @Override
     public ByteBuffer toByteBuffer() {
-        throw new UnsupportedOperationException();
+        throw new IllegalStateException();
     }
 
     @Override

@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 public class HeaderFactory {
     private static final Logger log = LoggerFactory.getLogger(HeaderFactory.class);
 
+    /**
+     *
+     * @param data
+     * @return 読み取りが完全に終わったヘッダ
+     */
     public static FinishedHeader from(Collection<ByteBuffer> data) {
         IntBuffer buf = IntBuffer.allocate(data.size());
         int headerSize = 4 + 4 + data.size() * 4;
@@ -22,14 +27,26 @@ public class HeaderFactory {
             buf.put(size);
         }
         buf.flip();
+        log.debug("send header size : {}", headerSize);
+        log.debug("send all data size: {}", dataSize);
         return new FinishedHeader(headerSize, dataSize, buf);
     }
 
+    /**
+     * チャネルからヘッダ情報を読み込みます。
+     * ヘッダは一度にすべてを読み込まれる必要はありませんが、最低でも８バイトは読み込まれる必要があります。
+     * @param channel
+     * @return 読み取りが完全に終わったヘッダ、あるいはまだ読み取りが完全に終わっていないヘッダ
+     * @throws IOException ヘッダの読み込みエラーが起きた場合、８バイト未満しか読み込めなかった場合
+     */
     public static Header from(SocketChannel channel) throws IOException {
         ByteBuffer headerSizeBuf = ByteBuffer.allocate(8);
         int tmp = channel.read(headerSizeBuf);
         if (tmp < 0) {
-            throw new IOException();
+            throw new IOException("header reading error");
+        }
+        if (tmp < 8) {
+            throw new IOException("read less than 8 bytes");
         }
         headerSizeBuf.flip();
         int headerSize = headerSizeBuf.getInt();
