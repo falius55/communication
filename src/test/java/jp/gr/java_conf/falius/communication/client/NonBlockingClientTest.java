@@ -5,6 +5,10 @@ import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.AfterClass;
@@ -22,6 +26,7 @@ import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.Sender;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
+import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 public class NonBlockingClientTest {
     private static Logger log = LoggerFactory.getLogger(NonBlockingClientTest.class);
@@ -93,12 +98,8 @@ public class NonBlockingClientTest {
 
             @Override
             public void onReceive(String fromAddress, int readByte, Receiver receiver) {
-                String ret1 = receiver.getString();
-                log.debug("ret1 : {}", ret1);
-                assertThat(ret1, is(sendData[0]));
-                String ret2 = receiver.getString();
-                log.debug("ret2 : {}", ret2);
-                assertThat(ret2, is(sendData[1]));
+                assertThat(receiver.getString(), is(sendData[0]));
+                assertThat(receiver.getString(), is(sendData[1]));
             }
         });
 
@@ -126,16 +127,39 @@ public class NonBlockingClientTest {
 
         });
 
-        String ret3 = receiver.getString();
-        log.debug("ret3 : {}", ret3);
-        assertThat(ret3, is(sendData[2]));
-        String ret4 = receiver.getString();
-        log.debug("ret4 : {}", ret4);
-        assertThat(ret4, is(sendData[3]));
+        assertThat(receiver.getString(), is(sendData[2]));
+        assertThat(receiver.getString(), is(sendData[3]));
     }
 
     @Test
-    public void testCall() {
+    public void testCall() throws InterruptedException, ExecutionException {
+        String[] sendData = {"abc", "def", "ghi", "jkl"};
+        Client client = new NonBlockingClient(HOST, mServer.getPort(), new Swapper.SwapperFactory() {
+
+            @Override
+            public Swapper get() {
+                return new OnceSwapper() {
+
+                    @Override
+                    public Sender swap(String remoteAddress, Receiver receiver) {
+                        assertThat(receiver, is(nullValue()));
+                        Sender sender = new MultiDataSender();
+                        for (String data : sendData) {
+                            sender.put(data);
+                        }
+                        return sender;
+                    }
+
+                };
+            }
+        });
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Receiver> future = executor.submit(client);
+        Receiver receiver = future.get();
+        for (String data : sendData) {
+            assertThat(receiver.getString(), is(data));
+        }
     }
 
 }

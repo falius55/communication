@@ -34,13 +34,11 @@ public class EchoServer implements ServerHelper {
                     public Sender swap(String remoteAddress, Receiver receiver) {
                         Sender sender = new MultiDataSender();
                         sender.put(receiver.getAll());
-                        log.debug("server swapper");
                         return sender;
                     }
 
                 };
             }
-
         });
     }
 
@@ -51,7 +49,7 @@ public class EchoServer implements ServerHelper {
 
             @Override
             public void onDissconnect(String remote, Throwable cause) {
-                log.debug("server disconnect with {}", remote);
+                log.debug("server disconnect with {} by {}", remote, cause);
             }
 
         });

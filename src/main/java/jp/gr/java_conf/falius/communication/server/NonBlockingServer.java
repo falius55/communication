@@ -141,13 +141,11 @@ public class NonBlockingServer implements Server {
             channel.configureBlocking(false);
             channel.register(selector, SelectionKey.OP_ACCEPT, mRemoteStarter);
 
-            log.debug("mIsShutdowned : {}", mIsShutdowned);
             while (!mIsShutdowned) {
                 // select()メソッドの戻り値は新しく通知(OP_ACCEPT)のあったキーの数
                 // selectedKeys(Setオブジェクト)から明示的に削除しない限り、
                 // キーはselectedKeysに格納されたままになる
                 // 削除しないと、次回も再び同じキーで通知される
-                log.debug("selector.select");
                 if (selector.select() > 0 || selector.selectedKeys().size() > 0) {
                     log.debug("selector.selectedKeys: {}", selector.selectedKeys().size());
 
@@ -167,10 +165,9 @@ public class NonBlockingServer implements Server {
     }
 
     private void bind(ServerSocketChannel channel) throws IOException {
-        log.debug("bind()");
         InetSocketAddress address = new InetSocketAddress(mServerPort);
         log.info("bind to ... {} : {}", getIPAddress(), address.getPort());
-        channel.bind(address);
+        channel.bind(address);  // ポートが競合したら処理が返ってこない？
         log.info("success binding");
     }
 

@@ -56,7 +56,7 @@ public class NonBlockingClient implements Client {
     }
 
     /**
-     * このオブジェクトをRunnableとして扱う際のコンストラクター
+     * このオブジェクトをCallableとして扱う際のコンストラクター
      * @param serverHost
      * @param serverPort
      * @param swapperFactory
