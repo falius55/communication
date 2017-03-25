@@ -10,6 +10,9 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.Remote;
 import jp.gr.java_conf.falius.communication.handler.Handler;
@@ -33,6 +36,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  *
  */
 public class NonBlockingClient implements Client {
+    private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
     private static final long POLL_TIMEOUT = 5000L;
 
     private final String mServerHost;
@@ -156,7 +160,7 @@ public class NonBlockingClient implements Client {
 
         Client client = new NonBlockingClient("localhost", 6200);
         client.addOnReceiveListener(
-                (address, size, rec) -> System.out.println("on receive"));
+                (address, size, rec) -> log.debug("on receive"));
         try {
             Receiver result = client.start(new RepeatSwapper() {
                 private int i = 0;
@@ -170,7 +174,7 @@ public class NonBlockingClient implements Client {
                     sender.put(4096);
                     sender.put("I send it " + i);
                     if (receiver != null) {
-                        System.out.println("return from server in swap():" + receiver.getString());
+                        log.debug("return from server in swap():" + receiver.getString());
                     }
                     i++;
                     if (i > 4)
@@ -183,10 +187,10 @@ public class NonBlockingClient implements Client {
                 return;
             }
             for (int i = 0, len = result.dataCount(); i < len; i++) {
-                System.out.println("return from server:" + result.getString());
+                log.debug("return from server:" + result.getString());
             }
         } catch (IOException | TimeoutException e) {
-            e.printStackTrace();
+            log.error("client error: ", e);
         }
     }
 

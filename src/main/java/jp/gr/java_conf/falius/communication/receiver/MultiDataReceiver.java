@@ -9,6 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.Header;
 
 /**
@@ -24,6 +27,8 @@ import jp.gr.java_conf.falius.communication.Header;
  *
  */
 public class MultiDataReceiver implements Receiver {
+    private static final Logger log = LoggerFactory.getLogger(MultiDataReceiver.class);
+
     private final Queue<ByteBuffer> mReceivedData = new ArrayDeque<>();
     private Entry mNonFinishedEntry = null;
 
@@ -46,7 +51,7 @@ public class MultiDataReceiver implements Receiver {
         if (mNonFinishedEntry == null) {
             try {
                 header = Header.from(channel);
-                System.out.println("header size:" + header.size());
+                log.debug("header size: {}", header.size());
             } catch (IOException e) {
                 return Result.ERROR;
             }
@@ -57,13 +62,13 @@ public class MultiDataReceiver implements Receiver {
         }
 
         int tmp = entry.read(channel);
-        System.out.println("once data read:" + tmp);
+        log.debug("once data read: {}", tmp);
         if (tmp < 0) {
             return Result.ERROR;
         }
 
         if (entry.isFinished()) {
-            System.out.println("reading finish");
+            log.debug("reading finish");
             entry.add(mReceivedData);
             if (mListener != null) {
                 String remoteAddress = channel.socket().getRemoteSocketAddress().toString();
@@ -91,7 +96,7 @@ public class MultiDataReceiver implements Receiver {
             mHeader = header;
             mRemain = header.allDataSize() - header.size();
             mItemData = new ArrayDeque<>();
-            System.out.println("all data size:" + header.allDataSize());
+            log.debug("all data size: {}", header.allDataSize());
             init();
         }
 
@@ -99,7 +104,7 @@ public class MultiDataReceiver implements Receiver {
             IntBuffer sizeBuf = mHeader.dataSizeBuffer();
             while (sizeBuf.hasRemaining()) {
                 int size = sizeBuf.get();
-                System.out.println("data size:" + size);
+                log.debug("data size: {}", size);
                 ByteBuffer buf = ByteBuffer.allocate(size);
                 mItemData.add(buf);
             }
@@ -113,7 +118,7 @@ public class MultiDataReceiver implements Receiver {
                     return -1;
                 }
                 readed += tmp;
-                System.out.println("item read:" + tmp);
+                log.debug("item read: {}", tmp);
             }
             mRemain -= readed;
             return readed;
@@ -140,8 +145,8 @@ public class MultiDataReceiver implements Receiver {
     @Override
     public ByteBuffer get() {
         ByteBuffer data = mReceivedData.poll();
-        System.out.println("MULTI_DATA_RECEIVER > data:" + data);
-        System.out.println("rest data count:" + mReceivedData.size());
+        log.debug("data: {}", data);
+        log.debug("rest data count: {}", mReceivedData.size());
         return data;
     }
 
@@ -167,10 +172,9 @@ public class MultiDataReceiver implements Receiver {
      */
     @Override
     public String getString() {
-        System.out.println("MULTI_DATA_RECEIVER > getString()");
         ByteBuffer buf = get();
         if (buf == null) {
-            System.err.println("no data null");
+            log.warn("no data null");
             return null;
         }
         String ret = StandardCharsets.UTF_8.decode(buf).toString();
@@ -191,7 +195,6 @@ public class MultiDataReceiver implements Receiver {
 
     @Override
     public void getAndOutput(OutputStream os) throws IOException {
-        System.out.println("get and output");
         ByteBuffer buf = get();
         try (OutputStream out = os) {
             if (buf.hasArray()) {

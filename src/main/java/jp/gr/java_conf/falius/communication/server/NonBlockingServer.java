@@ -9,14 +9,22 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.receiver.Receiver;
+import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.sender.Sender;
+import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
@@ -30,6 +38,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  * 続けます。
  */
 public class NonBlockingServer implements Server {
+    private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);
 
     private final int mServerPort;
 
@@ -155,7 +164,7 @@ public class NonBlockingServer implements Server {
 
     private void bind(ServerSocketChannel channel) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerPort);
-        System.out.println("bind to " + getIPAddress() + ":" + address.getPort());
+        log.info("bind to {} : {}", getIPAddress(), address.getPort());
         channel.bind(address);
     }
 
@@ -173,7 +182,7 @@ public class NonBlockingServer implements Server {
                 mOnDisconnectCallback.onDissconnect(remote, cause);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("disconnect failed: ", e);
         }
     }
 
@@ -182,8 +191,72 @@ public class NonBlockingServer implements Server {
             InetAddress address = InetAddress.getLocalHost();
             return address.getHostAddress();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            log.error("failed get IP: ", e);
         }
         return null;
+    }
+
+    public static void main(String... strings) {
+        final String STOP_KEY = "stop";
+        final int PORT = 9000;
+        try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
+
+            @Override
+            public Swapper get() {
+                return new OnceSwapper() {
+
+                    @Override
+                    public Sender swap(String remoteAddress, Receiver receiver) {
+                        Sender sender = new MultiDataSender();
+                        sender.put(receiver.getAll());
+                        log.info("server swapper");
+                        return sender;
+                    }
+
+                };
+            }
+
+        })) {
+
+            server.addOnDisconnectCallback(new OnDisconnectCallback() {
+
+                @Override
+                public void onDissconnect(String remote, Throwable cause) {
+                    log.info("server disconnect with {}", remote);
+                }
+
+            });
+
+            server.addOnShutdownCallback(new Server.OnShutdownCallback() {
+
+                @Override
+                public void onShutdown() {
+                    log.info("server shutdown");
+                }
+
+            });
+
+            server.addOnAcceptListener(new Server.OnAcceptListener() {
+
+                @Override
+                public void onAccept(String remoteAddress) {
+                    log.info("server accept from ", remoteAddress);
+                }
+            });
+
+            server.startOnNewThread();
+
+            try (Scanner sc = new Scanner(System.in)) {
+                String line;
+                while (true) {
+                    line = sc.nextLine();
+                    if (line.equals(STOP_KEY)) {
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            log.error("server error", e);
+        }
     }
 }
