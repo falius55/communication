@@ -14,82 +14,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
+import jp.gr.java_conf.falius.communication.helper.EchoServer;
+import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.receiver.Receiver;
 import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.Sender;
-import jp.gr.java_conf.falius.communication.server.NonBlockingServer;
-import jp.gr.java_conf.falius.communication.server.Server;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
-import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 public class NonBlockingClientTest {
     private static Logger log = LoggerFactory.getLogger(NonBlockingClientTest.class);
     private static final String HOST = "localhost";
-    private static final int PORT = 9101;
-    private static Server mServer;
+    private static final ServerHelper mServer = new EchoServer();
 
     @BeforeClass
     public static void setupServer() throws IOException {
-        mServer = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
-
-            @Override
-            public Swapper get() {
-                return new OnceSwapper() {
-
-                    @Override
-                    public Sender swap(String remoteAddress, Receiver receiver) {
-                        Sender sender = new MultiDataSender();
-                        sender.put(receiver.getAll());
-                        log.debug("server swapper");
-                        return sender;
-                    }
-
-                };
-            }
-
-        });
-
-        mServer.addOnDisconnectCallback(new OnDisconnectCallback() {
-
-            @Override
-            public void onDissconnect(String remote, Throwable cause) {
-                log.debug("server disconnect with {}", remote);
-            }
-
-        });
-
-        mServer.addOnShutdownCallback(new Server.OnShutdownCallback() {
-
-            @Override
-            public void onShutdown() {
-                log.info("server shutdown");
-            }
-
-        });
-
-        mServer.addOnAcceptListener(new Server.OnAcceptListener() {
-
-            @Override
-            public void onAccept(String remoteAddress) {
-                log.debug("server accept from {}", remoteAddress);
-            }
-        });
-
-        mServer.startOnNewThread();
-
+        mServer.beforeClass();
     }
 
     @AfterClass
     public static void shutdownServer() throws IOException {
-        mServer.close();
+        mServer.afterClass();
     }
 
     @Test
     public void testStart() throws IOException, TimeoutException {
         String sendData = "sendData";
-        Client client = new NonBlockingClient(HOST, PORT);
+        Client client = new NonBlockingClient(HOST, mServer.getPort());
 
         Receiver receiver = client.start(new OnceSwapper() {
 
@@ -110,7 +62,7 @@ public class NonBlockingClientTest {
     @Test
     public void testAddOnSendListener() throws IOException, TimeoutException {
         String sendData = "send data";
-        Client client = new NonBlockingClient(HOST, PORT);
+        Client client = new NonBlockingClient(HOST, mServer.getPort());
         client.addOnSendListener(new OnSendListener() {
 
             @Override
@@ -136,7 +88,7 @@ public class NonBlockingClientTest {
     @Test
     public void testAddOnReceiveListener() throws IOException, TimeoutException {
         String[] sendData = { "data1", "data2", "data3", "data4" };
-        Client client = new NonBlockingClient(HOST, PORT);
+        Client client = new NonBlockingClient(HOST, mServer.getPort());
         client.addOnReceiveListener(new OnReceiveListener() {
 
             @Override
