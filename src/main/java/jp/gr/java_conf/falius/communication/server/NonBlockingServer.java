@@ -131,6 +131,7 @@ public class NonBlockingServer implements Server {
     }
 
     private void exec() throws IOException {
+        log.debug("exec");
         try (Selector selector = Selector.open();
                 ServerSocketChannel channel = ServerSocketChannel.open()) {
             mSelector = selector;
@@ -140,12 +141,15 @@ public class NonBlockingServer implements Server {
             channel.configureBlocking(false);
             channel.register(selector, SelectionKey.OP_ACCEPT, mRemoteStarter);
 
+            log.debug("mIsShutdowned : {}", mIsShutdowned);
             while (!mIsShutdowned) {
                 // select()メソッドの戻り値は新しく通知(OP_ACCEPT)のあったキーの数
                 // selectedKeys(Setオブジェクト)から明示的に削除しない限り、
                 // キーはselectedKeysに格納されたままになる
                 // 削除しないと、次回も再び同じキーで通知される
+                log.debug("selector.select");
                 if (selector.select() > 0 || selector.selectedKeys().size() > 0) {
+                    log.debug("selector.selectedKeys: {}", selector.selectedKeys().size());
 
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
@@ -163,9 +167,11 @@ public class NonBlockingServer implements Server {
     }
 
     private void bind(ServerSocketChannel channel) throws IOException {
+        log.debug("bind()");
         InetSocketAddress address = new InetSocketAddress(mServerPort);
-        log.info("bind to {} : {}", getIPAddress(), address.getPort());
+        log.info("bind to ... {} : {}", getIPAddress(), address.getPort());
         channel.bind(address);
+        log.info("success binding");
     }
 
     @Override
@@ -182,7 +188,7 @@ public class NonBlockingServer implements Server {
                 mOnDisconnectCallback.onDissconnect(remote, cause);
             }
         } catch (IOException e) {
-            log.error("disconnect failed: ", e);
+            e.printStackTrace();
         }
     }
 
@@ -191,14 +197,14 @@ public class NonBlockingServer implements Server {
             InetAddress address = InetAddress.getLocalHost();
             return address.getHostAddress();
         } catch (UnknownHostException e) {
-            log.error("failed get IP: ", e);
+            e.printStackTrace();
         }
         return null;
     }
 
     public static void main(String... strings) {
         final String STOP_KEY = "stop";
-        final int PORT = 9000;
+        final int PORT = 9100;
         try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
 
             @Override
