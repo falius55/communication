@@ -19,10 +19,7 @@ import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.receiver.Receiver;
-import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.sender.Sender;
-import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
@@ -163,43 +160,4 @@ public class NonBlockingClient implements Client {
         remote.addOnReceiveListener(mOnReceiveListener);
         return remote;
     }
-
-    public static void main(String... args) {
-
-        Client client = new NonBlockingClient("localhost", 6200);
-        client.addOnReceiveListener(
-                (address, size, rec) -> log.debug("on receive"));
-        try {
-            Receiver result = client.start(new RepeatSwapper() {
-                private int i = 0;
-
-                @Override
-                public Sender swap(String remoteAddress, Receiver receiver) {
-                    Sender sender = new MultiDataSender();
-                    sender.put("I am Client. Who are you?");
-                    sender.put("put2 msg");
-                    sender.put("title");
-                    sender.put(4096);
-                    sender.put("I send it " + i);
-                    if (receiver != null) {
-                        log.debug("return from server in swap():" + receiver.getString());
-                    }
-                    i++;
-                    if (i > 4)
-                        finish();
-                    return sender;
-                }
-
-            });
-            if (result == null) {
-                return;
-            }
-            for (int i = 0, len = result.dataCount(); i < len; i++) {
-                log.debug("return from server:" + result.getString());
-            }
-        } catch (IOException | TimeoutException e) {
-            log.error("client error: ", e);
-        }
-    }
-
 }
