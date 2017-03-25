@@ -13,7 +13,8 @@ import java.util.Queue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.Header;
+import jp.gr.java_conf.falius.communication.header.Header;
+import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 
 /**
  * 複数データの受信を管理するクラスです
@@ -51,7 +52,7 @@ public class MultiDataReceiver implements Receiver {
         Entry entry;
         if (mNonFinishedEntry == null) {
             try {
-                header = Header.from(channel);
+                header = HeaderFactory.from(channel);
                 log.debug("header size: {}", header.size());
             } catch (IOException e) {
                 return Result.ERROR;
@@ -89,29 +90,37 @@ public class MultiDataReceiver implements Receiver {
      *
      */
     private static class Entry {
-        private final Header mHeader;
+        private Header mHeader;
         private int mRemain;
-        private final Queue<ByteBuffer> mItemData;
+        private Queue<ByteBuffer> mItemData = null;
 
         private Entry(Header header) {
             mHeader = header;
-            mRemain = header.allDataSize() - header.size();
-            mItemData = new ArrayDeque<>();
-            log.debug("all data size: {}", header.allDataSize());
-            init();
+            mRemain = mHeader.allDataSize() - mHeader.size();
+            log.debug("all data size: {}", mHeader.allDataSize());
         }
 
         private void init() {
+            if (mItemData != null) {
+                return;
+            }
+            mItemData = new ArrayDeque<>();
             IntBuffer sizeBuf = mHeader.dataSizeBuffer();
             while (sizeBuf.hasRemaining()) {
                 int size = sizeBuf.get();
-                log.debug("data size: {}", size);
                 ByteBuffer buf = ByteBuffer.allocate(size);
                 mItemData.add(buf);
             }
         }
 
         private int read(SocketChannel channel) throws IOException {
+            mHeader = mHeader.read(channel);
+            if (!mHeader.isReadFinished()) {
+                log.debug("header unfinish reading");
+                return 0;
+            }
+            init();
+
             int readed = 0;
             for (ByteBuffer itemBuf : mItemData) {
                 int tmp = channel.read(itemBuf);
@@ -119,7 +128,6 @@ public class MultiDataReceiver implements Receiver {
                     return -1;
                 }
                 readed += tmp;
-                log.debug("item read: {}", tmp);
             }
             mRemain -= readed;
             return readed;
@@ -136,7 +144,7 @@ public class MultiDataReceiver implements Receiver {
         }
 
         private boolean isFinished() {
-            return mRemain == 0;
+            return mHeader.isReadFinished() && mRemain == 0;
         }
     }
 
@@ -146,8 +154,6 @@ public class MultiDataReceiver implements Receiver {
     @Override
     public ByteBuffer get() {
         ByteBuffer data = mReceivedData.poll();
-        log.debug("data: {}", data);
-        log.debug("rest data count: {}", mReceivedData.size());
         return data;
     }
 

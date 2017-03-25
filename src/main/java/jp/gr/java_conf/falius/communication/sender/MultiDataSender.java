@@ -17,7 +17,8 @@ import java.util.Deque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.Header;
+import jp.gr.java_conf.falius.communication.header.Header;
+import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 
 /**
  * 複数データを送信する際に利用するクラスです。
@@ -47,22 +48,22 @@ public class MultiDataSender implements Sender {
         State state;
         if (mState == null) {
             state = mState = new State();
-            state.header = Header.from(mData);
-            state.headerBuffer = state.header.toByteBuffer();
+            state.mHeader = HeaderFactory.from(mData);
+            state.mHeaderBuffer = state.mHeader.toByteBuffer();
         } else {
             state = mState;
         }
 
-        state.writeSize += channel.write(state.headerBuffer);
+        state.mWriteSize += channel.write(state.mHeaderBuffer);
         for (ByteBuffer item : mData) {
-            state.writeSize += channel.write(item);
+            state.mWriteSize += channel.write(item);
         }
 
-        log.debug("state.writeSize: {}", state.writeSize);
-        log.debug("header.allDataSize(): {}", state.header.allDataSize());
-        if (state.writeSize == state.header.allDataSize()) {
+        log.debug("state.writeSize: {}", state.mWriteSize);
+        log.debug("mHeader.allDataSize(): {}", state.mHeader.allDataSize());
+        if (state.mWriteSize == state.mHeader.allDataSize()) {
             if (mListener != null) {
-                mListener.onSend(state.writeSize);
+                mListener.onSend(state.mWriteSize);
             }
             return Result.FINISHED;
         } else {
@@ -80,9 +81,9 @@ public class MultiDataSender implements Sender {
     private static class State {
         // 一度で最後までヘッダーを書き込めなかったときのために
         // 以前読み込んだデータの状態を覚えておくためのクラス
-        private Header header;
-        private ByteBuffer headerBuffer;
-        private int writeSize = 0;
+        private Header mHeader;
+        private ByteBuffer mHeaderBuffer;
+        private int mWriteSize = 0;
     }
 
     @Override
