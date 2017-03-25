@@ -29,7 +29,7 @@ public class NonBlockingServerTest {
     private static final int PORT = 9001;
 
     @Test
-    public void testReceiveValue() throws IOException, TimeoutException {
+    public void testReceiveValueInSwapper() throws IOException, TimeoutException {
         String[] receiveData = {"1", "2", "3"};
         try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
 
@@ -57,6 +57,7 @@ public class NonBlockingServerTest {
 
             ClientHelper client = new OnceClient(HOST, PORT);
             Receiver ret =  client.send(receiveData);
+            assertThat(ret.dataCount(), is(receiveData.length));
             for (String data : receiveData) {
                 assertThat(ret.getInt(), is(Integer.parseInt(data)));
             }

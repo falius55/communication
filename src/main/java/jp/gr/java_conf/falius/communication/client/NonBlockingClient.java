@@ -37,7 +37,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  */
 public class NonBlockingClient implements Client {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
-    private static final long POLL_TIMEOUT = 5000L;
+    private static final long POLL_TIMEOUT = 30000L;
 
     private final String mServerHost;
     private final int mServerPort;

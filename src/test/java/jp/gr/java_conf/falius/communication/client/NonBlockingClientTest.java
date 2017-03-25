@@ -27,6 +27,7 @@ import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.Sender;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
+import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingClientTest {
     private static Logger log = LoggerFactory.getLogger(NonBlockingClientTest.class);
@@ -160,6 +161,41 @@ public class NonBlockingClientTest {
         for (String data : sendData) {
             assertThat(receiver.getString(), is(data));
         }
+    }
+
+    @Test
+    public void testMuchData() throws IOException, TimeoutException {
+        String sendData = "sendData";
+        int len = 10000;
+        Client client = new NonBlockingClient(HOST, mServer.getPort());
+
+        client.addOnReceiveListener(new OnReceiveListener() {
+
+            @Override
+            public void onReceive(String fromAddress, int readByte, Receiver receiver) {
+                log.debug("readByte : {}", readByte);
+
+            }
+        });
+
+        Receiver receiver = client.start(new OnceSwapper() {
+
+            @Override
+            public Sender swap(String remoteAddress, Receiver receiver) {
+                assertThat(receiver, is(nullValue()));
+                Sender sender = new MultiDataSender();
+                new IntRange(len).simpleForEach(() -> {
+                    sender.put(sendData);
+                });
+                return sender;
+            }
+
+        });
+
+        assertThat(receiver.dataCount(), is(len));
+
+        receiver.clear();
+        assertThat(receiver.dataCount(), is(0));
     }
 
 }
