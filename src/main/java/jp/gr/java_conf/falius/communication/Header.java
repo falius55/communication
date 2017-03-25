@@ -79,7 +79,6 @@ public class Header {
 
     public int itemDataSize(int index) {
         int size = mItemDataSizes.get(index);
-        log.debug("data size: {}", size);
         return size;
     }
 

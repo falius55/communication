@@ -9,7 +9,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -20,11 +19,7 @@ import org.slf4j.LoggerFactory;
 import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.receiver.Receiver;
-import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.sender.Sender;
-import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
@@ -123,7 +118,9 @@ public class NonBlockingServer implements Server {
 
         mSelector.wakeup();
         mServerSocketChannel.close();
-        mExecutor.shutdown();
+        if (mExecutor != null) {
+            mExecutor.shutdown();
+        }
 
         if (mOnShutdownCallback != null) {
             mOnShutdownCallback.onShutdown();
@@ -131,6 +128,7 @@ public class NonBlockingServer implements Server {
     }
 
     private void exec() throws IOException {
+        log.debug("exec");
         try (Selector selector = Selector.open();
                 ServerSocketChannel channel = ServerSocketChannel.open()) {
             mSelector = selector;
@@ -146,6 +144,7 @@ public class NonBlockingServer implements Server {
                 // キーはselectedKeysに格納されたままになる
                 // 削除しないと、次回も再び同じキーで通知される
                 if (selector.select() > 0 || selector.selectedKeys().size() > 0) {
+                    log.debug("selector.selectedKeys: {}", selector.selectedKeys().size());
 
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
@@ -164,8 +163,9 @@ public class NonBlockingServer implements Server {
 
     private void bind(ServerSocketChannel channel) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerPort);
-        log.info("bind to {} : {}", getIPAddress(), address.getPort());
-        channel.bind(address);
+        log.info("bind to ... {} : {}", getIPAddress(), address.getPort());
+        channel.bind(address);  // ポートが競合したら処理が返ってこない？
+        log.info("success binding");
     }
 
     @Override
@@ -182,7 +182,7 @@ public class NonBlockingServer implements Server {
                 mOnDisconnectCallback.onDissconnect(remote, cause);
             }
         } catch (IOException e) {
-            log.error("disconnect failed: ", e);
+            e.printStackTrace();
         }
     }
 
@@ -191,72 +191,8 @@ public class NonBlockingServer implements Server {
             InetAddress address = InetAddress.getLocalHost();
             return address.getHostAddress();
         } catch (UnknownHostException e) {
-            log.error("failed get IP: ", e);
+            e.printStackTrace();
         }
         return null;
-    }
-
-    public static void main(String... strings) {
-        final String STOP_KEY = "stop";
-        final int PORT = 9000;
-        try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
-
-            @Override
-            public Swapper get() {
-                return new OnceSwapper() {
-
-                    @Override
-                    public Sender swap(String remoteAddress, Receiver receiver) {
-                        Sender sender = new MultiDataSender();
-                        sender.put(receiver.getAll());
-                        log.info("server swapper");
-                        return sender;
-                    }
-
-                };
-            }
-
-        })) {
-
-            server.addOnDisconnectCallback(new OnDisconnectCallback() {
-
-                @Override
-                public void onDissconnect(String remote, Throwable cause) {
-                    log.info("server disconnect with {}", remote);
-                }
-
-            });
-
-            server.addOnShutdownCallback(new Server.OnShutdownCallback() {
-
-                @Override
-                public void onShutdown() {
-                    log.info("server shutdown");
-                }
-
-            });
-
-            server.addOnAcceptListener(new Server.OnAcceptListener() {
-
-                @Override
-                public void onAccept(String remoteAddress) {
-                    log.info("server accept from ", remoteAddress);
-                }
-            });
-
-            server.startOnNewThread();
-
-            try (Scanner sc = new Scanner(System.in)) {
-                String line;
-                while (true) {
-                    line = sc.nextLine();
-                    if (line.equals(STOP_KEY)) {
-                        break;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            log.error("server error", e);
-        }
     }
 }

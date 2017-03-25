@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import org.slf4j.Logger;
@@ -174,7 +175,6 @@ public class MultiDataReceiver implements Receiver {
     public String getString() {
         ByteBuffer buf = get();
         if (buf == null) {
-            log.warn("no data null");
             return null;
         }
         String ret = StandardCharsets.UTF_8.decode(buf).toString();
@@ -184,6 +184,9 @@ public class MultiDataReceiver implements Receiver {
     @Override
     public int getInt() {
         ByteBuffer buf = get();
+        if (buf == null) {
+            throw new NoSuchElementException("no data");
+        }
         int ret = buf.getInt();
         return ret;
     }

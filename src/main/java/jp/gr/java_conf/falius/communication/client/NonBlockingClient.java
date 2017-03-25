@@ -37,7 +37,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  */
 public class NonBlockingClient implements Client {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
-    private static final long POLL_TIMEOUT = 5000L;
+    private static final long POLL_TIMEOUT = 30000L;
 
     private final String mServerHost;
     private final int mServerPort;
@@ -56,7 +56,7 @@ public class NonBlockingClient implements Client {
     }
 
     /**
-     * このオブジェクトをRunnableとして扱う際のコンストラクター
+     * このオブジェクトをCallableとして扱う際のコンストラクター
      * @param serverHost
      * @param serverPort
      * @param swapperFactory
@@ -138,6 +138,14 @@ public class NonBlockingClient implements Client {
         }
     }
 
+    /**
+     *
+     * @param channel
+     * @param swapper
+     * @return
+     * @throws IOException
+     * @throws ConnectException 接続に失敗した場合
+     */
     private Remote connect(SocketChannel channel, Swapper swapper) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerHost, mServerPort);
         channel.connect(address);
