@@ -18,6 +18,9 @@ public class CollectionReceiveData extends ExtendableReceiveData {
 
     public List<String> getList() {
         String jsonString = getString();
+        if (jsonString == null) {
+            return null;
+        }
         JSONArray json = new JSONArray(jsonString);
         List<String> ret = new ArrayList<>();
 
@@ -29,6 +32,9 @@ public class CollectionReceiveData extends ExtendableReceiveData {
 
     public Map<String, String> getMap() {
         String jsonString = getString();
+        if (jsonString == null) {
+            return null;
+        }
         JSONObject json = new JSONObject(jsonString);
         Map<String, String> ret = new HashMap<>();
 

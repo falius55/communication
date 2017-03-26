@@ -3,6 +3,7 @@ package jp.gr.java_conf.falius.communication.receiver;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.NoSuchElementException;
 
 /**
  * 受信データを保持するクラスです。
@@ -47,20 +48,29 @@ public interface ReceiveData {
 
     /**
      * データ１単位を文字列で取得します。
+     * 保持しているデータがなければnull
      * @return
+     * @throws IllegalStateException デコードできないデータをこのメソッドで取得しようとした場合
      */
     String getString();
 
     /**
-     * データ１単位をint値で取得します。
-     * @return データ１単位の最初の４バイトを整数とした値。保持しているデータがなければ0
+     * データ１単位の最初の４バイトをint値で取得します。
+     * @return データ１単位の最初の４バイトを整数とした値。
+     * @throws NoSuchElementException 保持しているデータがない場合
      */
     int getInt();
 
+    /**
+     * データ１単位を真偽値として取得します。
+     * SendData#putBooleanに対応した値を返しますが、それ以外の方法で与えられた値に対する結果は保証しません。
+     * @return
+     */
     boolean getBoolean();
 
     /**
      * データ１単位をOutputStreamに書き込みます。
+     * 保持しているデータがなければ何もしません。
      * @param os
      * @throws IOException
      */
