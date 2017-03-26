@@ -216,7 +216,7 @@ public class NonBlockingClientTest {
 
             @Override
             public void onDissconnect(String remote, Throwable cause) {
-                log.error("start sender disconnect to {} by {}", remote, cause == null ? "null" : cause);
+                log.debug("start sender disconnect to {} by {}", remote, cause == null ? "null" : cause);
             }
 
         });

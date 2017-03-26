@@ -14,6 +14,9 @@ public class SendQueue implements SendData {
 
     @Override
     public final SendQueue put(ByteBuffer buf) {
+        if (!buf.hasRemaining()) {
+            throw new IllegalArgumentException("data have no remaining. might not flip()");
+        }
         mData.add(buf);
         return this;
     }

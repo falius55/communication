@@ -13,15 +13,13 @@ import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 /**
  * 複数データを送信する際に利用するクラスです。
  *
- * 再利用はできません。Swapper#swapメソッドでは必ず新しく作成したインスタンスを
- * 返すようにしてください。
+ * 再利用はできません。
  * @author "ymiyauchi"
  *
  */
 public class MultiDataSender implements Sender {
     private static final Logger log = LoggerFactory.getLogger(MultiDataSender.class);
     private OnSendListener mListener = null;
-//    private final Queue<ByteBuffer> mData = new ArrayDeque<>();
     private final SendData mData;
     private State mState = null;
     private boolean mIsWritten = false;
@@ -82,8 +80,6 @@ public class MultiDataSender implements Sender {
      *
      */
     private static class State {
-        // 一度で最後までヘッダーを書き込めなかったときのために
-        // 以前読み込んだデータの状態を覚えておくためのクラス
         private Header mHeader;
         private ByteBuffer mHeaderBuffer;
         private int mWriteSize = 0;

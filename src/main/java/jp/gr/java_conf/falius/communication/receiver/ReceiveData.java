@@ -4,6 +4,26 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * 受信データを保持するクラスです。
+ * SendQueueによって送信された際に利用します。
+ *
+ * SendDataにputされたのと同じ順番でデータが格納されますので、getXXXメソッドにて取得してください。
+ * 取得されたデータはこのクラスの内部から削除されます。
+ * また、getXXXメソッドの実行によって例外が発生した場合、取得しようとしたデータは失われます。
+ *
+ *<p>
+ * このオブジェクトはまずOnReceiveListener#onReceiveメソッドの引数に渡され、その後Swapper#swapメソッド
+ * の引数に渡されます。クライアントに限り、最後に最終受信データがClient#startメソッドの戻り値として取得できます。<br>
+ * 一度の受信に対し、OnReceiveListener#onReceiveメソッドの引数に渡されるオブジェクトとSwapper#swapメソッド
+ * の引数に渡されるオブジェクトは同一になります。<br>
+ * 最後に受信した際に限り、上記の二つとClient#startメソッドの戻り値は同一になります。<br>
+ * このため、OnReceiverListenerの引数で渡されるReceiverオブジェクトから消費した受信データは Client#startメソッド
+ * の戻り値で渡されるReceiverオブジェクトには含まれていませんので注意してください(startメソッドの戻り値も同様)。
+ *
+ * @author "ymiyauchi"
+ *
+ */
 public interface ReceiveData {
 
     /**

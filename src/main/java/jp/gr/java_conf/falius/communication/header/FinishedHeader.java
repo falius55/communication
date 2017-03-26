@@ -31,12 +31,6 @@ public class FinishedHeader implements Header {
     }
 
     @Override
-    public int itemDataSize(int index) {
-        int size = mItemDataSizes.get(index);
-        return size;
-    }
-
-    @Override
     public IntBuffer dataSizeBuffer() {
         mItemDataSizes.rewind();
         return mItemDataSizes;
@@ -59,6 +53,7 @@ public class FinishedHeader implements Header {
 
     @Override
     public Header read(SocketChannel channel) {
+        // empty
         return this;
     }
 

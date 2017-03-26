@@ -7,6 +7,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
+/**
+ * {@inheritDoc}
+ *
+ * @author "ymiyauchi"
+ */
 public class ReceiveQueue implements ReceiveData {
     private final Queue<ByteBuffer> mData;
 

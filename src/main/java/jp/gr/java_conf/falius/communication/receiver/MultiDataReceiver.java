@@ -15,13 +15,7 @@ import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 
 /**
  * 複数データの受信を管理するクラスです
- * MultiDataSenderによって送信された際に利用します
- *
- * Senderによってputされたのと同じ順番でデータが格納されますので、getXXXメソッドにて取得してください。
- * 取得されたデータはこのクラスの内部から削除されます。
- *
- * OnReceiverListenerの引数で渡されるReceiverオブジェクトから消費した受信データは
- *  Client#startメソッドの戻り値で渡されるReceiverオブジェクトには含まれていませんので注意してください。
+ * Senderとは異なり、一度の通信の間保持されます。
  * @author "ymiyauchi"
  *
  */
@@ -95,7 +89,7 @@ public class MultiDataReceiver implements Receiver {
             log.debug("all data size: {}", mHeader.allDataSize());
         }
 
-        private void init() {
+        private void initItemData() {
             if (mItemData != null) {
                 return;
             }
@@ -114,7 +108,7 @@ public class MultiDataReceiver implements Receiver {
                 log.debug("header unfinish reading");
                 return 0;
             }
-            init();
+            initItemData();
 
             int readed = 0;
             for (ByteBuffer itemBuf : mItemData) {

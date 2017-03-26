@@ -20,14 +20,6 @@ public interface Sender {
         FINISHED, UNFINISHED,
     }
 
-    /**
-     *
-     * Client及びServerにて内部的に使用するメソッドです。
-     * このメソッドでリスナーを登録しても無効となりますので注意してください。
-     * 送信時のリスナーを登録するにはClient及びServerのaddOnSendListenerメソッドを利用してください。
-     * @param listener
-     * @return
-     */
     Sender addOnSendListener(OnSendListener listener);
 
     /**
