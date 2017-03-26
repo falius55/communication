@@ -1,18 +1,13 @@
 package jp.gr.java_conf.falius.communication.sender;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
+import java.util.Queue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +26,7 @@ import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 public class MultiDataSender implements Sender {
     private static final Logger log = LoggerFactory.getLogger(MultiDataSender.class);
     private OnSendListener mListener = null;
-    private final Deque<ByteBuffer> mData = new ArrayDeque<>();
+    private final Queue<ByteBuffer> mData = new ArrayDeque<>();
     private State mState = null;
 
     public MultiDataSender() {
@@ -111,10 +106,6 @@ public class MultiDataSender implements Sender {
         return put(str.getBytes(StandardCharsets.UTF_8));
     }
 
-    public Sender put(Path filePath) throws IOException {
-        return put(Files.readAllBytes(filePath));
-    }
-
     @Override
     public Sender put(int num) {
         ByteBuffer buf = ByteBuffer.allocate(4);
@@ -150,10 +141,6 @@ public class MultiDataSender implements Sender {
 
         result.flip();
         return put(result);
-    }
-
-    public Sender put(File file) throws FileNotFoundException, IOException {
-        return put(new FileInputStream(file));
     }
 
 }
