@@ -47,6 +47,7 @@ public class NonBlockingServer implements Server {
     private Server.OnShutdownCallback mOnShutdownCallback = null;
     private OnDisconnectCallback mOnDisconnectCallback = null;
 
+    private volatile boolean mIsStarted = false;
     private volatile boolean mIsShutdowned = false;
 
     public NonBlockingServer(int serverPort, Swapper.SwapperFactory swapperFactory) {
@@ -125,9 +126,14 @@ public class NonBlockingServer implements Server {
         if (mOnShutdownCallback != null) {
             mOnShutdownCallback.onShutdown();
         }
+        mIsStarted = false;
     }
 
     private void exec() throws IOException {
+        if (mIsStarted) {
+            throw new IllegalStateException("server is already executed. if you want restart, should shutdown.");
+        }
+        mIsStarted = true;
         log.debug("exec");
         try (Selector selector = Selector.open();
                 ServerSocketChannel channel = ServerSocketChannel.open()) {
@@ -150,6 +156,7 @@ public class NonBlockingServer implements Server {
                     while (iter.hasNext()) {
                         SelectionKey key = iter.next();
                         Handler handler = (Handler) key.attachment();
+                        log.debug("server handle");
                         handler.handle(key);
                         iter.remove();
                     }

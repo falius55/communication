@@ -55,11 +55,6 @@ public class UnFinishedHeader implements Header {
     }
 
     @Override
-    public int itemDataSize(int index) {
-        throw new IllegalStateException();
-    }
-
-    @Override
     public IntBuffer dataSizeBuffer() {
         return EMPTY_INT_BUFFER;
     }

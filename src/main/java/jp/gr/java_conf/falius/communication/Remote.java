@@ -3,7 +3,9 @@ package jp.gr.java_conf.falius.communication;
 import jp.gr.java_conf.falius.communication.receiver.MultiDataReceiver;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.receiver.Receiver;
+import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.sender.Sender;
 import jp.gr.java_conf.falius.communication.server.Server.OnAcceptListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
@@ -17,7 +19,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 public class Remote {
     private final String mRemoteAddress;
     private final Swapper mSwapper;
-    private Receiver mReceiver = null;
+    private final Receiver mReceiver = new MultiDataReceiver();
 
     private OnAcceptListener mOnAcceptListener = null;
     private OnSendListener mOnSendListener = null;
@@ -45,18 +47,16 @@ public class Remote {
     }
 
     public Receiver receiver() {
-        if (mReceiver == null) {
-            mReceiver = new MultiDataReceiver();
-        }
         mReceiver.addOnReceiveListener(mOnReceiveListener);
         return mReceiver;
     }
 
     public Sender sender() {
-        Sender sender = mSwapper.swap(mRemoteAddress, mReceiver);
-        if (sender == null) {
+        SendData sendData = mSwapper.swap(mRemoteAddress, mReceiver.getData());
+        if (sendData == null) {
             return null;
         }
+        Sender sender = new MultiDataSender(sendData);
         sender.addOnSendListener(mOnSendListener);
         return sender;
     }

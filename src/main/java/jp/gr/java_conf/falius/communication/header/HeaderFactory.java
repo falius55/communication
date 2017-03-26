@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jp.gr.java_conf.falius.communication.sender.SendData;
 
 public class HeaderFactory {
     private static final Logger log = LoggerFactory.getLogger(HeaderFactory.class);
@@ -17,7 +18,7 @@ public class HeaderFactory {
      * @param data
      * @return 読み取りが完全に終わったヘッダ
      */
-    public static FinishedHeader from(Collection<ByteBuffer> data) {
+    public static FinishedHeader from(SendData data) {
         IntBuffer buf = IntBuffer.allocate(data.size());
         int headerSize = 4 + 4 + data.size() * 4;
         int dataSize = headerSize;

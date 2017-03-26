@@ -18,8 +18,10 @@ import jp.gr.java_conf.falius.communication.Remote;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.receiver.Receiver;
+import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
@@ -84,7 +86,7 @@ public class NonBlockingClient implements Client {
      * @throws IOException
      */
     @Override
-    public Receiver call() throws IOException, TimeoutException {
+    public ReceiveData call() throws IOException, TimeoutException {
         return start(mSwapperFactory.get());
     }
 
@@ -101,13 +103,29 @@ public class NonBlockingClient implements Client {
         }
     }
 
+    @Override
+    public ReceiveData start(SendData sendData) throws IOException, TimeoutException {
+        if (!sendData.hasRemain()) {
+            throw new IllegalArgumentException("send data is empty");
+        }
+        return start(new OnceSwapper() {
+
+            @Override
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                return sendData;
+            }
+        });
+    }
+
     /**
      * @throws ConnectException 接続に失敗した場合
      * @throws IOException その他入出力エラーが発生した場合。接続がタイムアウトした場合も含まれます。
      */
     @Override
-    public Receiver start(Swapper swapper) throws IOException, TimeoutException {
-        Objects.requireNonNull(swapper, "sender is null");
+    public ReceiveData start(Swapper swapper) throws IOException, TimeoutException {
+        log.debug("client start");
+        mIsExit = false;
+        Objects.requireNonNull(swapper, "swapper is null");
         try (Selector selector = Selector.open(); SocketChannel channel = SocketChannel.open()) {
             mSelector = selector;
             Remote remote = connect(channel, swapper); // 接続はブロッキングモード
@@ -116,22 +134,26 @@ public class NonBlockingClient implements Client {
                     new WritingHandler(this, remote, true));
 
             while (!mIsExit) {
+                log.debug("client in loop");
                 if (selector.select(POLL_TIMEOUT) > 0 || selector.selectedKeys().size() > 0) {
+                    log.debug("client selectedKeys: {}", selector.selectedKeys().size());
 
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
                         SelectionKey key = iter.next();
                         Handler handler = (Handler) key.attachment();
+                        log.debug("client handle");
                         handler.handle(key);
                         iter.remove();
                     }
 
                 } else {
                     throw new TimeoutException("could not get selected operation during " +
-                            ((int)(double)POLL_TIMEOUT / 1000) + " sec.");
+                            ((int) (double) POLL_TIMEOUT / 1000) + " sec.");
                 }
             }
-            return remote.receiver();
+            log.debug("client end");
+            return remote.receiver().getData();
         }
     }
 

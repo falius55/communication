@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
-import jp.gr.java_conf.falius.communication.receiver.Receiver;
-import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
-import jp.gr.java_conf.falius.communication.sender.Sender;
+import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
+import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.sender.SendQueue;
 import jp.gr.java_conf.falius.communication.server.NonBlockingServer;
 import jp.gr.java_conf.falius.communication.server.Server;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
@@ -31,10 +31,10 @@ public class EchoServer implements ServerHelper {
                 return new OnceSwapper() {
 
                     @Override
-                    public Sender swap(String remoteAddress, Receiver receiver) {
-                        Sender sender = new MultiDataSender();
-                        sender.put(receiver.getAll());
-                        return sender;
+                    public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                        SendData data = new SendQueue();
+                        data.put(receiveData.getAll());
+                        return data;
                     }
 
                 };
@@ -49,7 +49,7 @@ public class EchoServer implements ServerHelper {
 
             @Override
             public void onDissconnect(String remote, Throwable cause) {
-                log.debug("server disconnect with {} by {}", remote, cause);
+                log.debug("server disconnect with {} by {}", remote, cause == null ? "null" : cause);
             }
 
         });

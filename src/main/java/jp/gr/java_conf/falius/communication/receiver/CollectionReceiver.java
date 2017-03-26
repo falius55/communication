@@ -12,8 +12,8 @@ import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class CollectionReceiver extends ExtendableReceiver {
 
-    public CollectionReceiver(Receiver receiver) {
-        super(receiver);
+    public CollectionReceiver(ReceiveData receiveData) {
+        super(receiveData);
     }
 
     public List<String> getList() {
