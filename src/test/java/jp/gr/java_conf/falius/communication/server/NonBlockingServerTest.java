@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 import jp.gr.java_conf.falius.communication.helper.ClientHelper;
 import jp.gr.java_conf.falius.communication.helper.OnceClient;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.receiver.Receiver;
-import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
-import jp.gr.java_conf.falius.communication.sender.Sender;
+import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
+import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.sender.SendQueue;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
@@ -38,10 +38,10 @@ public class NonBlockingServerTest {
                 return new OnceSwapper() {
 
                     @Override
-                    public Sender swap(String remoteAddress, Receiver receiver) {
+                    public SendData swap(String remoteAddress, ReceiveData receiver) {
                         log.info("swap from {}", remoteAddress);
                         assertThat(receiver, is(not(nullValue())));
-                        Sender sender = new MultiDataSender();
+                        SendData sender = new SendQueue();
                         for (String data : receiveData) {
                             String rev = receiver.getString();
                             assertThat(rev, is(data));
@@ -56,7 +56,7 @@ public class NonBlockingServerTest {
             server.startOnNewThread();
 
             ClientHelper client = new OnceClient(HOST, PORT);
-            Receiver ret =  client.send(receiveData);
+            ReceiveData ret =  client.send(receiveData);
             assertThat(ret.dataCount(), is(receiveData.length));
             for (String data : receiveData) {
                 assertThat(ret.getInt(), is(Integer.parseInt(data)));
@@ -75,11 +75,11 @@ public class NonBlockingServerTest {
                 return new OnceSwapper() {
 
                     @Override
-                    public Sender swap(String remoteAddress, Receiver receiver) {
+                    public SendData swap(String remoteAddress, ReceiveData receiver) {
                         log.info("swap from {}", remoteAddress);
                         assertThat(receiver, is(not(nullValue())));
                         assertThat(receiver.get(), is(nullValue()));
-                        Sender sender = new MultiDataSender();
+                        SendData sender = new SendQueue();
                         return sender;
                     }
                 };
@@ -88,9 +88,9 @@ public class NonBlockingServerTest {
             server.addOnReceiveListener(new OnReceiveListener() {
 
                 @Override
-                public void onReceive(String fromAddress, int readByte, Receiver receiver) {
+                public void onReceive(String fromAddress, int readByte, ReceiveData receiver) {
                         assertThat(receiver, is(not(nullValue())));
-                        Sender sender = new MultiDataSender();
+                        SendData sender = new SendQueue();
                         for (String data : receiveData) {
                             String rev = receiver.getString();
                             assertThat(rev, is(data));
@@ -118,10 +118,10 @@ public class NonBlockingServerTest {
                 return new OnceSwapper() {
 
                     @Override
-                    public Sender swap(String remoteAddress, Receiver receiver) {
+                    public SendData swap(String remoteAddress, ReceiveData receiver) {
                         log.info("swap from {}", remoteAddress);
                         assertThat(receiver, is(not(nullValue())));
-                        Sender sender = new MultiDataSender();
+                        SendData sender = new SendQueue();
                         for (String data : receiveData) {
                             String rev = receiver.getString();
                             assertThat(rev, is(data));

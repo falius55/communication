@@ -21,10 +21,10 @@ import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.receiver.Receiver;
-import jp.gr.java_conf.falius.communication.sender.MultiDataSender;
+import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.sender.Sender;
+import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.sender.SendQueue;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.util.range.IntRange;
@@ -49,19 +49,19 @@ public class NonBlockingClientTest {
         String sendData = "sendData";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
 
-        Receiver receiver = client.start(new OnceSwapper() {
+        ReceiveData receiveData = client.start(new OnceSwapper() {
 
             @Override
-            public Sender swap(String remoteAddress, Receiver receiver) {
-                assertThat(receiver, is(nullValue()));
-                Sender sender = new MultiDataSender();
-                sender.put(sendData);
-                return sender;
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                assertThat(receiveData, is(nullValue()));
+                SendData data = new SendQueue();
+                data.put(sendData);
+                return data;
             }
 
         });
 
-        String ret = receiver.getString();
+        String ret = receiveData.getString();
         assertThat(ret, is(sendData));
     }
 
@@ -82,10 +82,10 @@ public class NonBlockingClientTest {
         client.start(new OnceSwapper() {
 
             @Override
-            public Sender swap(String remoteAddress, Receiver receiver) {
-                Sender sender = new MultiDataSender();
-                sender.put(sendData);
-                return sender;
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                SendData data = new SendQueue();
+                data.put(sendData);
+                return data;
             }
 
         });
@@ -98,9 +98,9 @@ public class NonBlockingClientTest {
         client.addOnReceiveListener(new OnReceiveListener() {
 
             @Override
-            public void onReceive(String fromAddress, int readByte, Receiver receiver) {
-                assertThat(receiver.getString(), is(sendData[0]));
-                assertThat(receiver.getString(), is(sendData[1]));
+            public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
+                assertThat(receiveData.getString(), is(sendData[0]));
+                assertThat(receiveData.getString(), is(sendData[1]));
             }
         });
 
@@ -115,21 +115,21 @@ public class NonBlockingClientTest {
 
         });
 
-        Receiver receiver = client.start(new OnceSwapper() {
+        ReceiveData receiveData = client.start(new OnceSwapper() {
 
             @Override
-            public Sender swap(String remoteAddress, Receiver receiver) {
-                Sender sender = new MultiDataSender();
-                for (String data : sendData) {
-                    sender.put(data);
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                SendData data = new SendQueue();
+                for (String s : sendData) {
+                    data.put(s);
                 }
-                return sender;
+                return data;
             }
 
         });
 
-        assertThat(receiver.getString(), is(sendData[2]));
-        assertThat(receiver.getString(), is(sendData[3]));
+        assertThat(receiveData.getString(), is(sendData[2]));
+        assertThat(receiveData.getString(), is(sendData[3]));
     }
 
     @Test
@@ -142,13 +142,13 @@ public class NonBlockingClientTest {
                 return new OnceSwapper() {
 
                     @Override
-                    public Sender swap(String remoteAddress, Receiver receiver) {
-                        assertThat(receiver, is(nullValue()));
-                        Sender sender = new MultiDataSender();
-                        for (String data : sendData) {
-                            sender.put(data);
+                    public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                        assertThat(receiveData, is(nullValue()));
+                        SendData data = new SendQueue();
+                        for (String s : sendData) {
+                            data.put(s);
                         }
-                        return sender;
+                        return data;
                     }
 
                 };
@@ -156,10 +156,10 @@ public class NonBlockingClientTest {
         });
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Receiver> future = executor.submit(client);
-        Receiver receiver = future.get();
+        Future<ReceiveData> future = executor.submit(client);
+        ReceiveData receiveData = future.get();
         for (String data : sendData) {
-            assertThat(receiver.getString(), is(data));
+            assertThat(receiveData.getString(), is(data));
         }
     }
 
@@ -172,40 +172,40 @@ public class NonBlockingClientTest {
         client.addOnReceiveListener(new OnReceiveListener() {
 
             @Override
-            public void onReceive(String fromAddress, int readByte, Receiver receiver) {
+            public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
                 log.debug("much data readByte : {}", readByte);
 
             }
         });
 
-        Receiver receiver = client.start(new OnceSwapper() {
+        ReceiveData receiveData = client.start(new OnceSwapper() {
 
             @Override
-            public Sender swap(String remoteAddress, Receiver receiver) {
-                assertThat(receiver, is(nullValue()));
-                Sender sender = new MultiDataSender();
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                assertThat(receiveData, is(nullValue()));
+                SendData data = new SendQueue();
                 new IntRange(len).simpleForEach(() -> {
-                    sender.put(sendData);
+                    data.put(sendData);
                 });
-                return sender;
+                return data;
             }
 
         });
 
-        assertThat(receiver.dataCount(), is(len));
+        assertThat(receiveData.dataCount(), is(len));
 
-        receiver.clear();
-        assertThat(receiver.dataCount(), is(0));
+        receiveData.clear();
+        assertThat(receiveData.dataCount(), is(0));
     }
 
     @Test
-    public void testStartSender() throws IOException, TimeoutException {
+    public void testStartSendData() throws IOException, TimeoutException {
         String sendData = "data";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        Sender sender = new MultiDataSender();
-        sender.put(sendData);
-        Receiver receiver = client.start(sender);
-        assertThat(receiver.getString(), is(sendData));
+        SendData data = new SendQueue();
+        data.put(sendData);
+        ReceiveData receiveData = client.start(data);
+        assertThat(receiveData.getString(), is(sendData));
     }
 
     @Test
@@ -221,15 +221,15 @@ public class NonBlockingClientTest {
 
         });
         new IntRange(5).forEach((i) -> {
-            Receiver receiver;
+            ReceiveData receiveData;
             try {
-                Sender sender = new MultiDataSender();
-                sender.put(sendData + i);
-                receiver = client.start(sender);
+                SendData data = new SendQueue();
+                data.put(sendData + i);
+                receiveData = client.start(data);
             } catch (IOException | TimeoutException e) {
                 throw new IllegalStateException();
             }
-            assertThat(receiver.getString(), is(sendData + i));
+            assertThat(receiveData.getString(), is(sendData + i));
         });
     }
 }

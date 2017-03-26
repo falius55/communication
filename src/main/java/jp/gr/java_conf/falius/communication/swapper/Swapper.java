@@ -1,7 +1,7 @@
 package jp.gr.java_conf.falius.communication.swapper;
 
-import jp.gr.java_conf.falius.communication.receiver.Receiver;
-import jp.gr.java_conf.falius.communication.sender.Sender;
+import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
+import jp.gr.java_conf.falius.communication.sender.SendData;
 
 /**
  * <p>
@@ -49,7 +49,7 @@ public interface Swapper {
      * クライアントに限り、最初の一度だけreceiverにnullが渡されますので注意してください。
      *
      */
-    Sender swap(String remoteAddress, Receiver receiver);
+    SendData swap(String remoteAddress, ReceiveData receiver);
 
     /**
      * 通信を続けるかどうかを返すメソッドです。

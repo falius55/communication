@@ -13,8 +13,8 @@ import java.nio.file.Paths;
 public class FileReceiver extends ExtendableReceiver {
 
 
-    public FileReceiver(Receiver receiver) {
-        super(receiver);
+    public FileReceiver(ReceiveData receiveData) {
+        super(receiveData);
     }
 
     /**

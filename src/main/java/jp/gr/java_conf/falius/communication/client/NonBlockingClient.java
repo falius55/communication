@@ -18,9 +18,9 @@ import jp.gr.java_conf.falius.communication.Remote;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.receiver.Receiver;
+import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.sender.Sender;
+import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
@@ -86,7 +86,7 @@ public class NonBlockingClient implements Client {
      * @throws IOException
      */
     @Override
-    public Receiver call() throws IOException, TimeoutException {
+    public ReceiveData call() throws IOException, TimeoutException {
         return start(mSwapperFactory.get());
     }
 
@@ -104,12 +104,15 @@ public class NonBlockingClient implements Client {
     }
 
     @Override
-    public Receiver start(Sender sender) throws IOException, TimeoutException {
+    public ReceiveData start(SendData sendData) throws IOException, TimeoutException {
+        if (!sendData.hasRemain()) {
+            throw new IllegalArgumentException("send data is empty");
+        }
         return start(new OnceSwapper() {
 
             @Override
-            public Sender swap(String remoteAddress, Receiver receiver) {
-                return sender;
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                return sendData;
             }
         });
     }
@@ -119,18 +122,16 @@ public class NonBlockingClient implements Client {
      * @throws IOException その他入出力エラーが発生した場合。接続がタイムアウトした場合も含まれます。
      */
     @Override
-    public Receiver start(Swapper swapper) throws IOException, TimeoutException {
-        log.debug("before start synchronized");
+    public ReceiveData start(Swapper swapper) throws IOException, TimeoutException {
+        log.debug("client start");
         mIsExit = false;
         Objects.requireNonNull(swapper, "swapper is null");
         try (Selector selector = Selector.open(); SocketChannel channel = SocketChannel.open()) {
             mSelector = selector;
             Remote remote = connect(channel, swapper); // 接続はブロッキングモード
             channel.configureBlocking(false);
-            log.debug("before client channel register");
             channel.register(selector, SelectionKey.OP_WRITE,
                     new WritingHandler(this, remote, true));
-            log.debug("client mIsExit: {}", mIsExit);
 
             while (!mIsExit) {
                 log.debug("client in loop");
@@ -151,7 +152,8 @@ public class NonBlockingClient implements Client {
                             ((int) (double) POLL_TIMEOUT / 1000) + " sec.");
                 }
             }
-            return remote.receiver();
+            log.debug("client end");
+            return remote.receiver().getData();
         }
     }
 
@@ -165,9 +167,7 @@ public class NonBlockingClient implements Client {
      */
     private Remote connect(SocketChannel channel, Swapper swapper) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerHost, mServerPort);
-        log.debug("before client connect");
         channel.connect(address);
-        log.debug("after client connect");
 
         String remoteAddress = channel.getRemoteAddress().toString();
         Swapper.SwapperFactory swapperFactory = new Swapper.SwapperFactory() {
@@ -180,7 +180,6 @@ public class NonBlockingClient implements Client {
         Remote remote = new Remote(remoteAddress, swapperFactory);
         remote.addOnSendListener(mOnSendListener);
         remote.addOnReceiveListener(mOnReceiveListener);
-        log.debug("client finish connect");
         return remote;
     }
 }

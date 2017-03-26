@@ -3,23 +3,12 @@ package jp.gr.java_conf.falius.communication.receiver;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
-public abstract class ExtendableReceiver implements Receiver {
-    private final Receiver mSource;
+public abstract class ExtendableReceiver implements ReceiveData {
+    private final ReceiveData mSource;
 
-    public ExtendableReceiver(Receiver receiver) {
+    public ExtendableReceiver(ReceiveData receiver) {
         mSource = receiver;
-    }
-
-    @Override
-    public void addOnReceiveListener(OnReceiveListener listener) {
-        mSource.addOnReceiveListener(listener);
-    }
-
-    @Override
-    public Result receive(SocketChannel channel) throws IOException {
-        return mSource.receive(channel);
     }
 
     @Override
