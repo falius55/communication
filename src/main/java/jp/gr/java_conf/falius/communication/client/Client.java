@@ -9,11 +9,14 @@ import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.receiver.Receiver;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.sender.Sender;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 public interface Client extends Callable<Receiver>, Disconnectable {
 
-    Receiver start(Swapper sender) throws IOException, TimeoutException;
+    Receiver start(Sender sender) throws IOException, TimeoutException;
+
+    Receiver start(Swapper swapper) throws IOException, TimeoutException;
 
     void addOnSendListener(OnSendListener listener);
 

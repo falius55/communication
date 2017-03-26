@@ -134,7 +134,7 @@ public class NonBlockingClientTest {
 
     @Test
     public void testCall() throws InterruptedException, ExecutionException {
-        String[] sendData = {"abc", "def", "ghi", "jkl"};
+        String[] sendData = { "abc", "def", "ghi", "jkl" };
         Client client = new NonBlockingClient(HOST, mServer.getPort(), new Swapper.SwapperFactory() {
 
             @Override
@@ -198,4 +198,38 @@ public class NonBlockingClientTest {
         assertThat(receiver.dataCount(), is(0));
     }
 
+    @Test
+    public void testStartSender() throws IOException, TimeoutException {
+        String sendData = "data";
+        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        Sender sender = new MultiDataSender();
+        sender.put(sendData);
+        Receiver receiver = client.start(sender);
+        assertThat(receiver.getString(), is(sendData));
+    }
+
+    @Test
+    public void testLoopSend() {
+        String sendData = "data";
+        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        client.addOnDisconnectCallback(new OnDisconnectCallback() {
+
+            @Override
+            public void onDissconnect(String remote, Throwable cause) {
+                log.error("start sender disconnect to {} by {}", remote, cause == null ? "null" : cause);
+            }
+
+        });
+        new IntRange(5).forEach((i) -> {
+            Receiver receiver;
+            try {
+                Sender sender = new MultiDataSender();
+                sender.put(sendData + i);
+                receiver = client.start(sender);
+            } catch (IOException | TimeoutException e) {
+                throw new IllegalStateException();
+            }
+            assertThat(receiver.getString(), is(sendData + i));
+        });
+    }
 }

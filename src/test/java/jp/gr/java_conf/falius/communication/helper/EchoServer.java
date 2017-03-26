@@ -49,7 +49,7 @@ public class EchoServer implements ServerHelper {
 
             @Override
             public void onDissconnect(String remote, Throwable cause) {
-                log.debug("server disconnect with {} by {}", remote, cause);
+                log.debug("server disconnect with {} by {}", remote, cause == null ? "null" : cause);
             }
 
         });
