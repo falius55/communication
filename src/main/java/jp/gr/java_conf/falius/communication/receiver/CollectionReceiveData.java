@@ -10,9 +10,9 @@ import org.json.JSONObject;
 
 import jp.gr.java_conf.falius.util.range.IntRange;
 
-public class CollectionReceiver extends ExtendableReceiver {
+public class CollectionReceiveData extends ExtendableReceiveData {
 
-    public CollectionReceiver(ReceiveData receiveData) {
+    public CollectionReceiveData(ReceiveData receiveData) {
         super(receiveData);
     }
 

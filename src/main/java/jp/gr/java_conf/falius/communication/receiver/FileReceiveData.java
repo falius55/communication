@@ -10,10 +10,10 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FileReceiver extends ExtendableReceiver {
+public class FileReceiveData extends ExtendableReceiveData {
 
 
-    public FileReceiver(ReceiveData receiveData) {
+    public FileReceiveData(ReceiveData receiveData) {
         super(receiveData);
     }
 
