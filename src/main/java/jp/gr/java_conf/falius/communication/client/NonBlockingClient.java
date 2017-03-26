@@ -92,10 +92,7 @@ public class NonBlockingClient implements Client {
 
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) {
-        log.debug("before disconnect synchronized");
-        synchronized(this) {
-            mIsExit = true;
-        }
+        mIsExit = true;
         String remote = channel.socket().getInetAddress().toString();
         if (mSelector != null) {
             mSelector.wakeup();
@@ -116,6 +113,7 @@ public class NonBlockingClient implements Client {
             }
         });
     }
+
     /**
      * @throws ConnectException 接続に失敗した場合
      * @throws IOException その他入出力エラーが発生した場合。接続がタイムアウトした場合も含まれます。
@@ -123,9 +121,7 @@ public class NonBlockingClient implements Client {
     @Override
     public Receiver start(Swapper swapper) throws IOException, TimeoutException {
         log.debug("before start synchronized");
-        synchronized(this) {
-            mIsExit = false;
-        }
+        mIsExit = false;
         Objects.requireNonNull(swapper, "swapper is null");
         try (Selector selector = Selector.open(); SocketChannel channel = SocketChannel.open()) {
             mSelector = selector;
@@ -152,7 +148,7 @@ public class NonBlockingClient implements Client {
 
                 } else {
                     throw new TimeoutException("could not get selected operation during " +
-                            ((int)(double)POLL_TIMEOUT / 1000) + " sec.");
+                            ((int) (double) POLL_TIMEOUT / 1000) + " sec.");
                 }
             }
             return remote.receiver();
