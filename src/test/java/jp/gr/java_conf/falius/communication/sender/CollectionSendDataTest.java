@@ -45,6 +45,7 @@ public class CollectionSendDataTest {
                 add("data");
                 add("abc");
                 add("89345");
+                add("jldkajfkl");
             }
         };
         Client client = new NonBlockingClient(HOST, mServer.getPort());
@@ -66,12 +67,12 @@ public class CollectionSendDataTest {
         sendData.put("abc", "def");
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         CollectionSendData data = new CollectionSendData(new BasicSendData());
-        data.pub(sendData);
+        data.put(sendData);
         ReceiveData receiveData = client.start(data);
         Map<String, String> ret = new CollectionReceiveData(receiveData).getMap();
+        assertThat(ret.entrySet(), hasSize(sendData.size()));
         for (Map.Entry<String, String> entry : sendData.entrySet()) {
-            assertThat(ret, hasKey(entry.getKey()));
-            assertThat(ret.get(entry.getKey()), is(entry.getValue()));
+            assertThat(ret, hasEntry(entry.getKey(), entry.getValue()));
         }
 
         assertThat(receiveData.get(), is(nullValue()));
