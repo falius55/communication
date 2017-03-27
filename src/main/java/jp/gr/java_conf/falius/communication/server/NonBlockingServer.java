@@ -35,12 +35,12 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 public class NonBlockingServer implements Server {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);
 
+    private static final ExecutorService mExecutor = Executors.newCachedThreadPool();
+
     private final int mServerPort;
 
     private ServerSocketChannel mServerSocketChannel = null;
     private Selector mSelector = null;
-
-    private ExecutorService mExecutor = null;
 
     private final RemoteStarter mRemoteStarter;
 
@@ -95,9 +95,6 @@ public class NonBlockingServer implements Server {
         // 内部でcatchした後発生先との接続を切断して続行する。
         // それ以外の箇所で発生したIOExceptionはサーバー全体に問題が発生していると判断し、
         // スレッドを停止して例外を外に伝播させている
-        if (mExecutor == null) {
-            mExecutor = Executors.newCachedThreadPool();
-        }
         return mExecutor.submit(this);
     }
 

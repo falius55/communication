@@ -7,6 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * ファイルを送信する際に利用するSendData
+ * @author "ymiyauchi"
+ *
+ */
 public class FileSendData extends ExtendableSendData {
 
     public FileSendData(SendData sender) {

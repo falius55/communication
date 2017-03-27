@@ -6,6 +6,11 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * コレクションの形でデータを送信する際に利用するSendDataです。
+ * @author "ymiyauchi"
+ *
+ */
 public class CollectionSendData extends ExtendableSendData {
 
     public CollectionSendData(SendData sender) {
