@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
-public abstract class ExtendableReceiver implements ReceiveData {
+public abstract class ExtendableReceiveData implements ReceiveData {
     private final ReceiveData mSource;
 
-    public ExtendableReceiver(ReceiveData receiver) {
+    public ExtendableReceiveData(ReceiveData receiver) {
         mSource = receiver;
     }
 

@@ -170,7 +170,7 @@ public class NonBlockingServer implements Server {
 
     private void bind(ServerSocketChannel channel) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerPort);
-        log.info("bind to ... {} : {}", getIPAddress(), address.getPort());
+        log.info("bind to ... {} : {}", getLocalHostAddress(), address.getPort());
         channel.bind(address);  // ポートが競合したら処理が返ってこない？
         log.info("success binding");
     }
@@ -193,13 +193,19 @@ public class NonBlockingServer implements Server {
         }
     }
 
-    private String getIPAddress() {
+    @Override
+    public String getLocalHostAddress() {
         try {
             InetAddress address = InetAddress.getLocalHost();
             return address.getHostAddress();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            log.error("get address error", e);
         }
         return null;
+    }
+
+    @Override
+    public int getPort() {
+        return mServerPort;
     }
 }

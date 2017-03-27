@@ -10,14 +10,17 @@ import org.json.JSONObject;
 
 import jp.gr.java_conf.falius.util.range.IntRange;
 
-public class CollectionReceiver extends ExtendableReceiver {
+public class CollectionReceiveData extends ExtendableReceiveData {
 
-    public CollectionReceiver(ReceiveData receiveData) {
+    public CollectionReceiveData(ReceiveData receiveData) {
         super(receiveData);
     }
 
     public List<String> getList() {
         String jsonString = getString();
+        if (jsonString == null) {
+            return null;
+        }
         JSONArray json = new JSONArray(jsonString);
         List<String> ret = new ArrayList<>();
 
@@ -29,6 +32,9 @@ public class CollectionReceiver extends ExtendableReceiver {
 
     public Map<String, String> getMap() {
         String jsonString = getString();
+        if (jsonString == null) {
+            return null;
+        }
         JSONObject json = new JSONObject(jsonString);
         Map<String, String> ret = new HashMap<>();
 

@@ -2,7 +2,6 @@ package jp.gr.java_conf.falius.communication.sender;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +17,7 @@ public class FileSendData extends ExtendableSendData {
         return put(Files.readAllBytes(filePath));
     }
 
-    public SendData put(File file) throws FileNotFoundException, IOException {
+    public SendData put(File file) throws IOException {
         return put(new FileInputStream(file));
     }
 

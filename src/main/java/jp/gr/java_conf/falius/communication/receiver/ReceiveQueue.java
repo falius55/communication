@@ -3,6 +3,8 @@ package jp.gr.java_conf.falius.communication.receiver;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Queue;
@@ -13,6 +15,8 @@ import java.util.Queue;
  * @author "ymiyauchi"
  */
 public class ReceiveQueue implements ReceiveData {
+    private final static ByteBuffer[] EMPTY_BUFFER_ARRAY = new ByteBuffer[0];
+    private final CharsetDecoder DECODER = StandardCharsets.UTF_8.newDecoder();
     private final Queue<ByteBuffer> mData;
 
     ReceiveQueue(Queue<ByteBuffer> data) {
@@ -30,7 +34,7 @@ public class ReceiveQueue implements ReceiveData {
 
     @Override
     public ByteBuffer[] getAll() {
-        ByteBuffer[] ret = mData.toArray(new ByteBuffer[0]);
+        ByteBuffer[] ret = mData.toArray(EMPTY_BUFFER_ARRAY);
         mData.clear();
         return ret;
     }
@@ -54,8 +58,12 @@ public class ReceiveQueue implements ReceiveData {
         if (buf == null) {
             return null;
         }
-        String ret = StandardCharsets.UTF_8.decode(buf).toString();
-        return ret;
+
+        try {
+            return DECODER.decode(buf).toString();
+        } catch (CharacterCodingException e) {
+            throw new IllegalStateException("decode error");
+        }
     }
 
     @Override
@@ -77,6 +85,10 @@ public class ReceiveQueue implements ReceiveData {
     public void getAndOutput(OutputStream os) throws IOException {
         ByteBuffer buf = get();
         try (OutputStream out = os) {
+            if (buf == null) {
+                return;
+            }
+
             if (buf.hasArray()) {
                 byte[] bytes = buf.array();
                 out.write(bytes);

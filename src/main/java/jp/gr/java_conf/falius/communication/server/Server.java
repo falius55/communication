@@ -88,6 +88,10 @@ public interface Server extends Disconnectable, Callable<Throwable>, AutoCloseab
      */
     void shutdown() throws IOException;
 
+    String getLocalHostAddress();
+
+    int getPort();
+
     /**
      * 新しい接続要求を受け入れた際に実行されるリスナー
      */
