@@ -25,10 +25,10 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 /**
  * {@inheritDoc}
  *
- * <p/>
+ * <p>
  * startOnNewThreadメソッドの呼び出し一回につき、ひとつのスレッドで起動します。
  *
- * <p/>
+ * <p>
  * Timeoutの設定はなく、別のスレッドからshutdownメソッドあるいはcloseメソッドが実行されるまで起動を
  * 続けます。
  */

@@ -85,7 +85,7 @@ public class NonBlockingClient implements Client {
 
     /**
      * @throws IOException
-     * @throws NullpointerException コンストラクタにSwapperが渡されていない場合
+     * @throws NullPointerException コンストラクタにSwapperが渡されていない場合
      */
     @Override
     public ReceiveData call() throws IOException, TimeoutException {

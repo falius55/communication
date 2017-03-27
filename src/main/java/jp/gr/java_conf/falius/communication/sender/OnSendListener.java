@@ -9,7 +9,7 @@ public interface OnSendListener {
 
     /**
      *
-     * @param writeSize ヘッダも含めたすべての書き込みデータのサイズ
+     * @param writeBytes ヘッダも含めたすべての書き込みデータのサイズ
      */
     void onSend(int writeBytes);
 }
