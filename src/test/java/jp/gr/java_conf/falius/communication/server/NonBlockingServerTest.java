@@ -57,6 +57,7 @@ public class NonBlockingServerTest {
 
             ClientHelper client = new OnceClient(HOST, PORT);
             ReceiveData ret =  client.send(receiveData);
+            assertThat(ret, is(not(nullValue())));
             assertThat(ret.dataCount(), is(receiveData.length));
             for (String data : receiveData) {
                 assertThat(ret.getInt(), is(Integer.parseInt(data)));

@@ -16,7 +16,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 public class EchoServer implements ServerHelper {
     private static final Logger log = LoggerFactory.getLogger(EchoServer.class);
-    private static final int PORT = 9001;
+    private static int mPort = 9001;
     private final Server mServer;
 
     public EchoServer() {
@@ -24,7 +24,7 @@ public class EchoServer implements ServerHelper {
     }
 
     private Server init() {
-        return new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
+        return new NonBlockingServer(mPort++, new Swapper.SwapperFactory() {
 
             @Override
             public Swapper get() {
@@ -82,6 +82,6 @@ public class EchoServer implements ServerHelper {
 
     @Override
     public int getPort() {
-        return PORT;
+        return mServer.getPort();
     }
 }

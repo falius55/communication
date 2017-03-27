@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication;
+package jp.gr.java_conf.falius.communication.receiver;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;

@@ -1,7 +1,6 @@
 package jp.gr.java_conf.falius.communication.receiver;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -24,11 +23,11 @@ public class FileReceiveData extends ExtendableReceiveData {
         getAndOutput(Files.newOutputStream(savePath, openOptions));
     }
 
-    public void getAndSave(File file) throws FileNotFoundException, IOException {
+    public void getAndSave(File file) throws IOException {
         getAndOutput(new FileOutputStream(file));
     }
 
-    public void getAndSave(File file, boolean append) throws FileNotFoundException, IOException {
+    public void getAndSave(File file, boolean append) throws IOException {
         getAndOutput(new FileOutputStream(file, append));
     }
 

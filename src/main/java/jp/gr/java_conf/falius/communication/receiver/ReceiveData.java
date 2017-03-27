@@ -48,7 +48,8 @@ public interface ReceiveData {
 
     /**
      * データ１単位を文字列で取得します。
-     * 保持しているデータがなければnull
+     * 保持しているデータがなければnull。
+     * UTF-8でデコードされます。
      * @return
      * @throws IllegalStateException デコードできないデータをこのメソッドで取得しようとした場合
      */
