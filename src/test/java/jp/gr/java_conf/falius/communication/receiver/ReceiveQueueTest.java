@@ -18,7 +18,7 @@ import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.sender.SendData;
-import jp.gr.java_conf.falius.communication.sender.SendQueue;
+import jp.gr.java_conf.falius.communication.sender.BasicSendData;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class ReceiveQueueTest {
@@ -40,7 +40,7 @@ public class ReceiveQueueTest {
     public void testGetBoolean() throws IOException, TimeoutException {
         boolean[] data = {true, false, false, true};
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        SendData sendData = new SendQueue();
+        SendData sendData = new BasicSendData();
         for (boolean b : data) {
             sendData.put(b);
         }
@@ -55,7 +55,7 @@ public class ReceiveQueueTest {
     public void testGetStringException() throws IOException, TimeoutException {
         int[] data = {-15, 1, 2, 3};
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        SendData sendData = new SendQueue();
+        SendData sendData = new BasicSendData();
         for (int i : data) {
             sendData.put(i);
         }
@@ -71,7 +71,7 @@ public class ReceiveQueueTest {
     public void testGetIntException() throws IOException, TimeoutException {
         int[] data = {1, 2};
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        SendData sendData = new SendQueue();
+        SendData sendData = new BasicSendData();
         for (int i : data) {
             sendData.put(i);
         }

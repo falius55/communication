@@ -26,7 +26,7 @@ import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.sender.FileSendData;
-import jp.gr.java_conf.falius.communication.sender.SendQueue;
+import jp.gr.java_conf.falius.communication.sender.BasicSendData;
 
 public class FileReceiveDataTest {
     private static Logger log = LoggerFactory.getLogger(FileReceiveDataTest.class);
@@ -68,7 +68,7 @@ public class FileReceiveDataTest {
         String fileName = "test_testGetAndSavePathOpenOptionArray";
         Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new SendQueue());
+        FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
         ReceiveData ret = client.start(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);
@@ -84,7 +84,7 @@ public class FileReceiveDataTest {
         String fileName = "test_testGetAndSaveFile";
         Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new SendQueue());
+        FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
         ReceiveData ret = client.start(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);
@@ -104,7 +104,7 @@ public class FileReceiveDataTest {
         Files.copy(originFile, target);
 
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new SendQueue());
+        FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
         ReceiveData ret = client.start(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);
@@ -121,7 +121,7 @@ public class FileReceiveDataTest {
         String fileName = "test_testGetAndSaveStringStringArray";
         Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new SendQueue());
+        FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
         ReceiveData ret = client.start(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);

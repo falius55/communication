@@ -129,7 +129,7 @@ public class MultiDataReceiver implements Receiver {
             for (ByteBuffer data : mItemData) {
                 data.flip();
             }
-            return new ReceiveQueue(mItemData);
+            return new BasicReceiveData(mItemData);
         }
 
         private boolean isFinished() {

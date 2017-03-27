@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
 import jp.gr.java_conf.falius.communication.sender.SendData;
-import jp.gr.java_conf.falius.communication.sender.SendQueue;
+import jp.gr.java_conf.falius.communication.sender.BasicSendData;
 import jp.gr.java_conf.falius.communication.server.NonBlockingServer;
 import jp.gr.java_conf.falius.communication.server.Server;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
@@ -32,7 +32,7 @@ public class EchoServer implements ServerHelper {
 
                     @Override
                     public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                        SendData data = new SendQueue();
+                        SendData data = new BasicSendData();
                         data.put(receiveData.getAll());
                         return data;
                     }

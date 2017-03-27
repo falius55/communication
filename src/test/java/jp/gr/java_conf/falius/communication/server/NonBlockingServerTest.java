@@ -21,7 +21,7 @@ import jp.gr.java_conf.falius.communication.helper.OnceClient;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
 import jp.gr.java_conf.falius.communication.sender.SendData;
-import jp.gr.java_conf.falius.communication.sender.SendQueue;
+import jp.gr.java_conf.falius.communication.sender.BasicSendData;
 import jp.gr.java_conf.falius.communication.swapper.FixedRepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
@@ -45,7 +45,7 @@ public class NonBlockingServerTest {
                     public SendData swap(String remoteAddress, ReceiveData receiver) {
                         log.info("swap from {}", remoteAddress);
                         assertThat(receiver, is(not(nullValue())));
-                        SendData sender = new SendQueue();
+                        SendData sender = new BasicSendData();
                         for (String data : receiveData) {
                             String rev = receiver.getString();
                             assertThat(rev, is(data));
@@ -84,7 +84,7 @@ public class NonBlockingServerTest {
                         log.info("swap from {}", remoteAddress);
                         assertThat(receiver, is(not(nullValue())));
                         assertThat(receiver.get(), is(nullValue()));
-                        SendData sender = new SendQueue();
+                        SendData sender = new BasicSendData();
                         return sender;
                     }
                 };
@@ -95,7 +95,7 @@ public class NonBlockingServerTest {
                 @Override
                 public void onReceive(String fromAddress, int readByte, ReceiveData receiver) {
                     assertThat(receiver, is(not(nullValue())));
-                    SendData sender = new SendQueue();
+                    SendData sender = new BasicSendData();
                     for (String data : receiveData) {
                         String rev = receiver.getString();
                         assertThat(rev, is(data));
@@ -126,7 +126,7 @@ public class NonBlockingServerTest {
                     public SendData swap(String remoteAddress, ReceiveData receiver) {
                         log.info("swap from {}", remoteAddress);
                         assertThat(receiver, is(not(nullValue())));
-                        SendData sender = new SendQueue();
+                        SendData sender = new BasicSendData();
                         for (String data : receiveData) {
                             String rev = receiver.getString();
                             assertThat(rev, is(data));
@@ -166,7 +166,7 @@ public class NonBlockingServerTest {
                     @Override
                     public SendData swap(String remoteAddress, ReceiveData receiveData) {
                         int rcv = receiveData.getInt();
-                        SendData sendData = new SendQueue();
+                        SendData sendData = new BasicSendData();
                         sendData.put(rcv + 1);
 
                         count++;
@@ -188,7 +188,7 @@ public class NonBlockingServerTest {
 
                 @Override
                 public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                    SendData sendData = new SendQueue();
+                    SendData sendData = new BasicSendData();
                     if (count == 0) {
                         assertThat(receiveData, is(nullValue()));
                         sendData.put(0);
@@ -225,7 +225,7 @@ public class NonBlockingServerTest {
                     @Override
                     public SendData onSwap(String remoteAddress, ReceiveData receiveData) {
                         int rcv = receiveData.getInt();
-                        SendData sendData = new SendQueue();
+                        SendData sendData = new BasicSendData();
                         sendData.put(rcv + 1);
                         return sendData;
                     }
@@ -239,7 +239,7 @@ public class NonBlockingServerTest {
 
                 @Override
                 public SendData onSwap(String remoteAddress, ReceiveData receiveData) {
-                    SendData sendData = new SendQueue();
+                    SendData sendData = new BasicSendData();
                     if (receiveData == null) {
                         sendData.put(0);
                     } else {

@@ -7,7 +7,7 @@ import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
 import jp.gr.java_conf.falius.communication.sender.SendData;
-import jp.gr.java_conf.falius.communication.sender.SendQueue;
+import jp.gr.java_conf.falius.communication.sender.BasicSendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 
 public class OnceClient implements ClientHelper {
@@ -26,7 +26,7 @@ public class OnceClient implements ClientHelper {
 
             @Override
             public SendData swap(String remoteAddress, ReceiveData receiver) {
-                SendData data = new SendQueue();
+                SendData data = new BasicSendData();
                 for (T d : sendData) {
                     if (d instanceof String) {
                         data.put((String) d);

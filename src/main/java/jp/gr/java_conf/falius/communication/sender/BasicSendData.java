@@ -9,11 +9,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Queue;
 
-public class SendQueue implements SendData {
+public class BasicSendData implements SendData {
     private final Queue<ByteBuffer> mData = new ArrayDeque<>();
 
     @Override
-    public final SendQueue put(ByteBuffer buf) {
+    public final BasicSendData put(ByteBuffer buf) {
         if (!buf.hasRemaining()) {
             throw new IllegalArgumentException("data have no remaining. might not flip()");
         }
@@ -22,13 +22,13 @@ public class SendQueue implements SendData {
     }
 
     @Override
-    public final SendQueue put(ByteBuffer[] bufs) {
+    public final BasicSendData put(ByteBuffer[] bufs) {
         mData.addAll(Arrays.asList(bufs));
         return this;
     }
 
     @Override
-    public SendQueue put(byte[] bytes) {
+    public BasicSendData put(byte[] bytes) {
         ByteBuffer buf = ByteBuffer.allocate(bytes.length);
         buf.put(bytes);
         buf.flip();
@@ -36,12 +36,12 @@ public class SendQueue implements SendData {
     }
 
     @Override
-    public SendQueue put(String str) {
+    public BasicSendData put(String str) {
         return put(str.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
-    public SendQueue put(int num) {
+    public BasicSendData put(int num) {
         ByteBuffer buf = ByteBuffer.allocate(4);
         buf.putInt(num);
         buf.flip();
@@ -49,12 +49,12 @@ public class SendQueue implements SendData {
     }
 
     @Override
-    public SendQueue put(boolean bl) {
+    public BasicSendData put(boolean bl) {
         return put(bl ? 1 : 0);
     }
 
     @Override
-    public SendQueue put(InputStream is) throws IOException {
+    public BasicSendData put(InputStream is) throws IOException {
         final int READ_SIZE = 4096 * 2;
         int size = READ_SIZE;
         ByteBuffer result = ByteBuffer.allocate(size);
