@@ -26,7 +26,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 public class NonBlockingServerTest {
     private static Logger log = LoggerFactory.getLogger(NonBlockingServerTest.class);
     private static final String HOST = "localhost";
-    private static final int PORT = 9001;
+    private static final int PORT = 8999;
 
     @Test
     public void testReceiveValueInSwapper() throws IOException, TimeoutException {

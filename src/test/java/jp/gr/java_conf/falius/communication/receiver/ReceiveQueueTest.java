@@ -17,7 +17,6 @@ import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
-import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
 import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.sender.SendQueue;
 import jp.gr.java_conf.falius.util.range.IntRange;

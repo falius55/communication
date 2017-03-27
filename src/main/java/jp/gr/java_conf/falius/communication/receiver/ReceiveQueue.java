@@ -15,6 +15,7 @@ import java.util.Queue;
  * @author "ymiyauchi"
  */
 public class ReceiveQueue implements ReceiveData {
+    private final static ByteBuffer[] EMPTY_BUFFER_ARRAY = new ByteBuffer[0];
     private final CharsetDecoder DECODER = StandardCharsets.UTF_8.newDecoder();
     private final Queue<ByteBuffer> mData;
 
@@ -33,7 +34,7 @@ public class ReceiveQueue implements ReceiveData {
 
     @Override
     public ByteBuffer[] getAll() {
-        ByteBuffer[] ret = mData.toArray(new ByteBuffer[0]);
+        ByteBuffer[] ret = mData.toArray(EMPTY_BUFFER_ARRAY);
         mData.clear();
         return ret;
     }
