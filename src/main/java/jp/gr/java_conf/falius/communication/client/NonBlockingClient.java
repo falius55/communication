@@ -23,6 +23,7 @@ import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
+import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
  * ノンブロックな通信を行うクラスです
@@ -45,7 +46,7 @@ public class NonBlockingClient implements Client {
     private OnReceiveListener mOnReceiveListener = null;
     private OnDisconnectCallback mOnDisconnectCallback = null;
 
-    private Swapper.SwapperFactory mSwapperFactory;
+    private SwapperFactory mSwapperFactory;
 
     private boolean mIsExit = false;
     private Selector mSelector = null;
@@ -61,7 +62,7 @@ public class NonBlockingClient implements Client {
      * @param swapperFactory
      */
     public NonBlockingClient(String serverHost, int serverPort,
-            Swapper.SwapperFactory swapperFactory) {
+            SwapperFactory swapperFactory) {
         mServerHost = serverHost;
         mServerPort = serverPort;
         mSwapperFactory = swapperFactory;
@@ -170,7 +171,7 @@ public class NonBlockingClient implements Client {
         channel.connect(address);
 
         String remoteAddress = channel.getRemoteAddress().toString();
-        Swapper.SwapperFactory swapperFactory = new Swapper.SwapperFactory() {
+        SwapperFactory swapperFactory = new SwapperFactory() {
 
             @Override
             public Swapper get() {

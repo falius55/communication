@@ -20,12 +20,13 @@ import jp.gr.java_conf.falius.communication.helper.ClientHelper;
 import jp.gr.java_conf.falius.communication.helper.OnceClient;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
-import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.sender.BasicSendData;
+import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.swapper.FixedRepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
+import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 public class NonBlockingServerTest {
     private static Logger log = LoggerFactory.getLogger(NonBlockingServerTest.class);
@@ -35,7 +36,7 @@ public class NonBlockingServerTest {
     @Test
     public void testReceiveValueInSwapper() throws IOException, TimeoutException {
         String[] receiveData = { "1", "2", "3" };
-        try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
+        try (Server server = new NonBlockingServer(PORT, new SwapperFactory() {
 
             @Override
             public Swapper get() {
@@ -73,7 +74,7 @@ public class NonBlockingServerTest {
     @Test
     public void testAddOnReceiveListener() throws IOException, TimeoutException {
         String[] receiveData = { "data1", "data2", "data3" };
-        try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
+        try (Server server = new NonBlockingServer(PORT, new SwapperFactory() {
 
             @Override
             public Swapper get() {
@@ -116,7 +117,7 @@ public class NonBlockingServerTest {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<?> future = null;
         String[] receiveData = { "1", "2", "3" };
-        try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
+        try (Server server = new NonBlockingServer(PORT, new SwapperFactory() {
 
             @Override
             public Swapper get() {
@@ -156,7 +157,7 @@ public class NonBlockingServerTest {
     public void testRepeatSwapper() throws IOException, TimeoutException {
         final int repeatLen = 10;
         int port = 8998;
-        try (Server server = new NonBlockingServer(port, new Swapper.SwapperFactory() {
+        try (Server server = new NonBlockingServer(port, new SwapperFactory() {
 
             @Override
             public Swapper get() {
@@ -216,7 +217,7 @@ public class NonBlockingServerTest {
     public void testFixedRepeatSwapper() throws IOException, TimeoutException {
         final int repeatLen = 10;
         int port = 8998;
-        try (Server server = new NonBlockingServer(port, new Swapper.SwapperFactory() {
+        try (Server server = new NonBlockingServer(port, new SwapperFactory() {
 
             @Override
             public Swapper get() {

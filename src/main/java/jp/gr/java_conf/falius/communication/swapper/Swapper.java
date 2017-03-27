@@ -57,12 +57,4 @@ public interface Swapper {
      * @return 通信を続けるかどうか
      */
     boolean doContinue();
-
-    /**
-     * Swapperを生成するファクトリメソッドを持つインターフェースです。
-     */
-    interface SwapperFactory {
-
-        Swapper get();
-    }
 }

@@ -27,6 +27,7 @@ import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
+import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingClientTest {
@@ -135,7 +136,7 @@ public class NonBlockingClientTest {
     @Test
     public void testCall() throws InterruptedException, ExecutionException {
         String[] sendData = { "abc", "def", "ghi", "jkl" };
-        Client client = new NonBlockingClient(HOST, mServer.getPort(), new Swapper.SwapperFactory() {
+        Client client = new NonBlockingClient(HOST, mServer.getPort(), new SwapperFactory() {
 
             @Override
             public Swapper get() {
