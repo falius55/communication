@@ -22,11 +22,10 @@ import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
+import jp.gr.java_conf.falius.communication.sender.BasicSendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.SendData;
-import jp.gr.java_conf.falius.communication.sender.SendQueue;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
-import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingClientTest {
@@ -54,7 +53,7 @@ public class NonBlockingClientTest {
             @Override
             public SendData swap(String remoteAddress, ReceiveData receiveData) {
                 assertThat(receiveData, is(nullValue()));
-                SendData data = new SendQueue();
+                SendData data = new BasicSendData();
                 data.put(sendData);
                 return data;
             }
@@ -83,7 +82,7 @@ public class NonBlockingClientTest {
 
             @Override
             public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                SendData data = new SendQueue();
+                SendData data = new BasicSendData();
                 data.put(sendData);
                 return data;
             }
@@ -119,7 +118,7 @@ public class NonBlockingClientTest {
 
             @Override
             public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                SendData data = new SendQueue();
+                SendData data = new BasicSendData();
                 for (String s : sendData) {
                     data.put(s);
                 }
@@ -135,24 +134,18 @@ public class NonBlockingClientTest {
     @Test
     public void testCall() throws InterruptedException, ExecutionException {
         String[] sendData = { "abc", "def", "ghi", "jkl" };
-        Client client = new NonBlockingClient(HOST, mServer.getPort(), new Swapper.SwapperFactory() {
+        Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {
 
             @Override
-            public Swapper get() {
-                return new OnceSwapper() {
-
-                    @Override
-                    public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                        assertThat(receiveData, is(nullValue()));
-                        SendData data = new SendQueue();
-                        for (String s : sendData) {
-                            data.put(s);
-                        }
-                        return data;
-                    }
-
-                };
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                assertThat(receiveData, is(nullValue()));
+                SendData data = new BasicSendData();
+                for (String s : sendData) {
+                    data.put(s);
+                }
+                return data;
             }
+
         });
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -183,7 +176,7 @@ public class NonBlockingClientTest {
             @Override
             public SendData swap(String remoteAddress, ReceiveData receiveData) {
                 assertThat(receiveData, is(nullValue()));
-                SendData data = new SendQueue();
+                SendData data = new BasicSendData();
                 new IntRange(len).simpleForEach(() -> {
                     data.put(sendData);
                 });
@@ -202,7 +195,7 @@ public class NonBlockingClientTest {
     public void testStartSendData() throws IOException, TimeoutException {
         String sendData = "data";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        SendData data = new SendQueue();
+        SendData data = new BasicSendData();
         data.put(sendData);
         ReceiveData receiveData = client.start(data);
         assertThat(receiveData.getString(), is(sendData));
@@ -223,7 +216,7 @@ public class NonBlockingClientTest {
         new IntRange(5).forEach((i) -> {
             ReceiveData receiveData;
             try {
-                SendData data = new SendQueue();
+                SendData data = new BasicSendData();
                 data.put(sendData + i);
                 receiveData = client.start(data);
             } catch (IOException | TimeoutException e) {

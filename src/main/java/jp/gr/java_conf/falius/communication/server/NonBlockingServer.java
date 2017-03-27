@@ -20,15 +20,15 @@ import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.swapper.Swapper;
+import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
  * {@inheritDoc}
  *
- * <p/>
+ * <p>
  * startOnNewThreadメソッドの呼び出し一回につき、ひとつのスレッドで起動します。
  *
- * <p/>
+ * <p>
  * Timeoutの設定はなく、別のスレッドからshutdownメソッドあるいはcloseメソッドが実行されるまで起動を
  * 続けます。
  */
@@ -50,7 +50,7 @@ public class NonBlockingServer implements Server {
     private volatile boolean mIsStarted = false;
     private volatile boolean mIsShutdowned = false;
 
-    public NonBlockingServer(int serverPort, Swapper.SwapperFactory swapperFactory) {
+    public NonBlockingServer(int serverPort, SwapperFactory swapperFactory) {
         mServerPort = serverPort;
         mRemoteStarter = new RemoteStarter(this, swapperFactory);
     }

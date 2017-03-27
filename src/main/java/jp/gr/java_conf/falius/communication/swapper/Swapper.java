@@ -6,9 +6,10 @@ import jp.gr.java_conf.falius.communication.sender.SendData;
 /**
  * <p>
  * 受信内容を受け取り、送信内容を格納したSenderオブジェクトを作成するクラスのインターフェースです。
+ * データの受信と送信を繋ぎ、送信データのファクトリとしての役割を担います。
  *
- * <p/>
- * Senderが一度の送信ごとに使い捨てられるのに対し、Swapperは一つの接続に対して一つのオブジェクトがあてられます。
+ * <p>
+ * Swapperは一つの接続に対して一つのオブジェクトがあてられます。
  *
  *<p>
  * 受信内容をもとに送信内容を決定するためにReceiverオブジェクトを引数に受け取りますが、
@@ -31,22 +32,21 @@ public interface Swapper {
 
     /**
      * <p>
-     * データの受信と送信を繋ぐ処理を行うクラスのインターフェースです。
-     * 受信データが格納されたReceiverからデータを取得し、
-     * 送信するデータを格納したSenderオブジェクトを作成して戻り値としてください
+     * 受信データが格納されたReceiveDataからデータを取得し、
+     * 送信するデータを格納したSendDataオブジェクトを作成して戻り値としてください
      *
      *<p>
      * swapメソッドは送信の直前に実行されます。そのため、受信直後に実行され
      * るOnReceiveListener#onReceiveメソッドにて消費された受信データは
-     * このメソッドに渡されるReceiverオブジェクトには入っていません。
+     * このメソッドに渡されるReceiveDataオブジェクトには入っていません。
      *
      *<p>
      * nullを返すと通信を強制的に終了します。
      * この場合、クライアントかサーバーかに関係なく送信直前に接続を切断します。
-     * ただし通信相手は受信に失敗したことを検知して接続を切ることになるため、正常に終了したとは言えないかもしれません。
+     * 通信相手は受信に失敗したことを検知して接続を切ることになります。
      *
      *<p>
-     * クライアントに限り、最初の一度だけreceiverにnullが渡されますので注意してください。
+     * クライアントに限り、最初の一度だけreceiveDataにnullが渡されますので注意してください。
      *
      */
     SendData swap(String remoteAddress, ReceiveData receiveData);
@@ -57,12 +57,4 @@ public interface Swapper {
      * @return 通信を続けるかどうか
      */
     boolean doContinue();
-
-    /**
-     * Swapperを生成するファクトリメソッドを持つインターフェースです。
-     */
-    interface SwapperFactory {
-
-        Swapper get();
-    }
 }

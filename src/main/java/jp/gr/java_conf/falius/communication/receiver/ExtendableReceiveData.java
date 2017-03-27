@@ -12,42 +12,57 @@ public abstract class ExtendableReceiveData implements ReceiveData {
     }
 
     @Override
-    public int dataCount() {
+    public final int dataCount() {
         return mSource.dataCount();
     }
 
     @Override
-    public ByteBuffer get() {
+    public final ByteBuffer get() {
         return mSource.get();
     }
 
     @Override
-    public ByteBuffer[] getAll() {
+    public final ByteBuffer[] getAll() {
         return mSource.getAll();
     }
 
     @Override
-    public String getString() {
+    public final String getString() {
         return mSource.getString();
     }
 
     @Override
-    public int getInt() {
+    public final int getInt() {
         return mSource.getInt();
     }
 
     @Override
-    public boolean getBoolean() {
+    public final long getLong() {
+        return mSource.getLong();
+    }
+
+    @Override
+    public final double getDouble() {
+        return mSource.getDouble();
+    }
+
+    @Override
+    public final float getFloat() {
+        return mSource.getFloat();
+    }
+
+    @Override
+    public final boolean getBoolean() {
         return mSource.getBoolean();
     }
 
     @Override
-    public void getAndOutput(OutputStream os) throws IOException {
+    public final void getAndOutput(OutputStream os) throws IOException {
         mSource.getAndOutput(os);
     }
 
     @Override
-    public void clear() {
+    public final void clear() {
         mSource.clear();
 
     }

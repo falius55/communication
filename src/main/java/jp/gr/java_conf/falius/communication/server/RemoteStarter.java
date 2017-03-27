@@ -14,7 +14,7 @@ import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.ReadingHandler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.swapper.Swapper;
+import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
  *  接続要求を受入れ、Remoteオブジェクトを作成して続く処理を別のハンドラに委譲します。
@@ -25,14 +25,14 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  */
 public class RemoteStarter implements Handler {
     private static final Logger log = LoggerFactory.getLogger(RemoteStarter.class);
-    private final Swapper.SwapperFactory mSwapperFactory;
+    private final SwapperFactory mSwapperFactory;
     private final Disconnectable mDisconnectable;
 
     private Server.OnAcceptListener mOnAcceptListener = null;
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
 
-    public RemoteStarter(Disconnectable disconnectable, Swapper.SwapperFactory swapperFactory) {
+    public RemoteStarter(Disconnectable disconnectable, SwapperFactory swapperFactory) {
         mDisconnectable = disconnectable;
         mSwapperFactory = swapperFactory;
     }

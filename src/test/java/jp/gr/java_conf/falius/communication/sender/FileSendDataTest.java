@@ -45,7 +45,7 @@ public class FileSendDataTest {
                 "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication\\sender")
                 .getAbsolutePath(), "FileSendDataTest.java");
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new SendQueue());
+        FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(path);
         ReceiveData receiveData = client.start(sendData);
         String text = receiveData.getString().replace("\r\n", "").replace("\n", "");
@@ -58,7 +58,7 @@ public class FileSendDataTest {
                 "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication"
                 + "\\sender\\FileSendDataTest.java");
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new SendQueue());
+        FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(file);
         ReceiveData receiveData = client.start(sendData);
         String text = receiveData.getString().replace("\r\n", "").replace("\n", "");
@@ -71,7 +71,7 @@ public class FileSendDataTest {
         String curDir = "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication\\sender";
         String fileName = "FileSendDataTest.java";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new SendQueue());
+        FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.putFile(curDir, fileName);
         ReceiveData receiveData = client.start(sendData);
         String text = receiveData.getString().replace("\r\n", "").replace("\n", "");

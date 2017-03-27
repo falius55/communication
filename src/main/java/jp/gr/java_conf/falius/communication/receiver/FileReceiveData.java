@@ -9,6 +9,12 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * ファイル受信が可能なReceiveDataです。
+ * 指定された場所に保存します。
+ * @author "ymiyauchi"
+ *
+ */
 public class FileReceiveData extends ExtendableReceiveData {
 
 
@@ -27,6 +33,12 @@ public class FileReceiveData extends ExtendableReceiveData {
         getAndOutput(new FileOutputStream(file));
     }
 
+    /**
+     *
+     * @param file
+     * @param append 追記するかどうか
+     * @throws IOException
+     */
     public void getAndSave(File file, boolean append) throws IOException {
         getAndOutput(new FileOutputStream(file, append));
     }

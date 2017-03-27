@@ -9,6 +9,7 @@ import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.sender.Sender;
 import jp.gr.java_conf.falius.communication.server.Server.OnAcceptListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
+import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
  * 接続先に関する情報を管理するクラスです。
@@ -25,7 +26,7 @@ public class Remote {
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
 
-    public Remote(String remoteAddress, Swapper.SwapperFactory swapperFactory) {
+    public Remote(String remoteAddress, SwapperFactory swapperFactory) {
         mRemoteAddress = remoteAddress;
         mSwapper = swapperFactory.get();
     }
@@ -51,6 +52,10 @@ public class Remote {
         return mReceiver;
     }
 
+    /**
+     * Swapper#swapメソッドを実行し、得られたデータを保持した新しいSenderオブジェクトを返します。
+     * @return
+     */
     public Sender sender() {
         SendData sendData = mSwapper.swap(mRemoteAddress, mReceiver.getData());
         if (sendData == null) {

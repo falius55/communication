@@ -2,12 +2,17 @@ package jp.gr.java_conf.falius.communication.receiver;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.invoke.WrongMethodTypeException;
 import java.nio.ByteBuffer;
 import java.util.NoSuchElementException;
 
 /**
  * 受信データを保持するクラスです。
- * SendQueueによって送信された際に利用します。
+ * SendDataによって送信された際に利用します。
+ *
+ * <p>
+ * 受信データを作成する際はまずBasicReceiveDataクラスをインスタンス化し、基本データ型以外の形式でデータを作成したい場合は
+ * ExtendableReceiveDataを拡張したクラスのコンストラクタの引数に渡すことでさまざまな形式でデータを受信することができます。
  *
  * SendDataにputされたのと同じ順番でデータが格納されますので、getXXXメソッドにて取得してください。
  * 取得されたデータはこのクラスの内部から削除されます。
@@ -53,16 +58,41 @@ public interface ReceiveData {
      * 保持しているデータがなければnull。
      * UTF-8でデコードされます。
      * @return
-     * @throws IllegalStateException デコードできないデータをこのメソッドで取得しようとした場合
+     * @throws WrongMethodTypeException デコードできないデータをこのメソッドで取得しようとした場合
      */
     String getString();
 
     /**
-     * データ１単位の最初の４バイトをint値で取得します。
-     * @return データ１単位の最初の４バイトを整数とした値。
+     * データ１単位の最初の4バイトをint値で取得します。
+     * @return データ１単位の最初の4バイトを整数とした値。
      * @throws NoSuchElementException 保持しているデータがない場合
+     * @throws WrongMethodTypeException データが4バイトより少ないのにこのメソッドでデータを取得しようとした場合
      */
     int getInt();
+
+    /**
+     * データ１単位の最初の8バイトをlong値で取得します。
+     * @return データ１単位の最初の8バイトを整数とした値。
+     * @throws NoSuchElementException 保持しているデータがない場合
+     * @throws WrongMethodTypeException データが8バイトより少ないのにこのメソッドでデータを取得しようとした場合
+     */
+    long getLong();
+
+    /**
+     * データ１単位の最初の8バイトをdouble値で取得します。
+     * @return データ１単位の最初の8バイトをdouble値とした値。
+     * @throws NoSuchElementException 保持しているデータがない場合
+     * @throws WrongMethodTypeException データが8バイトより少ないのにこのメソッドでデータを取得しようとした場合
+     */
+    double getDouble();
+
+    /**
+     * データ１単位の最初の4バイトをfloat値で取得します。
+     * @return データ１単位の最初の4バイトをfloat値とした値。
+     * @throws NoSuchElementException 保持しているデータがない場合
+     * @throws WrongMethodTypeException データが4バイトより少ないのにこのメソッドでデータを取得しようとした場合
+     */
+    float getFloat();
 
     /**
      * データ１単位を真偽値として取得します。

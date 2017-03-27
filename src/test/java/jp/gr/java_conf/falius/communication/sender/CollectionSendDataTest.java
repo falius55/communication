@@ -48,7 +48,7 @@ public class CollectionSendDataTest {
             }
         };
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        CollectionSendData data = new CollectionSendData(new SendQueue());
+        CollectionSendData data = new CollectionSendData(new BasicSendData());
         data.put(sendData);
         ReceiveData receiveData = client.start(data);
         CollectionReceiveData collectionData = new CollectionReceiveData(receiveData);
@@ -65,7 +65,7 @@ public class CollectionSendDataTest {
         sendData.put("key2", "data2");
         sendData.put("abc", "def");
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        CollectionSendData data = new CollectionSendData(new SendQueue());
+        CollectionSendData data = new CollectionSendData(new BasicSendData());
         data.pub(sendData);
         ReceiveData receiveData = client.start(data);
         Map<String, String> ret = new CollectionReceiveData(receiveData).getMap();

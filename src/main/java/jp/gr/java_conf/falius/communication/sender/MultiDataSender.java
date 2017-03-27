@@ -11,7 +11,7 @@ import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 
 /**
- * 複数データを送信する際に利用するクラスです。
+ * 複数データを送信するクラスです。
  *
  * 再利用はできません。
  * @author "ymiyauchi"

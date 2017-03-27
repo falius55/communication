@@ -25,5 +25,8 @@ public interface Receiver {
      */
     Result receive(SocketChannel channel) throws IOException;
 
+    /**
+     * @return 最新の受信データ。まだ一度も受信していなければnull
+     */
     ReceiveData getData();
 }

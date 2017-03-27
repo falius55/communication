@@ -11,6 +11,11 @@ import jp.gr.java_conf.falius.communication.Disconnectable;
 import jp.gr.java_conf.falius.communication.Remote;
 import jp.gr.java_conf.falius.communication.receiver.Receiver;
 
+/**
+ * 読み込み処理を行うハンドラ
+ * @author "ymiyauchi"
+ *
+ */
 public class ReadingHandler implements Handler {
     private static final Logger log = LoggerFactory.getLogger(ReadingHandler.class);
 
