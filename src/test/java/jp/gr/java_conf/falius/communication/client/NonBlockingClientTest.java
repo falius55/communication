@@ -26,8 +26,6 @@ import jp.gr.java_conf.falius.communication.sender.BasicSendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
-import jp.gr.java_conf.falius.communication.swapper.Swapper;
-import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingClientTest {
@@ -136,24 +134,18 @@ public class NonBlockingClientTest {
     @Test
     public void testCall() throws InterruptedException, ExecutionException {
         String[] sendData = { "abc", "def", "ghi", "jkl" };
-        Client client = new NonBlockingClient(HOST, mServer.getPort(), new SwapperFactory() {
+        Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {
 
             @Override
-            public Swapper get() {
-                return new OnceSwapper() {
-
-                    @Override
-                    public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                        assertThat(receiveData, is(nullValue()));
-                        SendData data = new BasicSendData();
-                        for (String s : sendData) {
-                            data.put(s);
-                        }
-                        return data;
-                    }
-
-                };
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                assertThat(receiveData, is(nullValue()));
+                SendData data = new BasicSendData();
+                for (String s : sendData) {
+                    data.put(s);
+                }
+                return data;
             }
+
         });
 
         ExecutorService executor = Executors.newSingleThreadExecutor();

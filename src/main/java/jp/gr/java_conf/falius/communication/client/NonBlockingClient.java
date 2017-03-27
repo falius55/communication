@@ -46,7 +46,7 @@ public class NonBlockingClient implements Client {
     private OnReceiveListener mOnReceiveListener = null;
     private OnDisconnectCallback mOnDisconnectCallback = null;
 
-    private SwapperFactory mSwapperFactory;
+    private Swapper mSwapper = null;
 
     private boolean mIsExit = false;
     private Selector mSelector = null;
@@ -59,13 +59,13 @@ public class NonBlockingClient implements Client {
      * このオブジェクトをCallableとして扱う際のコンストラクター
      * @param serverHost
      * @param serverPort
-     * @param swapperFactory
+     * @param swapper
      */
     public NonBlockingClient(String serverHost, int serverPort,
-            SwapperFactory swapperFactory) {
+            Swapper swapper) {
         mServerHost = serverHost;
         mServerPort = serverPort;
-        mSwapperFactory = swapperFactory;
+        mSwapper = swapper;
     }
 
     @Override
@@ -85,10 +85,12 @@ public class NonBlockingClient implements Client {
 
     /**
      * @throws IOException
+     * @throws NullpointerException コンストラクタにSwapperが渡されていない場合
      */
     @Override
     public ReceiveData call() throws IOException, TimeoutException {
-        return start(mSwapperFactory.get());
+        Objects.requireNonNull(mSwapper, "could not call() without swapper");
+        return start(mSwapper);
     }
 
     @Override
