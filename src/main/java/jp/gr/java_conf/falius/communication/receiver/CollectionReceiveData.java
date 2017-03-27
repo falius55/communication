@@ -39,7 +39,7 @@ public class CollectionReceiveData extends ExtendableReceiveData {
             }
             return ret;
         } catch (JSONException e) {
-            throw new WrongMethodTypeException("could not convert to List data " + jsonString);
+            throw new WrongMethodTypeException("could not convert to List data: " + jsonString);
         }
     }
 
@@ -62,7 +62,7 @@ public class CollectionReceiveData extends ExtendableReceiveData {
             }
             return ret;
         } catch (JSONException e) {
-            throw new WrongMethodTypeException("could not convert to Map data " + jsonString);
+            throw new WrongMethodTypeException("could not convert to Map data: " + jsonString);
         }
     }
 }

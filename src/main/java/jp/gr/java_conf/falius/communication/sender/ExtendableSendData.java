@@ -18,52 +18,67 @@ public abstract class ExtendableSendData implements SendData {
     }
 
     @Override
-    public SendData put(ByteBuffer buf) {
+    public final SendData put(ByteBuffer buf) {
         return mSource.put(buf);
     }
 
     @Override
-    public SendData put(ByteBuffer[] bufs) {
+    public final SendData put(ByteBuffer[] bufs) {
         return mSource.put(bufs);
     }
 
     @Override
-    public SendData put(byte[] bytes) {
+    public final SendData put(byte[] bytes) {
         return mSource.put(bytes);
     }
 
     @Override
-    public SendData put(int num) {
+    public final SendData put(int num) {
         return mSource.put(num);
     }
 
     @Override
-    public SendData put(boolean bl) {
+    public final SendData put(long num) {
+        return mSource.put(num);
+    }
+
+    @Override
+    public final SendData put(double num) {
+        return mSource.put(num);
+    }
+
+    @Override
+    public final SendData put(float num) {
+        return mSource.put(num);
+    }
+
+    @Override
+    public final SendData put(boolean bl) {
         return mSource.put(bl);
     }
 
     @Override
-    public SendData put(String msg) {
+    public final SendData put(String msg) {
         return mSource.put(msg);
     }
 
     @Override
-    public SendData put(InputStream in) throws IOException {
+    public final SendData put(InputStream in) throws IOException {
         return mSource.put(in);
     }
 
     @Override
-    public int size() {
+    public final int size() {
         return mSource.size();
     }
 
     @Override
-    public Iterator<ByteBuffer> iterator() {
+    public final Iterator<ByteBuffer> iterator() {
         return mSource.iterator();
     }
 
     @Override
-    public boolean hasRemain() {
+    public final boolean hasRemain() {
         return mSource.hasRemain();
     }
 }

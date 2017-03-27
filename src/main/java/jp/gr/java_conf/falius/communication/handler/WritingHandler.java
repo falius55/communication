@@ -11,6 +11,11 @@ import jp.gr.java_conf.falius.communication.Disconnectable;
 import jp.gr.java_conf.falius.communication.Remote;
 import jp.gr.java_conf.falius.communication.sender.Sender;
 
+/**
+ * 書き込み操作を行うハンドラ
+ * @author "ymiyauchi"
+ *
+ */
 public class WritingHandler implements Handler {
     private static final Logger log = LoggerFactory.getLogger(WritingHandler.class);
 

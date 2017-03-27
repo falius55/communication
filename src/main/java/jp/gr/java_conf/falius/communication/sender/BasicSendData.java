@@ -49,6 +49,30 @@ public class BasicSendData implements SendData {
     }
 
     @Override
+    public BasicSendData put(long num) {
+        ByteBuffer buf = ByteBuffer.allocate(8);
+        buf.putLong(num);
+        buf.flip();
+        return put(buf);
+    }
+
+    @Override
+    public BasicSendData put(double num) {
+        ByteBuffer buf = ByteBuffer.allocate(8);
+        buf.putDouble(num);
+        buf.flip();
+        return put(buf);
+    }
+
+    @Override
+    public BasicSendData put(float num) {
+        ByteBuffer buf = ByteBuffer.allocate(4);
+        buf.putFloat(num);
+        buf.flip();
+        return put(buf);
+    }
+
+    @Override
     public BasicSendData put(boolean bl) {
         return put(bl ? 1 : 0);
     }

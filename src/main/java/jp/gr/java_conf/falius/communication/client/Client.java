@@ -14,6 +14,13 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 public interface Client extends Callable<ReceiveData>, Disconnectable {
 
+    /**
+     * 送受信を一度だけ行う場合の、start(Swapper)の簡易メソッドです。
+     * @param sendData
+     * @return
+     * @throws IOException
+     * @throws TimeoutException
+     */
     ReceiveData start(SendData sendData) throws IOException, TimeoutException;
 
     /**
@@ -25,10 +32,22 @@ public interface Client extends Callable<ReceiveData>, Disconnectable {
      */
     ReceiveData start(Swapper swapper) throws IOException, TimeoutException;
 
+    /**
+     * 一度の送信で書き込みが完了した直後に実行されるリスナーを登録します。
+     * @param listener
+     */
     void addOnSendListener(OnSendListener listener);
 
+    /**
+     * 一度の受信で読み込みが完了した直後に実行されるリスナーを登録します。
+     * @param listener
+     */
     void addOnReceiveListener(OnReceiveListener listener);
 
+    /**
+     * サーバーとの接続を切断した直後に実行されるリスナーを登録します。
+     * @param callback
+     */
     void addOnDisconnectCallback(OnDisconnectCallback callback);
 
 }

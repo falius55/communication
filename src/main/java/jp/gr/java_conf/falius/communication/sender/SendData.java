@@ -48,6 +48,12 @@ public interface SendData extends Iterable<ByteBuffer> {
      */
     SendData put(int num);
 
+    SendData put(long num);
+
+    SendData put(double num);
+
+    SendData put(float num);
+
     /**
      * boolean値のデータを書き込みます。
      * @param bl
