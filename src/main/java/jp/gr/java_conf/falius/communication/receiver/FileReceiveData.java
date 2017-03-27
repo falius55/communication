@@ -1,7 +1,6 @@
 package jp.gr.java_conf.falius.communication.receiver;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -10,11 +9,17 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FileReceiver extends ExtendableReceiver {
+/**
+ * ファイル受信が可能なReceiveDataです。
+ * 指定された場所に保存します。
+ * @author "ymiyauchi"
+ *
+ */
+public class FileReceiveData extends ExtendableReceiveData {
 
 
-    public FileReceiver(Receiver receiver) {
-        super(receiver);
+    public FileReceiveData(ReceiveData receiveData) {
+        super(receiveData);
     }
 
     /**
@@ -24,11 +29,17 @@ public class FileReceiver extends ExtendableReceiver {
         getAndOutput(Files.newOutputStream(savePath, openOptions));
     }
 
-    public void getAndSave(File file) throws FileNotFoundException, IOException {
+    public void getAndSave(File file) throws IOException {
         getAndOutput(new FileOutputStream(file));
     }
 
-    public void getAndSave(File file, boolean append) throws FileNotFoundException, IOException {
+    /**
+     *
+     * @param file
+     * @param append 追記するかどうか
+     * @throws IOException
+     */
+    public void getAndSave(File file, boolean append) throws IOException {
         getAndOutput(new FileOutputStream(file, append));
     }
 

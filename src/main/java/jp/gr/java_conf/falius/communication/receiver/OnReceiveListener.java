@@ -2,5 +2,11 @@ package jp.gr.java_conf.falius.communication.receiver;
 
 public interface OnReceiveListener {
 
-    void onReceive(String fromAddress, int readByte, Receiver receiver);
+    /**
+     *
+     * @param fromAddress 送信してきたリモートのアドレス
+     * @param readByte ヘッダを含めたすべてのデータの受信サイズ
+     * @param receiveData 受信データ
+     */
+    void onReceive(String fromAddress, int readByte, ReceiveData receiveData);
 }

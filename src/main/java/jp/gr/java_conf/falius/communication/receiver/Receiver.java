@@ -1,51 +1,32 @@
 package jp.gr.java_conf.falius.communication.receiver;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
- * 同じ接続では同じReceiverオブジェクトが利用されます。
- * そのため、同じ接続で何度も送受信を繰り返す場合、新たに受信したデータは以前に受信して消費しなかったデータに
- * 追記されることになります。
+ * チャネルからの受信を行うクラス。
  *
- *<p>
- * このオブジェクトはまずOnReceiveListener#onReceiveメソッドの引数に渡され、その後Swapper#swapメソッド
- * の引数に渡されます。クライアントに限り、最後にClient#startメソッドの戻り値として取得できます。
  * @author "ymiyauchi"
- *
  */
 public interface Receiver {
     enum Result {
         ERROR, UNFINISHED, FINISHED,
     }
 
-    /**
-     * 内部的に使用するメソッドです。
-     * 受信時のリスナーを登録する場合はClient及びServerのaddOnReceiveLisnerメソッドを使用してください。
-     * @param listener
-     */
     void addOnReceiveListener(OnReceiveListener listener);
 
+    /**
+     * チャネルからデータを読み取ります。
+     *
+     * @param channel 受信用ソケット・チャネル
+     * @return すべての受信データを読み取ればFINISHED, まだ受信していないデータが残った状態で終わったなら
+     * UNFINISHED, 通信が途切れるなどして受信できなかった場合にはERROR
+     * @throws IOException チャネルからの読み取りで例外が発生した場合
+     */
     Result receive(SocketChannel channel) throws IOException;
 
     /**
-     * 保持しているデータの個数を返します。
-     * getXXXメソッドを呼ぶ度に保持しているデータの個数は減少します。
-     * @return
+     * @return 最新の受信データ。まだ一度も受信していなければnull
      */
-    int dataCount();
-
-    ByteBuffer get();
-
-    ByteBuffer[] getAll();
-
-    String getString();
-
-    int getInt();
-
-    void getAndOutput(OutputStream os) throws IOException;
-
-    void clear();
+    ReceiveData getData();
 }

@@ -13,13 +13,27 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import jp.gr.java_conf.falius.communication.Disconnectable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.swapper.Swapper;
+import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
-public class NonBlockingServer implements Server, Disconnectable {
+/**
+ * {@inheritDoc}
+ *
+ * <p>
+ * startOnNewThreadメソッドの呼び出し一回につき、ひとつのスレッドで起動します。
+ *
+ * <p>
+ * Timeoutの設定はなく、別のスレッドからshutdownメソッドあるいはcloseメソッドが実行されるまで起動を
+ * 続けます。
+ */
+public class NonBlockingServer implements Server {
+    private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);
 
     private final int mServerPort;
 
@@ -31,10 +45,12 @@ public class NonBlockingServer implements Server, Disconnectable {
     private final RemoteStarter mRemoteStarter;
 
     private Server.OnShutdownCallback mOnShutdownCallback = null;
+    private OnDisconnectCallback mOnDisconnectCallback = null;
 
+    private volatile boolean mIsStarted = false;
     private volatile boolean mIsShutdowned = false;
 
-    public NonBlockingServer(int serverPort, Swapper.SwapperFactory swapperFactory) {
+    public NonBlockingServer(int serverPort, SwapperFactory swapperFactory) {
         mServerPort = serverPort;
         mRemoteStarter = new RemoteStarter(this, swapperFactory);
     }
@@ -57,6 +73,11 @@ public class NonBlockingServer implements Server, Disconnectable {
     @Override
     public void addOnShutdownCallback(Server.OnShutdownCallback callback) {
         mOnShutdownCallback = callback;
+    }
+
+    @Override
+    public void addOnDisconnectCallback(OnDisconnectCallback callback) {
+        mOnDisconnectCallback = callback;
     }
 
     /**
@@ -98,14 +119,22 @@ public class NonBlockingServer implements Server, Disconnectable {
 
         mSelector.wakeup();
         mServerSocketChannel.close();
-        mExecutor.shutdown();
+        if (mExecutor != null) {
+            mExecutor.shutdown();
+        }
 
         if (mOnShutdownCallback != null) {
             mOnShutdownCallback.onShutdown();
         }
+        mIsStarted = false;
     }
 
     private void exec() throws IOException {
+        if (mIsStarted) {
+            throw new IllegalStateException("server is already executed. if you want restart, should shutdown.");
+        }
+        mIsStarted = true;
+        log.debug("exec");
         try (Selector selector = Selector.open();
                 ServerSocketChannel channel = ServerSocketChannel.open()) {
             mSelector = selector;
@@ -121,11 +150,13 @@ public class NonBlockingServer implements Server, Disconnectable {
                 // キーはselectedKeysに格納されたままになる
                 // 削除しないと、次回も再び同じキーで通知される
                 if (selector.select() > 0 || selector.selectedKeys().size() > 0) {
+                    log.debug("selector.selectedKeys: {}", selector.selectedKeys().size());
 
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
                         SelectionKey key = iter.next();
                         Handler handler = (Handler) key.attachment();
+                        log.debug("server handle");
                         handler.handle(key);
                         iter.remove();
                     }
@@ -139,29 +170,42 @@ public class NonBlockingServer implements Server, Disconnectable {
 
     private void bind(ServerSocketChannel channel) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerPort);
-        System.out.println("bind to " + getIPAddress() + ":" + address.getPort());
-        channel.bind(address);
+        log.info("bind to ... {} : {}", getLocalHostAddress(), address.getPort());
+        channel.bind(address);  // ポートが競合したら処理が返ってこない？
+        log.info("success binding");
     }
 
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) {
         try {
+            String remote = channel.socket().getRemoteSocketAddress().toString();
+
             if (channel != null) {
                 channel.close();
             }
             key.cancel();
+
+            if (mOnDisconnectCallback != null) {
+                mOnDisconnectCallback.onDissconnect(remote, cause);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String getIPAddress() {
+    @Override
+    public String getLocalHostAddress() {
         try {
             InetAddress address = InetAddress.getLocalHost();
             return address.getHostAddress();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            log.error("get address error", e);
         }
         return null;
+    }
+
+    @Override
+    public int getPort() {
+        return mServerPort;
     }
 }
