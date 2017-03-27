@@ -202,7 +202,7 @@ public class NonBlockingClientTest {
     }
 
     @Test
-    public void testLoopSend() {
+    public void testMultiSend() {
         String sendData = "data";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         client.addOnDisconnectCallback(new OnDisconnectCallback() {
@@ -223,6 +223,28 @@ public class NonBlockingClientTest {
                 throw new IllegalStateException();
             }
             assertThat(receiveData.getString(), is(sendData + i));
+        });
+    }
+
+    @Test
+    public void testChaengeReceiveListener() {
+        String[] data = {"data1", "data2", "data3"};
+        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        new IntRange(data.length).forEach(i -> {
+            client.addOnReceiveListener(new OnReceiveListener() {
+
+                @Override
+                public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
+                    assertThat(receiveData.getString(), is(data[i]));
+                }
+            });
+            SendData sendData = new BasicSendData();
+            sendData.put(data[i]);
+            try {
+                client.start(sendData);
+            } catch (IOException | TimeoutException e) {
+                assertThat(false, is(true));
+            }
         });
     }
 }

@@ -53,7 +53,7 @@ public class FileSendDataTest {
     }
 
     @Test
-    public void testPutFile() throws IOException, TimeoutException {
+    public void testPutOfFile() throws IOException, TimeoutException {
         File file = new File(
                 "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication"
                 + "\\sender\\FileSendDataTest.java");
@@ -67,7 +67,7 @@ public class FileSendDataTest {
     }
 
     @Test
-    public void testPutFile1() throws IOException, TimeoutException {
+    public void testPutFile() throws IOException, TimeoutException {
         String curDir = "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication\\sender";
         String fileName = "FileSendDataTest.java";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
