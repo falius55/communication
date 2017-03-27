@@ -14,13 +14,17 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jp.gr.java_conf.falius.communication.client.Client;
+import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.helper.ClientHelper;
 import jp.gr.java_conf.falius.communication.helper.OnceClient;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
 import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.sender.SendQueue;
+import jp.gr.java_conf.falius.communication.swapper.FixedRepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
+import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 public class NonBlockingServerTest {
@@ -30,7 +34,7 @@ public class NonBlockingServerTest {
 
     @Test
     public void testReceiveValueInSwapper() throws IOException, TimeoutException {
-        String[] receiveData = {"1", "2", "3"};
+        String[] receiveData = { "1", "2", "3" };
         try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
 
             @Override
@@ -56,7 +60,7 @@ public class NonBlockingServerTest {
             server.startOnNewThread();
 
             ClientHelper client = new OnceClient(HOST, PORT);
-            ReceiveData ret =  client.send(receiveData);
+            ReceiveData ret = client.send(receiveData);
             assertThat(ret, is(not(nullValue())));
             assertThat(ret.dataCount(), is(receiveData.length));
             for (String data : receiveData) {
@@ -68,7 +72,7 @@ public class NonBlockingServerTest {
 
     @Test
     public void testAddOnReceiveListener() throws IOException, TimeoutException {
-        String[] receiveData = {"data1", "data2", "data3"};
+        String[] receiveData = { "data1", "data2", "data3" };
         try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
 
             @Override
@@ -90,14 +94,14 @@ public class NonBlockingServerTest {
 
                 @Override
                 public void onReceive(String fromAddress, int readByte, ReceiveData receiver) {
-                        assertThat(receiver, is(not(nullValue())));
-                        SendData sender = new SendQueue();
-                        for (String data : receiveData) {
-                            String rev = receiver.getString();
-                            assertThat(rev, is(data));
-                            sender.put(rev);
-                        }
-                        assertThat(receiver.getString(), is(nullValue()));
+                    assertThat(receiver, is(not(nullValue())));
+                    SendData sender = new SendQueue();
+                    for (String data : receiveData) {
+                        String rev = receiver.getString();
+                        assertThat(rev, is(data));
+                        sender.put(rev);
+                    }
+                    assertThat(receiver.getString(), is(nullValue()));
                 }
             });
             server.startOnNewThread();
@@ -111,7 +115,7 @@ public class NonBlockingServerTest {
     public void testCall() throws IOException, TimeoutException, InterruptedException, ExecutionException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<?> future = null;
-        String[] receiveData = {"1", "2", "3"};
+        String[] receiveData = { "1", "2", "3" };
         try (Server server = new NonBlockingServer(PORT, new Swapper.SwapperFactory() {
 
             @Override
@@ -148,4 +152,107 @@ public class NonBlockingServerTest {
         assertThat(future.isDone(), is(true));
     }
 
+    @Test
+    public void testRepeatSwapper() throws IOException, TimeoutException {
+        final int repeatLen = 10;
+        int port = 8998;
+        try (Server server = new NonBlockingServer(port, new Swapper.SwapperFactory() {
+
+            @Override
+            public Swapper get() {
+                return new RepeatSwapper() {
+                    private int count = 0;
+
+                    @Override
+                    public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                        int rcv = receiveData.getInt();
+                        SendData sendData = new SendQueue();
+                        sendData.put(rcv + 1);
+
+                        count++;
+                        if (count == 10) {
+                            finish();
+                            // このデータを送信したら終了
+                        }
+                        return sendData;
+                    }
+
+                };
+            }
+        })) {
+            server.startOnNewThread();
+
+            Client client = new NonBlockingClient(HOST, port);
+            ReceiveData result = client.start(new RepeatSwapper() {
+                private int count = 0;
+
+                @Override
+                public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                    SendData sendData = new SendQueue();
+                    if (count == 0) {
+                        assertThat(receiveData, is(nullValue()));
+                        sendData.put(0);
+                    } else {
+                        int rcv = receiveData.getInt();
+                        sendData.put(rcv + 1);
+                    }
+
+                    count++;
+                    if (count == repeatLen) {
+                        finish();
+                        // このデータを送信して、最後に受信して終わり
+                        // nullをここで返すと直後に切断されてしまい、最後の送受信が行われない。
+                    }
+                    return sendData;
+                }
+
+            });
+
+            assertThat(result.getInt(), is(repeatLen * 2 - 1));
+        }
+    }
+
+    @Test
+    public void testFixedRepeatSwapper() throws IOException, TimeoutException {
+        final int repeatLen = 10;
+        int port = 8998;
+        try (Server server = new NonBlockingServer(port, new Swapper.SwapperFactory() {
+
+            @Override
+            public Swapper get() {
+                return new FixedRepeatSwapper(repeatLen) {
+
+                    @Override
+                    public SendData onSwap(String remoteAddress, ReceiveData receiveData) {
+                        int rcv = receiveData.getInt();
+                        SendData sendData = new SendQueue();
+                        sendData.put(rcv + 1);
+                        return sendData;
+                    }
+                };
+            }
+        })) {
+            server.startOnNewThread();
+
+            Client client = new NonBlockingClient(HOST, port);
+            ReceiveData result = client.start(new FixedRepeatSwapper(repeatLen) {
+
+                @Override
+                public SendData onSwap(String remoteAddress, ReceiveData receiveData) {
+                    SendData sendData = new SendQueue();
+                    if (receiveData == null) {
+                        sendData.put(0);
+                    } else {
+                        int rcv = receiveData.getInt();
+                        sendData.put(rcv + 1);
+                    }
+
+                    return sendData;
+                }
+
+            });
+
+            assertThat(result.getInt(), is(repeatLen * 2 - 1));
+        }
+    }
 }

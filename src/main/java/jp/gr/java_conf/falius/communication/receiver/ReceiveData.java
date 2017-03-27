@@ -18,7 +18,9 @@ import java.util.NoSuchElementException;
  * の引数に渡されます。クライアントに限り、最後に最終受信データがClient#startメソッドの戻り値として取得できます。<br>
  * 一度の受信に対し、OnReceiveListener#onReceiveメソッドの引数に渡されるオブジェクトとSwapper#swapメソッド
  * の引数に渡されるオブジェクトは同一になります。<br>
- * 最後に受信した際に限り、上記の二つとClient#startメソッドの戻り値は同一になります。<br>
+ * クライアントの最終受信データはSwapper#swapメソッドには渡されません。
+ * OnReceiveListener#onReceiveメソッドに渡された直後に接続が切断されるため、
+ * 代わりにClient#satartメソッドの戻り値として返されます。<br>
  * このため、OnReceiverListenerの引数で渡されるReceiverオブジェクトから消費した受信データは Client#startメソッド
  * の戻り値で渡されるReceiverオブジェクトには含まれていませんので注意してください(startメソッドの戻り値も同様)。
  *

@@ -44,6 +44,8 @@ public class FileReceiveDataTest {
         // コピー先の一時ディレクトリ
         mTargetTmpDir = Files.createTempDirectory("cmt_");
 
+        // @Beforeで毎回同一名のファイルを作成すると、各テストが並列実行される際に
+        // アクセスが拒否されることがある。そのため、各メソッドの名前でファイルを作成
         for (Method method : FileReceiveDataTest.class.getDeclaredMethods()) {
             Annotation anotation = method.getAnnotation(Test.class);
             if (anotation != null) {

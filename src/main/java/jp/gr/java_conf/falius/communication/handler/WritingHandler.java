@@ -46,6 +46,7 @@ public class WritingHandler implements Handler {
             }
 
             if (sender == null) {
+                log.info("disconnect by send data returned null");
                 mDisconnectable.disconnect(channel, key, null);
                 return;
             }
