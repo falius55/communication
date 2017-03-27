@@ -15,6 +15,14 @@ package jp.gr.java_conf.falius.communication.swapper;
 public abstract class RepeatSwapper implements Swapper {
     private boolean isContinue = true;
 
+    /**
+     *
+     * このメソッドを呼び出すことで、isContinueメソッドがfalseを
+     * 返すようになって通信が終了します。
+     * 送信、受信共にswapメソッドが同数呼ばれるようにしてこのメソッドを
+     * 呼び出してください。
+     * サーバーはその直後、クライアントはもう一度受信した上で接続が切断されます。
+     */
     protected final void finish() {
         isContinue = false;
     }

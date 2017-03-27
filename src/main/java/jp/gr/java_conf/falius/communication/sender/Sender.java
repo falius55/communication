@@ -1,36 +1,34 @@
 package jp.gr.java_conf.falius.communication.sender;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+/**
+ *
+ * <p>
+ * 送信データを管理するクラスです。
+ *
+ * <p>
+ * 接続の間ずっと共有されるReceiverオブジェクトとは異なり、こちらは一度の送信ごとに使い捨てとなります。
+ * そのため、再利用はできません。
+ * Swapper#swapメソッドでは必ず新しく作成したインスタンスを返すようにしてください。
+ * @author "ymiyauchi"
+ *
+ */
 public interface Sender {
     enum Result {
         FINISHED, UNFINISHED,
     }
 
-    Result send(SocketChannel channel) throws IOException;
-
-    /**
-     * Client及びServerにて内部的に使用するメソッドです。
-     * このメソッドでリスナーを登録しても無効となりますので注意してください。
-     * 送信時のリスナーを登録するにはClient及びServerのaddOnSendListenerメソッドを利用してください。
-     * @param listener
-     * @return
-     */
     Sender addOnSendListener(OnSendListener listener);
 
-    Sender put(ByteBuffer buf);
-
-    Sender put(ByteBuffer[] bufs);
-
-    Sender put(byte[] bytes);
-
-    Sender put(int num);
-
-    Sender put(String msg);
-
-    Sender put(InputStream in) throws IOException;
-
+    /**
+     * Client及びServerの内部で使用します。
+     * 実際の送信を行うメソッドです。
+     *
+     * @param channel 送信するチャネル
+     * @return 送信予定のデータをすべて送信し終えた場合はFINISHED, まだ未送信のデータが残っていればUNFINISHED
+     * @throws IOException
+     */
+    Result send(SocketChannel channel) throws IOException;
 }

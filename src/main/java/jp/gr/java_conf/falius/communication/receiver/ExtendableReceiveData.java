@@ -3,25 +3,12 @@ package jp.gr.java_conf.falius.communication.receiver;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
-import jp.gr.java_conf.falius.communication.receiver.Receiver.Result;
+public abstract class ExtendableReceiveData implements ReceiveData {
+    private final ReceiveData mSource;
 
-public abstract class ExtendableReceiver implements Receiver {
-    private final Receiver mSource;
-
-    public ExtendableReceiver(Receiver receiver) {
+    public ExtendableReceiveData(ReceiveData receiver) {
         mSource = receiver;
-    }
-
-    @Override
-    public void addOnReceiveListener(OnReceiveListener listener) {
-        mSource.addOnReceiveListener(listener);
-    }
-
-    @Override
-    public Result receive(SocketChannel channel) throws IOException {
-        return mSource.receive(channel);
     }
 
     @Override
@@ -47,6 +34,11 @@ public abstract class ExtendableReceiver implements Receiver {
     @Override
     public int getInt() {
         return mSource.getInt();
+    }
+
+    @Override
+    public boolean getBoolean() {
+        return mSource.getBoolean();
     }
 
     @Override

@@ -5,6 +5,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.Disconnectable;
 import jp.gr.java_conf.falius.communication.Remote;
 import jp.gr.java_conf.falius.communication.handler.Handler;
@@ -14,11 +17,14 @@ import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
+ *  接続要求を受入れ、Remoteオブジェクトを作成して続く処理を別のハンドラに委譲します。
+ *
  *  リスナーはいつでも変更することが可能ですが、新しいリスナーは変更後に開始された接続から有効になります。
  * @author "ymiyauchi"
  *
  */
 public class RemoteStarter implements Handler {
+    private static final Logger log = LoggerFactory.getLogger(RemoteStarter.class);
     private final Swapper.SwapperFactory mSwapperFactory;
     private final Disconnectable mDisconnectable;
 
@@ -57,7 +63,7 @@ public class RemoteStarter implements Handler {
                 mDisconnectable.disconnect(clientChannel, key,
                         new IOException("remote starter failed accept:" + remoteAddress, e));
             }
-            e.printStackTrace();
+            log.warn("accept error to disconnect", e);
         }
     }
 
