@@ -13,6 +13,10 @@ public abstract class FixedRepeatSwapper extends RepeatSwapper {
     private int mCount = 0;
     private final int mLimit;
 
+    /**
+     *
+     * @param limit 送受信の最大回数。送信と受信のセットで一回です。
+     */
     public FixedRepeatSwapper(int limit) {
         mLimit = limit;
     }

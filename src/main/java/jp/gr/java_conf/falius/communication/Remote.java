@@ -52,6 +52,10 @@ public class Remote {
         return mReceiver;
     }
 
+    /**
+     * Swapper#swapメソッドを実行し、得られたデータを保持した新しいSenderオブジェクトを返します。
+     * @return
+     */
     public Sender sender() {
         SendData sendData = mSwapper.swap(mRemoteAddress, mReceiver.getData());
         if (sendData == null) {
