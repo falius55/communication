@@ -25,8 +25,8 @@ import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
-import jp.gr.java_conf.falius.communication.sender.FileSendData;
 import jp.gr.java_conf.falius.communication.sender.BasicSendData;
+import jp.gr.java_conf.falius.communication.sender.FileSendData;
 
 public class FileReceiveDataTest {
     private static Logger log = LoggerFactory.getLogger(FileReceiveDataTest.class);
@@ -37,7 +37,7 @@ public class FileReceiveDataTest {
     private static Path mTargetTmpDir;
 
     @BeforeClass
-    public static void setupServer() throws IOException {
+    public static void setup() throws IOException {
         mServer.beforeClass();
         // コピー元ファイルを作成する一時ディレクトリ
         mOriginTmpDir = Files.createTempDirectory("cmt_");
@@ -59,7 +59,7 @@ public class FileReceiveDataTest {
     }
 
     @AfterClass
-    public static void shutdownServer() throws IOException {
+    public static void shutdown() throws IOException {
         mServer.afterClass();
     }
 
