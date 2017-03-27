@@ -184,7 +184,7 @@ public class NonBlockingServerTest {
             server.startOnNewThread();
 
             Client client = new NonBlockingClient(HOST, port);
-            ReceiveData result = client.start(new RepeatSwapper() {
+            ReceiveData receiveData = client.start(new RepeatSwapper() {
                 private int count = 0;
 
                 @Override
@@ -209,7 +209,7 @@ public class NonBlockingServerTest {
 
             });
 
-            assertThat(result.getInt(), is(repeatLen * 2 - 1));
+            assertThat(receiveData.getInt(), is(repeatLen * 2 - 1));
         }
     }
 
