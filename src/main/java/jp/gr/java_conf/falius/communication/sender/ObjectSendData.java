@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+/**
+ * シリアライズ可能オブジェクトを送信する際に利用するSendData
+ * @author "ymiyauchi"
+ *
+ */
 public class ObjectSendData extends ExtendableSendData {
 
     public ObjectSendData(SendData sender) {

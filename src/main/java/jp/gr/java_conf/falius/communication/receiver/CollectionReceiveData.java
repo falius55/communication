@@ -3,7 +3,7 @@ package jp.gr.java_conf.falius.communication.receiver;
 import java.lang.invoke.WrongMethodTypeException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +54,7 @@ public class CollectionReceiveData extends ExtendableReceiveData {
         }
         try {
             JSONObject json = new JSONObject(jsonString);
-            Map<String, String> ret = new HashMap<>();
+            Map<String, String> ret = new LinkedHashMap<>();
 
             for (String key : json.keySet()) {
                 ret.put(key, json.getString(key));

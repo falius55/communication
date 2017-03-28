@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * シリアライズ可能オブジェクトを受信することができるReceiveDataです。
+ * @author "ymiyauchi"
+ *
+ */
 public class ObjectReceiveData extends ExtendableReceiveData {
 
     public ObjectReceiveData(ReceiveData receiver) {
@@ -22,6 +27,6 @@ public class ObjectReceiveData extends ExtendableReceiveData {
             Object ret = ois.readObject();
             return ret;
         }
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();  // unreachable
     }
 }
