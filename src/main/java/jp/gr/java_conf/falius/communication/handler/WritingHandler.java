@@ -28,6 +28,7 @@ public class WritingHandler implements Handler {
         mDisconnectable = disconnectable;
         mRemote = remote;
         mIsClient = isClient;
+        mSender = remote.sender();
     }
 
     @Override
@@ -43,12 +44,7 @@ public class WritingHandler implements Handler {
                 return;
             }
 
-            Sender sender;
-            if (mSender == null) {
-                sender = mSender = mRemote.sender();
-            } else {
-                sender = mSender;
-            }
+            Sender sender = mSender;
 
             if (sender == null) {
                 log.info("disconnect by send data returned null");

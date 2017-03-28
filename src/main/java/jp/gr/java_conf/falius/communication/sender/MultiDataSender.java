@@ -53,9 +53,7 @@ public class MultiDataSender implements Sender {
         }
 
         state.mWriteSize += channel.write(state.mHeaderBuffer);
-        boolean hasRemain = false;
         for (ByteBuffer item : mData) {
-            hasRemain = hasRemain && item.hasRemaining();
             state.mWriteSize += channel.write(item);
         }
 
