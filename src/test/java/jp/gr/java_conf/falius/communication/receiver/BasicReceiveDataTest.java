@@ -18,8 +18,9 @@ import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
-import jp.gr.java_conf.falius.communication.sender.BasicSendData;
-import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class BasicReceiveDataTest {
@@ -54,6 +55,7 @@ public class BasicReceiveDataTest {
 
     @Test(expected=WrongMethodTypeException.class)
     public void testGetStringException() throws IOException, TimeoutException {
+        // getString内で-15がデコードできたりできなかったり...??
         int[] data = {-15, 1, 2, 3};
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();

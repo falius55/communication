@@ -3,6 +3,8 @@ package jp.gr.java_conf.falius.communication.receiver;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+
 /**
  * チャネルからの受信を行うクラス。
  *

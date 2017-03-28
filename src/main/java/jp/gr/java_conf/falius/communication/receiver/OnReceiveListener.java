@@ -1,5 +1,7 @@
 package jp.gr.java_conf.falius.communication.receiver;
 
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+
 public interface OnReceiveListener {
 
     /**

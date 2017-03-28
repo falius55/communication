@@ -13,14 +13,14 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
-import jp.gr.java_conf.falius.communication.Remote;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
+import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
+import jp.gr.java_conf.falius.communication.remote.Remote;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;

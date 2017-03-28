@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication;
+package jp.gr.java_conf.falius.communication.remote;
 
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;

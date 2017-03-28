@@ -14,8 +14,10 @@ import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
-import jp.gr.java_conf.falius.communication.sender.BasicSendData;
-import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.rcvdata.CollectionReceiveData;
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 public class CollectionReceiveDataTest {
     private static Logger log = LoggerFactory.getLogger(CollectionReceiveDataTest.class);

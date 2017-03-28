@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
 
-public class UnFinishedHeader implements Header {
+class UnFinishedHeader implements Header {
     private static final IntBuffer EMPTY_INT_BUFFER = IntBuffer.allocate(0);
 
     private final int mHeaderSize;  // ヘッダー自身のサイズ

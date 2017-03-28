@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 /**
  * 複数データを送信するクラスです。
@@ -26,7 +27,7 @@ public class MultiDataSender implements Sender {
 
     public MultiDataSender(SendData data) {
         if (!data.hasRemain()) {
-            log.error("data is empty");
+            log.debug("data is empty");
         }
         mData = data;
     }

@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication.sender;
+package jp.gr.java_conf.falius.communication.senddata;
 
 import java.util.List;
 import java.util.Map;
@@ -17,12 +17,12 @@ public class CollectionSendData extends ExtendableSendData {
         super(sender);
     }
 
-    public SendData put(List<String> list) {
+    public SendData put(List<?> list) {
         JSONArray json = new JSONArray(list);
         return put(json.toString());
     }
 
-    public SendData put(Map<String, String> map) {
+    public SendData put(Map<?, ?> map) {
         JSONObject json = new JSONObject(map);
         return put(json.toString());
     }
