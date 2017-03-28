@@ -5,10 +5,10 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
-import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
-import jp.gr.java_conf.falius.communication.sender.BasicSendData;
-import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
+import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.server.NonBlockingServer;
 import jp.gr.java_conf.falius.communication.server.Server;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;

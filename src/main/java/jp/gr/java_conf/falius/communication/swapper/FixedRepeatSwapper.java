@@ -1,7 +1,7 @@
 package jp.gr.java_conf.falius.communication.swapper;
 
-import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
-import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 /**
  * 固定回数分送受信を行うためのSwapper

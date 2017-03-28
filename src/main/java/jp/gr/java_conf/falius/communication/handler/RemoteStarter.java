@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication.server;
+package jp.gr.java_conf.falius.communication.handler;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -8,16 +8,16 @@ import java.nio.channels.SocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.Disconnectable;
-import jp.gr.java_conf.falius.communication.Remote;
-import jp.gr.java_conf.falius.communication.handler.Handler;
-import jp.gr.java_conf.falius.communication.handler.ReadingHandler;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.remote.Disconnectable;
+import jp.gr.java_conf.falius.communication.remote.Remote;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.server.Server;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
  *  接続要求を受入れ、Remoteオブジェクトを作成して続く処理を別のハンドラに委譲します。
+ *  Serverが利用します。
  *
  *  リスナーはいつでも変更することが可能ですが、新しいリスナーは変更後に開始された接続から有効になります。
  * @author "ymiyauchi"

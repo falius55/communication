@@ -7,8 +7,8 @@ import java.nio.channels.SocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.Disconnectable;
-import jp.gr.java_conf.falius.communication.Remote;
+import jp.gr.java_conf.falius.communication.remote.Disconnectable;
+import jp.gr.java_conf.falius.communication.remote.Remote;
 import jp.gr.java_conf.falius.communication.sender.Sender;
 
 /**

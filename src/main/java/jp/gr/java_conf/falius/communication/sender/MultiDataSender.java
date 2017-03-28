@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 /**
  * 複数データを送信するクラスです。

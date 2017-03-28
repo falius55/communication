@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication.receiver;
+package jp.gr.java_conf.falius.communication.rcvdata;
 
 import java.io.IOException;
 import java.io.OutputStream;

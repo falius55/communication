@@ -8,7 +8,7 @@ import java.nio.channels.SocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 public class HeaderFactory {
     private static final Logger log = LoggerFactory.getLogger(HeaderFactory.class);

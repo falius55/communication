@@ -18,10 +18,10 @@ import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.helper.ClientHelper;
 import jp.gr.java_conf.falius.communication.helper.OnceClient;
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
-import jp.gr.java_conf.falius.communication.sender.BasicSendData;
-import jp.gr.java_conf.falius.communication.sender.SendData;
+import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.swapper.FixedRepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
@@ -184,7 +184,7 @@ public class NonBlockingServerTest {
             server.startOnNewThread();
 
             Client client = new NonBlockingClient(HOST, port);
-            ReceiveData result = client.start(new RepeatSwapper() {
+            ReceiveData receiveData = client.start(new RepeatSwapper() {
                 private int count = 0;
 
                 @Override
@@ -209,7 +209,7 @@ public class NonBlockingServerTest {
 
             });
 
-            assertThat(result.getInt(), is(repeatLen * 2 - 1));
+            assertThat(receiveData.getInt(), is(repeatLen * 2 - 1));
         }
     }
 

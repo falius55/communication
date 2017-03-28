@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * @author "ymiyauchi"
  *
  */
-public class FinishedHeader implements Header {
+class FinishedHeader implements Header {
     private static final Logger log = LoggerFactory.getLogger(FinishedHeader.class);
     // ヘッダーのサイズ(自身を含む), 全データのサイズ(ヘッダーを含む), データ１のサイズ, データ２のサイズ...
     private final int mHeaderSize;  // ヘッダー自身のサイズ
