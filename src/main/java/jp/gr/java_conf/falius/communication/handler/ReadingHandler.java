@@ -4,11 +4,21 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import jp.gr.java_conf.falius.communication.Disconnectable;
-import jp.gr.java_conf.falius.communication.Remote;
-import jp.gr.java_conf.falius.communication.receiver.Receiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ReadingHandler implements Handler {
+import jp.gr.java_conf.falius.communication.receiver.Receiver;
+import jp.gr.java_conf.falius.communication.remote.Disconnectable;
+import jp.gr.java_conf.falius.communication.remote.Remote;
+
+/**
+ * 読み込み処理を行うハンドラ
+ * @author "ymiyauchi"
+ *
+ */
+class ReadingHandler implements Handler {
+    private static final Logger log = LoggerFactory.getLogger(ReadingHandler.class);
+
     private final Disconnectable mDisconnectable;
     private final Remote mRemote;
     private final boolean mIsClient;
@@ -21,7 +31,7 @@ public class ReadingHandler implements Handler {
 
     @Override
     public void handle(SelectionKey key) {
-        System.out.println("reading handle");
+        log.debug("reading handle");
         SocketChannel channel = (SocketChannel) key.channel();
 
         try {
@@ -31,7 +41,7 @@ public class ReadingHandler implements Handler {
             Receiver.Result result = receiver.receive(channel);
 
             if (result == Receiver.Result.ERROR) {
-                System.err.println("receive error");
+                log.warn("receive error");
                 mDisconnectable.disconnect(channel, key, new IOException("reading channel returns -1"));
                 return;
             }
@@ -49,7 +59,7 @@ public class ReadingHandler implements Handler {
 
         } catch (Exception e) {
             mDisconnectable.disconnect(channel, key, new IOException("reading handler exception", e));
-            e.printStackTrace();
+            log.error("handle error", e);
         }
     }
 }
