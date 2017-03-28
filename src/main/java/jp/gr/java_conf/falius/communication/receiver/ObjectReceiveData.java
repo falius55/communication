@@ -22,6 +22,6 @@ public class ObjectReceiveData extends ExtendableReceiveData {
             Object ret = ois.readObject();
             return ret;
         }
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

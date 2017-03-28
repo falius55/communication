@@ -36,7 +36,7 @@ public class ObjectSendDataTest {
     }
 
     @Test
-    public void testPutObject() throws IOException, TimeoutException, ClassNotFoundException {
+    public void testPutAndGetObject() throws IOException, TimeoutException, ClassNotFoundException {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SerializableTest data = new SerializableTest("test sample", 25, SerializableTest.Sex.MALE);
         ObjectSendData sendData = new ObjectSendData(new BasicSendData());
