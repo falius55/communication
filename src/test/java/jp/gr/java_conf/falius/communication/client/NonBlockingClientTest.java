@@ -4,7 +4,6 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,7 +44,7 @@ public class NonBlockingClientTest {
 
     @Test
     public void testStart() throws IOException, TimeoutException {
-        String sendData = "sendData";
+        final String sendData = "sendData";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
 
         ReceiveData receiveData = client.start(new OnceSwapper() {
@@ -66,7 +65,7 @@ public class NonBlockingClientTest {
 
     @Test
     public void testAddOnSendListener() throws IOException, TimeoutException {
-        String sendData = "send data";
+        final String sendData = "send data";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         client.addOnSendListener(new OnSendListener() {
 
@@ -92,7 +91,7 @@ public class NonBlockingClientTest {
 
     @Test
     public void testAddOnReceiveListener() throws IOException, TimeoutException {
-        String[] sendData = { "data1", "data2", "data3", "data4" };
+        final String[] sendData = { "data1", "data2", "data3", "data4" };
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         client.addOnReceiveListener(new OnReceiveListener() {
 
@@ -107,7 +106,7 @@ public class NonBlockingClientTest {
 
             @Override
             public void onDissconnect(String remote, Throwable cause) {
-                if (Objects.nonNull(cause)) {
+                if (cause != null) {
                     log.info("client disconnect : {}", cause.getMessage());
                 }
             }
@@ -133,7 +132,7 @@ public class NonBlockingClientTest {
 
     @Test
     public void testCall() throws InterruptedException, ExecutionException {
-        String[] sendData = { "abc", "def", "ghi", "jkl" };
+        final String[] sendData = { "abc", "def", "ghi", "jkl" };
         Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {
 
             @Override
@@ -158,8 +157,8 @@ public class NonBlockingClientTest {
 
     @Test
     public void testMuchData() throws IOException, TimeoutException {
-        String sendData = "sendData";
-        int len = 10000;
+        final String sendData = "sendData";
+        final int len = 10000;
         Client client = new NonBlockingClient(HOST, mServer.getPort());
 
         client.addOnReceiveListener(new OnReceiveListener() {
@@ -176,9 +175,12 @@ public class NonBlockingClientTest {
             @Override
             public SendData swap(String remoteAddress, ReceiveData receiveData) {
                 assertThat(receiveData, is(nullValue()));
-                SendData data = new BasicSendData();
-                new IntRange(len).simpleForEach(() -> {
-                    data.put(sendData);
+                final SendData data = new BasicSendData();
+                new IntRange(len).simpleForEach(new Runnable() {
+                    @Override
+                    public void run() {
+                        data.put(sendData);
+                    }
                 });
                 return data;
             }
@@ -213,7 +215,7 @@ public class NonBlockingClientTest {
             }
 
         });
-        new IntRange(5).forEach((i) -> {
+        for (int i : new IntRange(5)) {
             ReceiveData receiveData;
             try {
                 SendData data = new BasicSendData();
@@ -223,14 +225,14 @@ public class NonBlockingClientTest {
                 throw new IllegalStateException();
             }
             assertThat(receiveData.getString(), is(sendData + i));
-        });
+        }
     }
 
     @Test
     public void testChaengeReceiveListener() {
-        String[] data = {"data1", "data2", "data3"};
+        final String[] data = { "data1", "data2", "data3" };
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-        new IntRange(data.length).forEach(i -> {
+        for (final int i : new IntRange(data.length)) {
             client.addOnReceiveListener(new OnReceiveListener() {
 
                 @Override
@@ -245,6 +247,6 @@ public class NonBlockingClientTest {
             } catch (IOException | TimeoutException e) {
                 assertThat(false, is(true));
             }
-        });
+        }
     }
 }

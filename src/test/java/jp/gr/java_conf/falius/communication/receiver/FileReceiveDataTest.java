@@ -3,17 +3,18 @@ package jp.gr.java_conf.falius.communication.receiver;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -55,7 +56,9 @@ public class FileReceiveDataTest {
                 String fileName = "test_" + methodName;
                 Path filePath = Paths.get(mOriginTmpDir.toString(), fileName);
                 log.debug("file path : {}", filePath.toString());
-                Files.write(filePath, Arrays.asList(FILE_CONTENT));
+                try (BufferedWriter bw = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE)) {
+                    bw.write(FILE_CONTENT);
+                }
             }
         }
     }
@@ -66,36 +69,24 @@ public class FileReceiveDataTest {
     }
 
     @Test
-    public void testGetAndSavePathOpenOptionArray() throws IOException, TimeoutException {
-        String fileName = "test_testGetAndSavePathOpenOptionArray";
-        Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new BasicSendData());
-        sendData.put(originFile);
-        ReceiveData ret = client.start(sendData);
-        FileReceiveData fileRcvData = new FileReceiveData(ret);
-
-        Path targetFile = Paths.get(mTargetTmpDir.toString(), fileName);
-        fileRcvData.getAndSave(targetFile, StandardOpenOption.CREATE_NEW);
-        assertThat(Files.exists(targetFile), is(true));
-        assertThat(Files.lines(targetFile).collect(Collectors.joining()), is(FILE_CONTENT));
-    }
-
-    @Test
     public void testGetAndSaveFile() throws IOException, TimeoutException {
         String fileName = "test_testGetAndSaveFile";
         Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
-        sendData.put(originFile);
+        sendData.put(originFile.toFile());
         ReceiveData ret = client.start(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);
 
         File targetFile = new File(mTargetTmpDir.toString() + "\\" + fileName);
         fileRcvData.getAndSave(targetFile);
         assertThat(targetFile.exists(), is(true));
-        assertThat(Files.lines(Paths.get(mTargetTmpDir.toString(), fileName)).collect(Collectors.joining()),
-                is(FILE_CONTENT));
+
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = Files.newBufferedReader(targetFile.toPath(), StandardCharsets.UTF_8)) {
+            sb.append(br.readLine());
+        }
+        assertThat(sb.toString(), is(FILE_CONTENT));
     }
 
     @Test
@@ -107,32 +98,19 @@ public class FileReceiveDataTest {
 
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
-        sendData.put(originFile);
+        sendData.put(originFile.toFile());
         ReceiveData ret = client.start(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);
 
         File targetFile = new File(mTargetTmpDir.toString() + "\\" + fileName);
         fileRcvData.getAndSave(targetFile, true);
         assertThat(targetFile.exists(), is(true));
-        assertThat(Files.lines(Paths.get(mTargetTmpDir.toString(), fileName)).collect(Collectors.joining()),
-                is(FILE_CONTENT + FILE_CONTENT));
-    }
 
-    @Test
-    public void testGetAndSaveStringStringArray() throws IOException, TimeoutException {
-        String fileName = "test_testGetAndSaveStringStringArray";
-        Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new BasicSendData());
-        sendData.put(originFile);
-        ReceiveData ret = client.start(sendData);
-        FileReceiveData fileRcvData = new FileReceiveData(ret);
-
-        fileRcvData.getAndSave(mTargetTmpDir.toString(), fileName);
-
-        Path targetFile = Paths.get(mTargetTmpDir.toString(), fileName);
-        assertThat(Files.exists(targetFile), is(true));
-        assertThat(Files.lines(targetFile).collect(Collectors.joining()), is(FILE_CONTENT));
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = Files.newBufferedReader(targetFile.toPath(), StandardCharsets.UTF_8)) {
+            sb.append(br.readLine());
+        }
+        assertThat(sb.toString(), is(FILE_CONTENT + FILE_CONTENT));
     }
 
 }
