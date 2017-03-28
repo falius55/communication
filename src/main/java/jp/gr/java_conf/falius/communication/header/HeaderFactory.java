@@ -1,6 +1,7 @@
 package jp.gr.java_conf.falius.communication.header;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
@@ -58,5 +59,31 @@ public class HeaderFactory {
         UnFinishedHeader header = new UnFinishedHeader(headerSize, dataSize, headerBuf);
         return header.read(channel);
 
+    }
+
+    public static Header from(InputStream is) throws IOException {
+        byte[] headerBytes = new byte[8];
+        int tmp = is.read(headerBytes);
+        if (tmp < 0) {
+            throw new IOException("header reading error");
+        }
+        if (tmp < 8) {
+            throw new IOException("read less than 8 bytes");
+        }
+        ByteBuffer headerSizeBuf = ByteBuffer.allocate(8);
+        headerSizeBuf.put(headerBytes);
+        headerSizeBuf.flip();
+        int headerSize = headerSizeBuf.getInt();
+        int dataSize = headerSizeBuf.getInt();
+
+        ByteBuffer headerBuf = ByteBuffer.allocate(headerSize - 8);
+        byte[] remainHeaderBytes = new byte[headerSize - 8];
+        tmp = is.read(remainHeaderBytes);
+        headerBuf.put(remainHeaderBytes);
+
+        IntBuffer dataSizes = UnFinishedHeader.datasizesFromHeaderBuf(headerSize, headerBuf);
+
+        Header header = new FinishedHeader(headerSize, dataSize, dataSizes);
+        return header;
     }
 }
