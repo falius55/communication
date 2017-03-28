@@ -1,23 +1,46 @@
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'maven'
-
-def defaultEncoding = 'UTF-8'
-compileJava.options.encoding = defaultEncoding
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+def defaultEncoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = defaultEncoding
+}
+
 javadoc {
-	destinationDir = file 'doc/javadoc'
-	options.encoding = defaultEncoding
-	options.links << 'http://docs.oracle.com/javase/jp/7/api'
+    destinationDir = file 'doc/javadoc'
+    options.encoding = defaultEncoding
+    options.links << 'http://docs.oracle.com/javase/jp/8/api'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-	compile  'net.sf.json-lib:json-lib:2.4:jdk15@jar'
-    testCompile 'junit:junit:4.12i'
+    compile  "org.json:json:20160810"
+    compile 'com.github.falius55:java-util:1.1.3'
+    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile 'org.slf4j:slf4j-log4j12:1.7.2'
+    testCompile 'junit:junit:4.12', {
+        transitive = false
+    }
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+mainClassName = 'jp.gr.java_conf.falius.communication.server.NonBlockingServer'
+
+run {
+    standardInput = System.in
 }
