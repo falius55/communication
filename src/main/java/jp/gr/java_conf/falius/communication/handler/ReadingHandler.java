@@ -7,16 +7,16 @@ import java.nio.channels.SocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.Disconnectable;
-import jp.gr.java_conf.falius.communication.Remote;
 import jp.gr.java_conf.falius.communication.receiver.Receiver;
+import jp.gr.java_conf.falius.communication.remote.Disconnectable;
+import jp.gr.java_conf.falius.communication.remote.Remote;
 
 /**
  * 読み込み処理を行うハンドラ
  * @author "ymiyauchi"
  *
  */
-public class ReadingHandler implements Handler {
+class ReadingHandler implements Handler {
     private static final Logger log = LoggerFactory.getLogger(ReadingHandler.class);
 
     private final Disconnectable mDisconnectable;

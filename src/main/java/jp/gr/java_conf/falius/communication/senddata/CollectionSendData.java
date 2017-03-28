@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication.sender;
+package jp.gr.java_conf.falius.communication.senddata;
 
 import java.util.List;
 import java.util.Map;

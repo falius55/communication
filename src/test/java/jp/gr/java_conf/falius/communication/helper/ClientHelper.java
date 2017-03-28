@@ -3,7 +3,7 @@ package jp.gr.java_conf.falius.communication.helper;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 
 public interface ClientHelper {
 

@@ -11,12 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+
 /**
  * {@inheritDoc}
  *
  * @author "ymiyauchi"
  */
-public class BasicReceiveData implements ReceiveData {
+class BasicReceiveData implements ReceiveData {
+    // パッケージプライベートにするため、receiverパッケージ
     private final static ByteBuffer[] EMPTY_BUFFER_ARRAY = new ByteBuffer[0];
     private final CharsetDecoder DECODER = StandardCharsets.UTF_8.newDecoder();
     private final Queue<ByteBuffer> mData;

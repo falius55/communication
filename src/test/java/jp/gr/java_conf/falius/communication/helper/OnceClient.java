@@ -5,9 +5,9 @@ import java.util.concurrent.TimeoutException;
 
 import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
-import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
-import jp.gr.java_conf.falius.communication.sender.SendData;
-import jp.gr.java_conf.falius.communication.sender.BasicSendData;
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 
 public class OnceClient implements ClientHelper {

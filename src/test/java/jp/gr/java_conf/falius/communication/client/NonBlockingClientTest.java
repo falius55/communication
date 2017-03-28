@@ -17,14 +17,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
+import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.receiver.ReceiveData;
-import jp.gr.java_conf.falius.communication.sender.BasicSendData;
+import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
+import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.sender.SendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
