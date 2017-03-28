@@ -22,7 +22,7 @@ public class CollectionSendData extends ExtendableSendData {
         return put(json.toString());
     }
 
-    public SendData pub(Map<String, String> map) {
+    public SendData put(Map<String, String> map) {
         JSONObject json = new JSONObject(map);
         return put(json.toString());
     }

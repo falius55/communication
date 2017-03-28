@@ -2,6 +2,7 @@ package jp.gr.java_conf.falius.communication.receiver;
 
 import java.lang.invoke.WrongMethodTypeException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +14,6 @@ import org.json.JSONObject;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class CollectionReceiveData extends ExtendableReceiveData {
-    private static final List<String> EMPTY_LIST = new ArrayList<>(0);
-    private static final Map<String, String> EMPTY_MAP = new HashMap<>(0);
 
     public CollectionReceiveData(ReceiveData receiveData) {
         super(receiveData);
@@ -28,7 +27,7 @@ public class CollectionReceiveData extends ExtendableReceiveData {
     public List<String> getList() {
         String jsonString = getString();
         if (jsonString == null) {
-            return EMPTY_LIST;
+            return Collections.emptyList();
         }
         try {
             JSONArray json = new JSONArray(jsonString);
@@ -51,7 +50,7 @@ public class CollectionReceiveData extends ExtendableReceiveData {
     public Map<String, String> getMap() {
         String jsonString = getString();
         if (jsonString == null) {
-            return EMPTY_MAP;
+            return Collections.emptyMap();
         }
         try {
             JSONObject json = new JSONObject(jsonString);

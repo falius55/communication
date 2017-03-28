@@ -18,7 +18,7 @@ public class HeaderFactory {
      * @param data
      * @return 読み取りが完全に終わったヘッダ
      */
-    public static FinishedHeader from(SendData data) {
+    public static Header from(SendData data) {
         IntBuffer buf = IntBuffer.allocate(data.size());
         int headerSize = 4 + 4 + data.size() * 4;
         int dataSize = headerSize;

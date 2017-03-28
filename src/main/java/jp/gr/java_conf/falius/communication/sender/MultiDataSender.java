@@ -26,7 +26,7 @@ public class MultiDataSender implements Sender {
 
     public MultiDataSender(SendData data) {
         if (!data.hasRemain()) {
-            log.error("data is empty");
+            log.debug("data is empty");
         }
         mData = data;
     }
