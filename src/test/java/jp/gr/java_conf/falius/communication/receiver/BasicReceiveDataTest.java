@@ -54,6 +54,7 @@ public class BasicReceiveDataTest {
 
     @Test(expected=WrongMethodTypeException.class)
     public void testGetStringException() throws IOException, TimeoutException {
+        // getString内で-15がデコードできたりできなかったり...??
         int[] data = {-15, 1, 2, 3};
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
