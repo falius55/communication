@@ -224,3 +224,24 @@ ReceiveData receiveData = client.start(new FixedRepeatSwapper(repeatLen) {
 
 System.out.println(receiveData.getInt());  // -> 19
 ```
+
+### 扱えるデータの拡張
+ExtendableSendData及びExtendableReceiveDataを継承したクラスを使うことで扱えるデータを増やすことができます。
+```
+// 送信データ
+SendData sendData = new BasicSendData();
+FileSendData fileData = new FileSendData(sendData);
+File file = new File("sample.txt");
+fileData.put(file);
+
+
+
+// 受信データ
+FileReceiveData fileData = new FileReceiveData(receiveData);
+File file = new File("rcv.txt");
+fileData.getAndSave(file);  // 送信されてきたsample.txtの内容をrcv.txtという名前で保存
+```
+扱えるデータ
+* ファイル
+* List, Map
+* Serializable
