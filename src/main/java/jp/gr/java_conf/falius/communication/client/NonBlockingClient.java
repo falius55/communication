@@ -27,11 +27,11 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
  * ノンブロックな通信を行うクラスです
- * 送信内容はコンストラクタかstartメソッドの引数に渡すSenderオブジェクトに格納し、
+ * 送信内容はコンストラクタかstartメソッドの引数に渡すSendDataオブジェクトに格納し、
  *  受信内容はOnReceiveListenerの引数かstartメソッドの戻り値で渡される
- *   Receiverオブジェクトから取得してください。
- * OnReceiverListenerの引数で渡されるReceiverオブジェクトから消費した受信データは
- *  start()メソッドの戻り値で渡されるReceiverオブジェクトには含まれていませんので注意してください。
+ *   ReceiveDataオブジェクトから取得してください。
+ * OnReceiverListenerの引数で渡されるReceiveDataオブジェクトから消費した受信データは
+ *  start()メソッドの戻り値で渡されるReceiveDataオブジェクトには含まれていませんので注意してください。
  * @author "ymiyauchi"
  *
  */
