@@ -3,14 +3,12 @@ package jp.gr.java_conf.falius.communication.sender;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -42,19 +40,6 @@ public class FileSendDataTest {
     }
 
     @Test
-    public void testPutPath() throws IOException, TimeoutException {
-        Path path = Paths.get(new File(
-                "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication\\sender")
-                .getAbsolutePath(), "FileSendDataTest.java");
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new BasicSendData());
-        sendData.put(path);
-        ReceiveData receiveData = client.start(sendData);
-        String text = receiveData.getString().replace("\r\n", "").replace("\n", "");
-        assertThat(text, is(Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining())));
-    }
-
-    @Test
     public void testPutOfFile() throws IOException, TimeoutException {
         File file = new File(
                 "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication"
@@ -64,21 +49,15 @@ public class FileSendDataTest {
         sendData.put(file);
         ReceiveData receiveData = client.start(sendData);
         String text = receiveData.getString().replace("\r\n", "").replace("\n", "");
-        assertThat(text, is(Files.lines(Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)
-                        .collect(Collectors.joining())));
-    }
 
-    @Test
-    public void testPutFile() throws IOException, TimeoutException {
-        String curDir = "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication\\sender";
-        String fileName = "FileSendDataTest.java";
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
-        FileSendData sendData = new FileSendData(new BasicSendData());
-        sendData.putFile(curDir, fileName);
-        ReceiveData receiveData = client.start(sendData);
-        String text = receiveData.getString().replace("\r\n", "").replace("\n", "");
-        assertThat(text, is(Files.lines(Paths.get(curDir, fileName), StandardCharsets.UTF_8)
-                        .collect(Collectors.joining())));
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        }
+        assertThat(text, is(sb.toString()));
     }
 
 }
