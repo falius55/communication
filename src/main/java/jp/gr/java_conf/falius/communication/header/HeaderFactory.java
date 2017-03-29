@@ -80,6 +80,7 @@ public class HeaderFactory {
         byte[] remainHeaderBytes = new byte[headerSize - 8];
         tmp = is.read(remainHeaderBytes);
         headerBuf.put(remainHeaderBytes);
+        headerBuf.flip();
 
         IntBuffer dataSizes = UnFinishedHeader.datasizesFromHeaderBuf(headerSize, headerBuf);
 

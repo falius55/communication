@@ -33,9 +33,11 @@ public class Session implements Runnable {
     public void run() {
         try (BluetoothVisitor visitor = new BluetoothVisitor(mChannel, mSwapper)) {
             BluetoothReadingHandler handler = new BluetoothReadingHandler(visitor);
-            handler.receive();
+            handler.handle();
         } catch (IOException e) {
             log.error("I/O error :\n{}", e.getMessage());
         }
+
+        log.debug("session run end");
     }
 }

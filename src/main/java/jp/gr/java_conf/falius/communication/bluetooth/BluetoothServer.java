@@ -2,6 +2,7 @@ package jp.gr.java_conf.falius.communication.bluetooth;
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
-import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
+import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
@@ -54,11 +55,12 @@ public class BluetoothServer implements AutoCloseable {
     }
 
     public Future<?> startOnNewThread() {
+        log.debug("start on new thread");
         Runnable runnable = new Runnable() {
-           @Override
-           public void run() {
-               exec();
-           }
+            @Override
+            public void run() {
+                exec();
+            }
         };
         return mExecutor.submit(runnable);
     }
@@ -66,11 +68,12 @@ public class BluetoothServer implements AutoCloseable {
     private void exec() {
         try {
             while (!mIsShutdowned) {
+                log.debug("in loop");
                 Session session = accept();
                 mExecutor.submit(session);
             }
         } catch (IOException e) {
-
+            log.error("I/O error in exec : {}", e.getMessage());
         }
     }
 
@@ -90,6 +93,7 @@ public class BluetoothServer implements AutoCloseable {
         if (mConnection != null) {
             mConnection.close();
         }
+        mExecutor.shutdown();
         mIsShutdowned = true;
     }
 
@@ -98,34 +102,44 @@ public class BluetoothServer implements AutoCloseable {
         shutdown();
     }
 
-
-    public static void main(String...strings ) {
+    public static void main(String... strings) throws InterruptedException, ExecutionException {
         try (BluetoothServer server = new BluetoothServer(new SwapperFactory() {
 
             @Override
             public Swapper get() {
-                return new OnceSwapper() {
+                return new RepeatSwapper() {
 
                     @Override
                     public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                        String rcv = receiveData.getString();
-                        SendData sendData = new BasicSendData();
-                        sendData.put(rcv.toUpperCase());
-                        return sendData;
+                        try {
+                            log.debug("swap");
+                            String rcv = receiveData.getString();
+                            log.debug("receive: {}", rcv);
+                            SendData sendData = new BasicSendData();
+                            sendData.put(rcv.toUpperCase());
+                            return sendData;
+                        } catch (Exception e) {
+                            log.error("swapper error", e);
+                            throw new NullPointerException();
+                        }
                     }
 
                 };
             }
 
         }); Scanner sc = new Scanner(System.in)) {
-            server.startOnNewThread();
+            Future<?> future = server.startOnNewThread();
+            future.get();
 
             while (true) {
+                log.debug("main loop");
+                System.out.println("please type stop if you want to stop server");
                 if ((sc.nextLine()).equals("stop")) {
                     break;
                 }
             }
 
+            log.debug("main end");
         } catch (IOException e) {
             e.printStackTrace();
         }

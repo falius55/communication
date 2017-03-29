@@ -16,6 +16,7 @@ import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.BasicReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 public class BluetoothReadingHandler {
     private static final Logger log = LoggerFactory.getLogger(BluetoothReadingHandler.class);
@@ -31,17 +32,27 @@ public class BluetoothReadingHandler {
         mListener = listener;
     }
 
-    public void receive() throws IOException {
-        InputStream is = mVisitor.getInputStream();
-        Header header = HeaderFactory.from(is);
-        Entry entry = new Entry(header);
-        int readBytes = entry.read(is);
-        ReceiveData data = entry.getData();
+    public void handle() throws IOException {
+        log.debug("reading handler");
+        try (InputStream is = mVisitor.getInputStream()) {
+            Header header = HeaderFactory.from(is);
+            Entry entry = new Entry(header);
+            int readBytes = entry.read(is);
+            log.debug("data get");
+            ReceiveData data = entry.getData();
 
-        mListener.onReceive(mVisitor.toString(), readBytes, data);
+            log.debug("on receive");
+            if (mListener != null) {
+                mListener.onReceive(mVisitor.toString(), readBytes, data);
+            }
 
-        BluetoothWritingHandler sender = new BluetoothWritingHandler(mVisitor);
-        sender.send(mVisitor.newSendData(data));
+            log.debug("writing instance in {}", Thread.currentThread().getName());
+            BluetoothWritingHandler sender = new BluetoothWritingHandler(mVisitor);
+            log.debug("get sendData");
+            SendData sendData = mVisitor.newSendData(data);
+            log.debug("sender send");
+            sender.handle(sendData);
+        }
     }
 
     /**
@@ -62,12 +73,15 @@ public class BluetoothReadingHandler {
 
         private void initItemData() {
             if (mItemData != null) {
+                log.debug("mItemData is not null return");
                 return;
             }
             mItemData = new ArrayDeque<>();
             IntBuffer sizeBuf = mHeader.dataSizeBuffer();
+            log.debug("data size buffer : {}", sizeBuf);
             while (sizeBuf.hasRemaining()) {
                 int size = sizeBuf.get();
+                log.debug("item buf size", size);
                 ByteBuffer buf = ByteBuffer.allocate(size);
                 mItemData.add(buf);
             }
@@ -76,17 +90,21 @@ public class BluetoothReadingHandler {
         private int read(InputStream is) throws IOException {
             initItemData();
 
+            log.debug("entry read");
             int readed = 0;
             for (ByteBuffer itemBuf : mItemData) {
                 byte[] bytes = new byte[itemBuf.limit()];
                 int tmp = is.read(bytes);
                 if (tmp < 0) {
+                    log.debug("read error -1 return");
                     return -1;
                 }
+                log.debug("read bytes", tmp);
                 itemBuf.put(bytes);
                 readed += tmp;
             }
             mRemain -= readed;
+            log.debug("entry readed : mRemain is {}", mRemain);
             return readed;
         }
 
