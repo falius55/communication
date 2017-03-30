@@ -11,6 +11,7 @@ import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.server.NonBlockingServer;
 import jp.gr.java_conf.falius.communication.server.Server;
+import jp.gr.java_conf.falius.communication.server.SocketServer;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
@@ -18,13 +19,13 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 public class EchoServer implements ServerHelper {
     private static final Logger log = LoggerFactory.getLogger(EchoServer.class);
     private static int mPort = 9001;
-    private final Server mServer;
+    private final SocketServer mServer;
 
     public EchoServer() {
         mServer = init();
     }
 
-    private Server init() {
+    private SocketServer init() {
         return new NonBlockingServer(mPort++, new SwapperFactory() {
 
             @Override

@@ -18,13 +18,13 @@ import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
  *
  * @author "ymiyauchi"
  */
-class BasicReceiveData implements ReceiveData {
+public class BasicReceiveData implements ReceiveData {
     // パッケージプライベートにするため、receiverパッケージ
     private final static ByteBuffer[] EMPTY_BUFFER_ARRAY = new ByteBuffer[0];
     private final CharsetDecoder DECODER = StandardCharsets.UTF_8.newDecoder();
     private final Queue<ByteBuffer> mData;
 
-    BasicReceiveData(Queue<ByteBuffer> data) {
+    public BasicReceiveData(Queue<ByteBuffer> data) {
         mData = data;
     }
 

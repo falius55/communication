@@ -34,7 +34,7 @@ class UnFinishedHeader implements Header {
         return new FinishedHeader(mHeaderSize, mAllDataSize, dataSizes);
     }
 
-    private static IntBuffer datasizesFromHeaderBuf(int headerSize, ByteBuffer headerBuf) {
+    static IntBuffer datasizesFromHeaderBuf(int headerSize, ByteBuffer headerBuf) {
         int dataCount = headerSize / 4 - 2;
         IntBuffer dataSizes = IntBuffer.allocate(dataCount);
         while (headerBuf.hasRemaining()) {

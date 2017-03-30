@@ -33,7 +33,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  * Timeoutの設定はなく、別のスレッドからshutdownメソッドあるいはcloseメソッドが実行されるまで起動を
  * 続けます。
  */
-public class NonBlockingServer implements Server {
+public class NonBlockingServer implements SocketServer {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);
 
     private final int mServerPort;
