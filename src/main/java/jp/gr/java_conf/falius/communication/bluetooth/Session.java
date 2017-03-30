@@ -19,11 +19,6 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
-/**
- * セッション。
- * - 並列にセッションを晴れるかは試していない。
- * - 基本的に Socket と同じ。
- */
 public class Session implements Runnable, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(Session.class);
 
