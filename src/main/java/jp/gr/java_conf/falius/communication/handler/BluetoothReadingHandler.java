@@ -28,22 +28,21 @@ public class BluetoothReadingHandler implements BluetoothHandler {
 
     public void handle() throws IOException {
         log.debug("reading handler");
-        try (InputStream is = mSession.getInputStream()) {
-            Header header = HeaderFactory.from(is);
-            Entry entry = new Entry(header);
-            int readBytes = entry.read(is);
-            log.debug("data get");
-            ReceiveData data = entry.getData();
+        InputStream is = mSession.getInputStream();
+        Header header = HeaderFactory.from(is);
+        Entry entry = new Entry(header);
+        int readBytes = entry.read(is);
+        log.debug("data get");
+        ReceiveData data = entry.getData();
 
-            log.debug("on receive");
-            mSession.onReceive(mSession.toString(), readBytes, data);
+        log.debug("on receive");
+        mSession.onReceive(mSession.toString(), readBytes, data);
 
-            log.debug("get sendData");
-            SendData sendData = mSession.newSendData(data);
-            log.debug("writing instance");
-            BluetoothHandler handler = new BluetoothWritingHandler(mSession, sendData);
-            mSession.setHandler(handler);
-        }
+        log.debug("get sendData");
+        SendData sendData = mSession.newSendData(data);
+        log.debug("writing instance");
+        BluetoothHandler handler = new BluetoothWritingHandler(mSession, sendData);
+        mSession.setHandler(handler);
     }
 
     /**

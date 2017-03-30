@@ -42,7 +42,7 @@ test {
     }
 }
 
-mainClassName = 'jp.gr.java_conf.falius.communication.bluetooth.BluetoothServer'
+mainClassName = 'jp.gr.java_conf.falius.communication.server.BluetoothServer'
 
 run {
     standardInput = System.in

@@ -122,7 +122,9 @@ public class BluetoothServer implements Server, AutoCloseable {
         log.debug("Accept");
         StreamConnection channel = mConnection.acceptAndOpen();
         log.debug("Connect");
-        mOnAcceptListener.onAccept(channel.toString());
+        if (mOnAcceptListener != null) {
+            mOnAcceptListener.onAccept(channel.toString());
+        }
         return new Session(channel, mSwapperFactory.get(), mOnSendListener, mOnReceiveListener);
     }
 
