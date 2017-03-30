@@ -26,7 +26,7 @@ public class BluetoothReadingHandler implements BluetoothHandler {
         mSession = session;
     }
 
-    public void handle() throws IOException {
+    public void handle() throws Exception {
         log.debug("reading handler");
         InputStream is = mSession.getInputStream();
         Header header = HeaderFactory.from(is);

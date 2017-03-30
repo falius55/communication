@@ -49,7 +49,6 @@ public class NonBlockingClient implements Client {
     private Swapper mSwapper = null;
 
     private boolean mIsExit = false;
-    private Selector mSelector = null;
 
     public NonBlockingClient(String serverHost, int serverPort) {
         this(serverHost, serverPort, null);
@@ -97,9 +96,7 @@ public class NonBlockingClient implements Client {
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) {
         mIsExit = true;
         String remote = channel.socket().getInetAddress().toString();
-        if (mSelector != null) {
-            mSelector.wakeup();
-        }
+        key.selector().wakeup();
 
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(remote, cause);
@@ -130,7 +127,6 @@ public class NonBlockingClient implements Client {
         mIsExit = false;
         Objects.requireNonNull(swapper, "swapper is null");
         try (Selector selector = Selector.open(); SocketChannel channel = SocketChannel.open()) {
-            mSelector = selector;
             Remote remote = connect(channel, swapper); // 接続はブロッキングモード
             channel.configureBlocking(false);
             channel.register(selector, SelectionKey.OP_WRITE,

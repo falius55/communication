@@ -56,8 +56,8 @@ public class Session implements Runnable, AutoCloseable {
                 BluetoothHandler handler = mNextHandler;
                 handler.handle();
             }
-        } catch (IOException e) {
-            log.error("I/O error :\n{}", e.getMessage());
+        } catch (Exception e) {
+            log.error("handle error :\n{}", e.getMessage());
         }
 
         log.debug("session run end");
@@ -94,8 +94,12 @@ public class Session implements Runnable, AutoCloseable {
         return mOut;
     }
 
-    public SendData newSendData(ReceiveData latestReceiveData) {
-        return mSwapper.swap(mRemoteAddress, latestReceiveData);
+    public SendData newSendData(ReceiveData latestReceiveData) throws Exception {
+        try {
+            return mSwapper.swap(mRemoteAddress, latestReceiveData);
+        } catch (Exception e) {
+            throw new Exception("thrown exception from swap method");
+        }
     }
 
     public boolean doContinue() {

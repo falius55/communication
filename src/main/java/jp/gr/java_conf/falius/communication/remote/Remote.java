@@ -55,9 +55,15 @@ public class Remote {
     /**
      * Swapper#swapメソッドを実行し、得られたデータを保持した新しいSenderオブジェクトを返します。
      * @return
+     * @throws Exception
      */
-    public Sender sender() {
-        SendData sendData = mSwapper.swap(mRemoteAddress, mReceiver.getData());
+    public Sender sender() throws Exception {
+        SendData sendData;
+        try {
+            sendData = mSwapper.swap(mRemoteAddress, mReceiver.getData());
+        } catch (Exception e) {
+            throw new Exception("thrown exception from swap method", e);
+        }
         if (sendData == null) {
             return null;
         }
