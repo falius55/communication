@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication.bluetooth;
+package jp.gr.java_conf.falius.communication.server;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -16,12 +16,12 @@ import javax.microedition.io.StreamConnectionNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jp.gr.java_conf.falius.communication.bluetooth.Session;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
-import jp.gr.java_conf.falius.communication.server.Server;
 import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;

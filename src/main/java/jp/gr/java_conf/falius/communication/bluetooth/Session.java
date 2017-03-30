@@ -9,6 +9,7 @@ import javax.microedition.io.StreamConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jp.gr.java_conf.falius.communication.handler.BluetoothHandler;
 import jp.gr.java_conf.falius.communication.handler.BluetoothReadingHandler;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
@@ -31,6 +32,9 @@ public class Session implements Runnable, AutoCloseable {
 
     private final InputStream mIn;
     private final OutputStream mOut;
+    private BluetoothHandler mNextHandler = null;
+
+    private boolean mIsContinue = true;
 
     public Session(StreamConnection channel, Swapper swapper,
             OnSendListener onSendListener, OnReceiveListener onReceiveListener) throws IOException {
@@ -40,6 +44,7 @@ public class Session implements Runnable, AutoCloseable {
         mOnReceiveListener = onReceiveListener;
         mIn = channel.openInputStream();
         mOut = channel.openOutputStream();
+        mNextHandler = new BluetoothReadingHandler(this);
     }
 
     /**
@@ -48,13 +53,23 @@ public class Session implements Runnable, AutoCloseable {
      */
     public void run() {
         try (Session session = this) {
-            BluetoothReadingHandler handler = new BluetoothReadingHandler(this);
-            handler.handle();
+            while (mIsContinue) {
+                BluetoothHandler handler = mNextHandler;
+                handler.handle();
+            }
         } catch (IOException e) {
             log.error("I/O error :\n{}", e.getMessage());
         }
 
         log.debug("session run end");
+    }
+
+    public void disconnect() {
+        mIsContinue = false;
+    }
+
+    public void setHandler(BluetoothHandler handler) {
+        mNextHandler = handler;
     }
 
     public void onSend(int writeBytes) {

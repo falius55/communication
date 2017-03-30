@@ -17,7 +17,7 @@ import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.BasicReceiveData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
-public class BluetoothReadingHandler {
+public class BluetoothReadingHandler implements BluetoothHandler {
     private static final Logger log = LoggerFactory.getLogger(BluetoothReadingHandler.class);
 
     private final Session mSession;
@@ -38,12 +38,11 @@ public class BluetoothReadingHandler {
             log.debug("on receive");
             mSession.onReceive(mSession.toString(), readBytes, data);
 
-            log.debug("writing instance");
-            BluetoothWritingHandler sender = new BluetoothWritingHandler(mSession);
             log.debug("get sendData");
             SendData sendData = mSession.newSendData(data);
-            log.debug("sender send");
-            sender.handle(sendData);
+            log.debug("writing instance");
+            BluetoothHandler handler = new BluetoothWritingHandler(mSession, sendData);
+            mSession.setHandler(handler);
         }
     }
 
