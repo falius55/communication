@@ -7,29 +7,22 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.bluetooth.BluetoothVisitor;
+import jp.gr.java_conf.falius.communication.bluetooth.Session;
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
-import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 
 public class BluetoothWritingHandler {
     private static final Logger log = LoggerFactory.getLogger(BluetoothWritingHandler.class);
-    private final BluetoothVisitor mVisitor;
-    private OnSendListener mListener;
+    private final Session mSession;
 
-    public BluetoothWritingHandler(BluetoothVisitor visitor) {
-        mVisitor = visitor;
-    }
-
-    public BluetoothWritingHandler addOnSendListener(OnSendListener listener) {
-        mListener = listener;
-        return this;
+    public BluetoothWritingHandler(Session session) {
+        mSession = session;
     }
 
     public void handle(SendData data) throws IOException {
         log.debug("writing handler");
-        try (OutputStream os = mVisitor.getOutputStream()) {
+        try (OutputStream os = mSession.getOutputStream()) {
             Header header = HeaderFactory.from(data);
             ByteBuffer headerBuf = header.toByteBuffer();
             byte[] headerBytes = headerBuf.array();
@@ -45,13 +38,11 @@ public class BluetoothWritingHandler {
 
             log.debug("write size: {}", writeBytes);
             log.debug("on send listener");
-            if (mListener != null) {
-                mListener.onSend(writeBytes);
-            }
+            mSession.onSend(writeBytes);
 
-            if (mVisitor.doContinue()) {
+            if (mSession.doContinue()) {
                 log.debug("do continue");
-                BluetoothReadingHandler receiver = new BluetoothReadingHandler(mVisitor);
+                BluetoothReadingHandler receiver = new BluetoothReadingHandler(mSession);
                 receiver.handle();
             }
         }

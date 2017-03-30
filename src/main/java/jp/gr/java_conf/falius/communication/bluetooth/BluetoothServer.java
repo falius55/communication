@@ -2,6 +2,7 @@ package jp.gr.java_conf.falius.communication.bluetooth;
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,17 +18,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
+import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.server.Server;
 import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
-public class BluetoothServer implements AutoCloseable {
+public class BluetoothServer implements AutoCloseable, Callable<Throwable> {
     private static final Logger log = LoggerFactory.getLogger(BluetoothServer.class);
 
     private final ExecutorService mExecutor = Executors.newCachedThreadPool();
     private final SwapperFactory mSwapperFactory;
+
+    private OnSendListener mOnSendListener = null;
+    private Server.OnAcceptListener mOnAcceptListener = null;
+    private OnReceiveListener mOnReceiveListener = null;
+    private Server.OnShutdownCallback mOnShutdownCallback = null;
 
     private boolean mIsShutdowned = false;
 
@@ -52,6 +61,30 @@ public class BluetoothServer implements AutoCloseable {
         LocalDevice.getLocalDevice().updateRecord(record);
 
         log.debug("server start");
+    }
+
+    public void addOnSendListener(OnSendListener listener) {
+        mOnSendListener = listener;
+    }
+
+    public void addOnReceiveListener(OnReceiveListener listener) {
+        mOnReceiveListener = listener;
+    }
+
+    public void addOnAcceptListener(Server.OnAcceptListener listener) {
+        mOnAcceptListener = listener;
+    }
+
+    public void addOnShutdownCallback(Server.OnShutdownCallback callback) {
+        mOnShutdownCallback = callback;
+    }
+
+    /**
+     * @return null
+     */
+    public Throwable call() throws IOException {
+        exec();
+        return null;
     }
 
     public Future<?> startOnNewThread() {
@@ -85,7 +118,8 @@ public class BluetoothServer implements AutoCloseable {
         log.debug("Accept");
         StreamConnection channel = mConnection.acceptAndOpen();
         log.debug("Connect");
-        return new Session(channel, mSwapperFactory.get());
+        mOnAcceptListener.onAccept(channel.toString());
+        return new Session(channel, mSwapperFactory.get(), mOnSendListener, mOnReceiveListener);
     }
 
     public void shutdown() throws IOException {
@@ -95,6 +129,10 @@ public class BluetoothServer implements AutoCloseable {
         }
         mExecutor.shutdown();
         mIsShutdowned = true;
+
+        if (mOnShutdownCallback != null) {
+            mOnShutdownCallback.onShutdown();
+        }
     }
 
     @Override

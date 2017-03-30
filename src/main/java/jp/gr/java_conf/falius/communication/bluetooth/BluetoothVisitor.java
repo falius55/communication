@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
+import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 public class BluetoothVisitor implements AutoCloseable {
@@ -20,11 +22,29 @@ public class BluetoothVisitor implements AutoCloseable {
     private final InputStream mIn;
     private final OutputStream mOut;
 
-    public BluetoothVisitor(StreamConnection connection, Swapper swapper) throws IOException {
+    private final OnSendListener mOnSendListener;
+    private final OnReceiveListener mOnReceiveListener;
+
+    public BluetoothVisitor(StreamConnection connection, Swapper swapper,
+            OnSendListener onSendListener, OnReceiveListener onReceiveListener) throws IOException {
         mConnection = connection;
         mSwapper = swapper;
         mIn = connection.openInputStream();
         mOut = connection.openOutputStream();
+        mOnSendListener = onSendListener;
+        mOnReceiveListener = onReceiveListener;
+    }
+
+    public void onSend(int writeBytes) {
+        if (mOnSendListener != null) {
+            mOnSendListener.onSend(writeBytes);
+        }
+    }
+
+    public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
+        if (mOnReceiveListener != null) {
+            mOnReceiveListener.onReceive(fromAddress, readByte, receiveData);
+        }
     }
 
     public InputStream getInputStream() throws IOException {
