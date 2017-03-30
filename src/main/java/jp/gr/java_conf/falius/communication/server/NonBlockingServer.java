@@ -49,7 +49,6 @@ public class NonBlockingServer implements SocketServer {
     private OnDisconnectCallback mOnDisconnectCallback = null;
 
     private volatile boolean mIsStarted = false;
-    private volatile boolean mIsShutdowned = false;
 
     public NonBlockingServer(int serverPort, SwapperFactory swapperFactory) {
         mServerPort = serverPort;
@@ -109,14 +108,9 @@ public class NonBlockingServer implements SocketServer {
 
     @Override
     public void shutdown() throws IOException {
-        if (mIsShutdowned) {
+        if (mServerSocketChannel == null || mSelector == null) {
             return;
         }
-        if (mServerSocketChannel == null) {
-            return;
-        }
-
-        mIsShutdowned = true;
 
         mSelector.wakeup();
         mServerSocketChannel.close();
@@ -145,7 +139,7 @@ public class NonBlockingServer implements SocketServer {
             channel.configureBlocking(false);
             channel.register(selector, SelectionKey.OP_ACCEPT, mRemoteStarter);
 
-            while (!mIsShutdowned) {
+            while (channel.isOpen()) {
                 // select()メソッドの戻り値は新しく通知(OP_ACCEPT)のあったキーの数
                 // selectedKeys(Setオブジェクト)から明示的に削除しない限り、
                 // キーはselectedKeysに格納されたままになる

@@ -98,7 +98,7 @@ public class NonBlockingClient implements Client {
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) throws IOException {
         String remote = channel.socket().getInetAddress().toString();
-        key.selector().close();
+        channel.close();
         key.selector().wakeup();
 
         if (mOnDisconnectCallback != null) {
@@ -162,7 +162,7 @@ public class NonBlockingClient implements Client {
             channel.register(selector, SelectionKey.OP_WRITE,
                     new WritingHandler(this, remote, true));
 
-            while (selector.isOpen()) {
+            while (channel.isOpen()) {
                 log.debug("client in loop");
                 if (selector.select(POLL_TIMEOUT) > 0 || selector.selectedKeys().size() > 0) {
                     log.debug("client selectedKeys: {}", selector.selectedKeys().size());
