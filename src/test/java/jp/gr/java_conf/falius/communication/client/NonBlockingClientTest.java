@@ -169,8 +169,8 @@ public class NonBlockingClientTest {
             public SendData swap(String remoteAddress, ReceiveData receiveData) {
                 assertThat(receiveData, is(nullValue()));
                 SendData data = new BasicSendData();
-                for (String s : sendData) {
-                    data.put(s);
+                for (int i : new IntRange(sendData.length)) {
+                    data.put(sendData[i]);
                 }
                 return data;
             }
@@ -187,8 +187,12 @@ public class NonBlockingClientTest {
 
         for (Future<ReceiveData> future : futures) {
             ReceiveData receiveData = future.get();
-            for (String data : sendData) {
-                assertThat(receiveData.getString(), is(data));
+            assertThat(receiveData.dataCount(), is(sendData.length));
+            for (int i : new IntRange(sendData.length)) {
+                log.info("data: {} : {}", i, sendData[i]);
+                String ret = receiveData.getString();
+                log.info("ret : {} : {}", i, ret);
+                assertThat(ret, is(sendData[i]));
             }
             assertThat(future.isDone(), is(true));
         }

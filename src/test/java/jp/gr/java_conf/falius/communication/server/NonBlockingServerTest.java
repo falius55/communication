@@ -27,6 +27,7 @@ import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
+import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingServerTest {
     private static Logger log = LoggerFactory.getLogger(NonBlockingServerTest.class);
@@ -254,6 +255,98 @@ public class NonBlockingServerTest {
             });
 
             assertThat(result.getInt(), is(repeatLen * 2 - 1));
+        }
+    }
+
+    @Test(expected = ExecutionException.class)
+    public void testStartAfterShutdown() throws IOException, InterruptedException, ExecutionException {
+        // shutdownメソッドが呼ばれたら再度startOnNewThradできないことの確認
+        int port = 8997;
+        String data = "data";
+        try (Server server = new NonBlockingServer(port, new SwapperFactory() {
+
+            @Override
+            public Swapper get() {
+                return new OnceSwapper() {
+
+                    @Override
+                    public SendData swap(String remoteAddress, ReceiveData receiveData) throws Exception {
+                        SendData sendData = new BasicSendData();
+                        sendData.put(data);
+                        return sendData;
+                    }
+
+                };
+            }
+
+        })) {
+            server.startOnNewThread();
+            server.close();
+            Future<?> future = server.startOnNewThread();
+            future.get();
+        }
+    }
+
+    @Test(expected = ExecutionException.class)
+    public void testSequenceCall() throws IOException, InterruptedException, ExecutionException {
+        // ExecutorServiceに複数回submit
+        int port = 8997;
+        String data = "data";
+        try (Server server = new NonBlockingServer(port, new SwapperFactory() {
+
+            @Override
+            public Swapper get() {
+                return new OnceSwapper() {
+
+                    @Override
+                    public SendData swap(String remoteAddress, ReceiveData receiveData) throws Exception {
+                        SendData sendData = new BasicSendData();
+                        sendData.put(data);
+                        return sendData;
+                    }
+
+                };
+            }
+
+        })) {
+
+            ExecutorService executor = Executors.newFixedThreadPool(3);
+            Future<?> future = null;
+            for (int i : new IntRange(10)) {
+                future = executor.submit(server);
+            }
+            future.get();
+        }
+    }
+
+    public void testSequenceStart() throws IOException, InterruptedException, ExecutionException {
+        // ExecutionExceptionが投げられることもあれば、IllegalStateExceptionが投げられることもある
+        int port = 8997;
+        String data = "data";
+        try (Server server = new NonBlockingServer(port, new SwapperFactory() {
+
+            @Override
+            public Swapper get() {
+                return new OnceSwapper() {
+
+                    @Override
+                    public SendData swap(String remoteAddress, ReceiveData receiveData) throws Exception {
+                        SendData sendData = new BasicSendData();
+                        sendData.put(data);
+                        return sendData;
+                    }
+
+                };
+            }
+
+        })) {
+            Future<?> future = null;
+            for (int i : new IntRange(5)) {
+                try (Server serv = server) {
+                    future = serv.startOnNewThread();
+                }
+            }
+            future.get();
         }
     }
 }
