@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.bluetooth.RemoteDevice;
 import javax.microedition.io.StreamConnection;
 
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class Session implements Runnable, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(Session.class);
 
     private final StreamConnection mChannel;
+    private final String mRemoteAddress;
     private final Swapper mSwapper;
     private final OnSendListener mOnSendListener;
     private final OnReceiveListener mOnReceiveListener;
@@ -42,6 +44,8 @@ public class Session implements Runnable, AutoCloseable {
             OnSendListener onSendListener, OnReceiveListener onReceiveListener,
             OnDisconnectCallback onDisconnectCallback) throws IOException {
         mChannel = channel;
+        RemoteDevice remote = RemoteDevice.getRemoteDevice(channel);
+        mRemoteAddress = remote.getBluetoothAddress();
         mSwapper = swapper;
         mOnSendListener = onSendListener;
         mOnReceiveListener = onReceiveListener;
@@ -51,10 +55,6 @@ public class Session implements Runnable, AutoCloseable {
         mNextHandler = new BluetoothReadingHandler(this);
     }
 
-    /**
-     * 英小文字の受信データを英大文字にしてエコーバックする。
-     * - 入力が空なら終了。
-     */
     public void run() {
         try (Session session = this) {
             while (mIsContinue) {
@@ -68,10 +68,10 @@ public class Session implements Runnable, AutoCloseable {
         log.debug("session run end");
     }
 
-    public void disconnect(Throwable cause) {
+    public void disconnect(Throwable cause) throws IOException {
         mIsContinue = false;
         if (mOnDisconnectCallback != null) {
-            mOnDisconnectCallback.onDissconnect(mChannel.toString(), cause);
+            mOnDisconnectCallback.onDissconnect(mRemoteAddress, cause);
         }
     }
 
@@ -85,9 +85,9 @@ public class Session implements Runnable, AutoCloseable {
         }
     }
 
-    public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
+    public void onReceive(int readByte, ReceiveData receiveData) {
         if (mOnReceiveListener != null) {
-            mOnReceiveListener.onReceive(fromAddress, readByte, receiveData);
+            mOnReceiveListener.onReceive(mRemoteAddress, readByte, receiveData);
         }
     }
 
@@ -100,7 +100,7 @@ public class Session implements Runnable, AutoCloseable {
     }
 
     public SendData newSendData(ReceiveData latestReceiveData) {
-        return mSwapper.swap(mChannel.toString(), latestReceiveData);
+        return mSwapper.swap(mRemoteAddress, latestReceiveData);
     }
 
     public boolean doContinue() {

@@ -40,7 +40,7 @@ public class BluetoothReadingHandler implements BluetoothHandler {
         ReceiveData data = entry.getData();
 
         log.debug("on receive");
-        mSession.onReceive(mSession.toString(), readBytes, data);
+        mSession.onReceive(readBytes, data);
 
         log.debug("get sendData");
         SendData sendData = mSession.newSendData(data);

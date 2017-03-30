@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.bluetooth.LocalDevice;
+import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.ServiceRecord;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
@@ -133,7 +134,8 @@ public class BluetoothServer implements Server, AutoCloseable {
         StreamConnection channel = mConnection.acceptAndOpen();
         log.debug("Connect");
         if (mOnAcceptListener != null) {
-            mOnAcceptListener.onAccept(channel.toString());
+            RemoteDevice remote = RemoteDevice.getRemoteDevice(channel);
+            mOnAcceptListener.onAccept(remote.getBluetoothAddress());
         }
         return new Session(channel, mSwapperFactory.get(),
                 mOnSendListener, mOnReceiveListener, mOnDisconnectCallback);
@@ -184,6 +186,14 @@ public class BluetoothServer implements Server, AutoCloseable {
             }
 
         }); Scanner sc = new Scanner(System.in)) {
+            server.addOnAcceptListener(new OnAcceptListener() {
+
+                @Override
+                public void onAccept(String remoteAddress) {
+                    log.debug("accept to {}", remoteAddress);
+                }
+
+            });
             Future<?> future = server.startOnNewThread();
             future.get();
 
