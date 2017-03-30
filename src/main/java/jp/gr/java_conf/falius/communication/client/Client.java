@@ -12,7 +12,7 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
-public interface Client extends Callable<ReceiveData>, Disconnectable {
+public interface Client extends Callable<ReceiveData>, Disconnectable, AutoCloseable {
 
     /**
      * 送受信を一度だけ行う場合の、start(Swapper)の簡易メソッドです。

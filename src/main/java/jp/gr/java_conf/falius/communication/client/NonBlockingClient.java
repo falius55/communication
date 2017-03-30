@@ -3,11 +3,15 @@ package jp.gr.java_conf.falius.communication.client;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
@@ -41,6 +45,7 @@ public class NonBlockingClient implements Client {
 
     private final String mServerHost;
     private final int mServerPort;
+    private final Set<SelectionKey> mKeys = Collections.synchronizedSet(new HashSet<>());
 
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
@@ -48,6 +53,7 @@ public class NonBlockingClient implements Client {
 
     private Swapper mSwapper = null;
 
+    // FIXME: Callbleとして複数スレッドで実行された場合、意図しない動きになる可能性あり
     private boolean mIsExit = false;
 
     public NonBlockingClient(String serverHost, int serverPort) {
@@ -103,8 +109,33 @@ public class NonBlockingClient implements Client {
         }
     }
 
+    /**
+     * このクライアントによる接続をすべて切断します。
+     * 現状では複数回のstartメソッドの呼び出しが同一スレッドにより行われた場合には
+     * 先の呼び出しによるチャネルが切断されてから次の呼び出しが行われますので、
+     * このメソッドを呼び出す必要はありません(このあたりは内部仕様を変更する可能性があります)。
+     * Swapper#swapメソッド内でfinishメソッドを呼んでいれば、このクラスをCallbleとして複数スレッドで動作した場合も同様です。
+     * 異なるスレッドで実行している場合に外から処理を止める場合に利用します。
+     */
+    @Override
+    public void close() {
+        synchronized (mKeys) {
+            for (SelectionKey key : mKeys) {
+                SelectableChannel channel = key.channel();
+                if (key.isValid() && channel instanceof SocketChannel) {
+                    disconnect((SocketChannel) channel, key, null);
+                }
+            }
+            mKeys.clear();
+        }
+    }
+
+    /**
+     * @throws NullPointerException sendDataがnullの場合
+     */
     @Override
     public ReceiveData start(SendData sendData) throws IOException, TimeoutException {
+        Objects.requireNonNull(sendData);
         if (!sendData.hasRemain()) {
             throw new IllegalArgumentException("send data is empty");
         }
@@ -118,8 +149,10 @@ public class NonBlockingClient implements Client {
     }
 
     /**
+     * @throws NullPointerException swapperがnullの場合
      * @throws ConnectException 接続に失敗した場合
-     * @throws IOException その他入出力エラーが発生した場合。接続がタイムアウトした場合も含まれます。
+     * @throws IOException その他入出力エラーが発生した場合
+     * @throws TimeoutException 接続がタイムアウトした場合
      */
     @Override
     public ReceiveData start(Swapper swapper) throws IOException, TimeoutException {
@@ -140,6 +173,7 @@ public class NonBlockingClient implements Client {
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
                         SelectionKey key = iter.next();
+                        mKeys.add(key);
                         Handler handler = (Handler) key.attachment();
                         log.debug("client handle");
                         handler.handle(key);
