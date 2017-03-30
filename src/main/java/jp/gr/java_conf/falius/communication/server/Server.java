@@ -5,7 +5,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 
 /**
@@ -24,7 +23,7 @@ import jp.gr.java_conf.falius.communication.sender.OnSendListener;
  * 特定の接続先との間で例外が発生した場合、捕捉してその接続先との通信を切断した上で
  * 続行します。
  */
-public interface Server extends Disconnectable, Callable<Throwable>, AutoCloseable {
+public interface Server extends Callable<Throwable>, AutoCloseable {
 
     /**
      * 受信直後に実行するリスナーを登録します。

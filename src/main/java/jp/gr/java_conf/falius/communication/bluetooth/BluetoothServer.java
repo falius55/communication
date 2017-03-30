@@ -2,7 +2,6 @@ package jp.gr.java_conf.falius.communication.bluetooth;
 
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,8 +26,14 @@ import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
-public class BluetoothServer implements AutoCloseable, Callable<Throwable> {
+public class BluetoothServer implements Server, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(BluetoothServer.class);
+    /**
+     * UUIDは独自プロトコルのサービスの場合は固有に生成する。
+     * - 各種ツールで生成する。（ほぼ乱数）
+     * - 注：このまま使わないように。
+     */
+    private static final String serverUUID = "11111111111111111111111111111123";
 
     private final ExecutorService mExecutor = Executors.newCachedThreadPool();
     private final SwapperFactory mSwapperFactory;
@@ -39,13 +44,6 @@ public class BluetoothServer implements AutoCloseable, Callable<Throwable> {
     private Server.OnShutdownCallback mOnShutdownCallback = null;
 
     private boolean mIsShutdowned = false;
-
-    /**
-     * UUIDは独自プロトコルのサービスの場合は固有に生成する。
-     * - 各種ツールで生成する。（ほぼ乱数）
-     * - 注：このまま使わないように。
-     */
-    static final String serverUUID = "11111111111111111111111111111123";
 
     private StreamConnectionNotifier mConnection = null;
 
@@ -63,18 +61,22 @@ public class BluetoothServer implements AutoCloseable, Callable<Throwable> {
         log.debug("server start");
     }
 
+    @Override
     public void addOnSendListener(OnSendListener listener) {
         mOnSendListener = listener;
     }
 
+    @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
         mOnReceiveListener = listener;
     }
 
+    @Override
     public void addOnAcceptListener(Server.OnAcceptListener listener) {
         mOnAcceptListener = listener;
     }
 
+    @Override
     public void addOnShutdownCallback(Server.OnShutdownCallback callback) {
         mOnShutdownCallback = callback;
     }
@@ -82,11 +84,13 @@ public class BluetoothServer implements AutoCloseable, Callable<Throwable> {
     /**
      * @return null
      */
+    @Override
     public Throwable call() throws IOException {
         exec();
         return null;
     }
 
+    @Override
     public Future<?> startOnNewThread() {
         log.debug("start on new thread");
         Runnable runnable = new Runnable() {
@@ -122,6 +126,7 @@ public class BluetoothServer implements AutoCloseable, Callable<Throwable> {
         return new Session(channel, mSwapperFactory.get(), mOnSendListener, mOnReceiveListener);
     }
 
+    @Override
     public void shutdown() throws IOException {
         log.debug("shutdown");
         if (mConnection != null) {
