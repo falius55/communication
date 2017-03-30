@@ -30,7 +30,7 @@ class ReadingHandler implements Handler {
     }
 
     @Override
-    public void handle(SelectionKey key) {
+    public void handle(SelectionKey key) throws  IOException {
         log.debug("reading handle");
         SocketChannel channel = (SocketChannel) key.channel();
 

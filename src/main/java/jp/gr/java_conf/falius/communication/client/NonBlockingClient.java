@@ -53,9 +53,6 @@ public class NonBlockingClient implements Client {
 
     private Swapper mSwapper = null;
 
-    // FIXME: Callbleとして複数スレッドで実行された場合、意図しない動きになる可能性あり
-    private boolean mIsExit = false;
-
     public NonBlockingClient(String serverHost, int serverPort) {
         this(serverHost, serverPort, null);
     }
@@ -99,9 +96,9 @@ public class NonBlockingClient implements Client {
     }
 
     @Override
-    public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) {
-        mIsExit = true;
+    public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) throws IOException {
         String remote = channel.socket().getInetAddress().toString();
+        key.selector().close();
         key.selector().wakeup();
 
         if (mOnDisconnectCallback != null) {
@@ -116,9 +113,10 @@ public class NonBlockingClient implements Client {
      * このメソッドを呼び出す必要はありません(このあたりは内部仕様を変更する可能性があります)。
      * Swapper#swapメソッド内でfinishメソッドを呼んでいれば、このクラスをCallbleとして複数スレッドで動作した場合も同様です。
      * 異なるスレッドで実行している場合に外から処理を止める場合に利用します。
+     * @throws IOException
      */
     @Override
-    public void close() {
+    public void close() throws IOException {
         synchronized (mKeys) {
             for (SelectionKey key : mKeys) {
                 SelectableChannel channel = key.channel();
@@ -157,7 +155,6 @@ public class NonBlockingClient implements Client {
     @Override
     public ReceiveData start(Swapper swapper) throws IOException, TimeoutException {
         log.debug("client start");
-        mIsExit = false;
         Objects.requireNonNull(swapper, "swapper is null");
         try (Selector selector = Selector.open(); SocketChannel channel = SocketChannel.open()) {
             Remote remote = connect(channel, swapper); // 接続はブロッキングモード
@@ -165,7 +162,7 @@ public class NonBlockingClient implements Client {
             channel.register(selector, SelectionKey.OP_WRITE,
                     new WritingHandler(this, remote, true));
 
-            while (!mIsExit) {
+            while (selector.isOpen()) {
                 log.debug("client in loop");
                 if (selector.select(POLL_TIMEOUT) > 0 || selector.selectedKeys().size() > 0) {
                     log.debug("client selectedKeys: {}", selector.selectedKeys().size());
