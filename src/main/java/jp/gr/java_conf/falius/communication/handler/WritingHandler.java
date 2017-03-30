@@ -31,7 +31,7 @@ public class WritingHandler implements Handler {
     }
 
     @Override
-    public void handle(SelectionKey key) {
+    public void handle(SelectionKey key) throws IOException {
         log.debug("writing handle");
         SocketChannel channel = (SocketChannel) key.channel();
         try {

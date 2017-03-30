@@ -38,11 +38,11 @@ public class RemoteStarter implements Handler {
     }
 
     @Override
-    public void handle(SelectionKey key) {
+    public void handle(SelectionKey key) throws IOException {
         accept(key);
     }
 
-    public void accept(SelectionKey key) {
+    public void accept(SelectionKey key) throws IOException {
         SocketChannel clientChannel = null;
         String remoteAddress = "";
         try {
