@@ -13,6 +13,7 @@ import jp.gr.java_conf.falius.communication.handler.BluetoothHandler;
 import jp.gr.java_conf.falius.communication.handler.BluetoothReadingHandler;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
@@ -29,6 +30,7 @@ public class Session implements Runnable, AutoCloseable {
     private final Swapper mSwapper;
     private final OnSendListener mOnSendListener;
     private final OnReceiveListener mOnReceiveListener;
+    private final OnDisconnectCallback mOnDisconnectCallback;
 
     private final InputStream mIn;
     private final OutputStream mOut;
@@ -37,11 +39,13 @@ public class Session implements Runnable, AutoCloseable {
     private boolean mIsContinue = true;
 
     public Session(StreamConnection channel, Swapper swapper,
-            OnSendListener onSendListener, OnReceiveListener onReceiveListener) throws IOException {
+            OnSendListener onSendListener, OnReceiveListener onReceiveListener,
+            OnDisconnectCallback onDisconnectCallback) throws IOException {
         mChannel = channel;
         mSwapper = swapper;
         mOnSendListener = onSendListener;
         mOnReceiveListener = onReceiveListener;
+        mOnDisconnectCallback = onDisconnectCallback;
         mIn = channel.openInputStream();
         mOut = channel.openOutputStream();
         mNextHandler = new BluetoothReadingHandler(this);
@@ -64,8 +68,11 @@ public class Session implements Runnable, AutoCloseable {
         log.debug("session run end");
     }
 
-    public void disconnect() {
+    public void disconnect(Throwable cause) {
         mIsContinue = false;
+        if (mOnDisconnectCallback != null) {
+            mOnDisconnectCallback.onDissconnect(mChannel.toString(), cause);
+        }
     }
 
     public void setHandler(BluetoothHandler handler) {

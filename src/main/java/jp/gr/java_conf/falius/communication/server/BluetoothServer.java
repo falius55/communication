@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import jp.gr.java_conf.falius.communication.bluetooth.Session;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
@@ -37,24 +38,28 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     private final ExecutorService mExecutor = Executors.newCachedThreadPool();
     private final SwapperFactory mSwapperFactory;
+    private final String mServerUuid;
 
     private OnSendListener mOnSendListener = null;
     private Server.OnAcceptListener mOnAcceptListener = null;
     private OnReceiveListener mOnReceiveListener = null;
     private Server.OnShutdownCallback mOnShutdownCallback = null;
+    private OnDisconnectCallback mOnDisconnectCallback = null;
 
     private boolean mIsShutdowned = false;
 
     private StreamConnectionNotifier mConnection = null;
 
-    public BluetoothServer(SwapperFactory swapperFactory) throws IOException {
+    public BluetoothServer(String serverUuid, SwapperFactory swapperFactory) throws IOException {
+        mServerUuid = serverUuid;
         mSwapperFactory = swapperFactory;
         // RFCOMMベースのサーバの開始。
         // - btspp:は PRCOMM 用なのでベースプロトコルによって変わる。
         mConnection = (StreamConnectionNotifier) Connector.open(
-                "btspp://localhost:" + serverUUID,
+                "btspp://localhost:" + mServerUuid,
                 Connector.READ_WRITE, true);
         // ローカルデバイスにサービスを登録。必須ではない。
+        // これによって、周囲の機器がこのアプリを探せるようになる(macアドレスの登録をいちいちしなくてよくなる)
         ServiceRecord record = LocalDevice.getLocalDevice().getRecord(mConnection);
         LocalDevice.getLocalDevice().updateRecord(record);
 
@@ -79,6 +84,11 @@ public class BluetoothServer implements Server, AutoCloseable {
     @Override
     public void addOnShutdownCallback(Server.OnShutdownCallback callback) {
         mOnShutdownCallback = callback;
+    }
+
+    @Override
+    public void addOnDisconnectCallback(OnDisconnectCallback callback) {
+        mOnDisconnectCallback = callback;
     }
 
     /**
@@ -125,7 +135,8 @@ public class BluetoothServer implements Server, AutoCloseable {
         if (mOnAcceptListener != null) {
             mOnAcceptListener.onAccept(channel.toString());
         }
-        return new Session(channel, mSwapperFactory.get(), mOnSendListener, mOnReceiveListener);
+        return new Session(channel, mSwapperFactory.get(),
+                mOnSendListener, mOnReceiveListener, mOnDisconnectCallback);
     }
 
     @Override
@@ -148,7 +159,7 @@ public class BluetoothServer implements Server, AutoCloseable {
     }
 
     public static void main(String... strings) throws InterruptedException, ExecutionException {
-        try (BluetoothServer server = new BluetoothServer(new SwapperFactory() {
+        try (BluetoothServer server = new BluetoothServer(serverUUID, new SwapperFactory() {
 
             @Override
             public Swapper get() {

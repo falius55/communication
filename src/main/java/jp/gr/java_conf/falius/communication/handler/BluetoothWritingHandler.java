@@ -47,7 +47,7 @@ public class BluetoothWritingHandler implements BluetoothHandler {
             BluetoothHandler handler = new BluetoothReadingHandler(mSession);
             mSession.setHandler(handler);
         } else {
-            mSession.disconnect();
+            mSession.disconnect(null);
         }
     }
 }
