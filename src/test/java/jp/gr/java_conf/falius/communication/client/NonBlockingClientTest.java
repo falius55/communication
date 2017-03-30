@@ -4,7 +4,9 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -157,6 +159,42 @@ public class NonBlockingClientTest {
     }
 
     @Test
+    public void testMultiCall() throws InterruptedException, ExecutionException {
+        final int THREADPOOL_COUNT = 3;
+        final int TASK_COUNT = 15;
+        String[] sendData = { "abc", "def", "ghi", "jkl" };
+        Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {
+
+            @Override
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                assertThat(receiveData, is(nullValue()));
+                SendData data = new BasicSendData();
+                for (String s : sendData) {
+                    data.put(s);
+                }
+                return data;
+            }
+
+        });
+
+        Set<Future<ReceiveData>> futures = new HashSet<>();
+        ExecutorService executor = Executors.newFixedThreadPool(THREADPOOL_COUNT);
+
+        for (int i : new IntRange(TASK_COUNT)) {
+            Future<ReceiveData> future = executor.submit(client);
+            futures.add(future);
+        }
+
+        for (Future<ReceiveData> future : futures) {
+            ReceiveData receiveData = future.get();
+            for (String data : sendData) {
+                assertThat(receiveData.getString(), is(data));
+            }
+            assertThat(future.isDone(), is(true));
+        }
+    }
+
+    @Test
     public void testMuchData() throws IOException, TimeoutException {
         String sendData = "sendData";
         int len = 10000;
@@ -228,7 +266,7 @@ public class NonBlockingClientTest {
 
     @Test
     public void testChaengeReceiveListener() {
-        String[] data = {"data1", "data2", "data3"};
+        String[] data = { "data1", "data2", "data3" };
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         new IntRange(data.length).forEach(i -> {
             client.addOnReceiveListener(new OnReceiveListener() {
