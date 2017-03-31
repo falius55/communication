@@ -46,6 +46,7 @@ public class MultiDataReceiver implements Receiver {
             try {
                 header = HeaderFactory.from(channel);
             } catch (IOException e) {
+                log.error("header reading error", e);
                 return Result.ERROR;
             }
             entry = new Entry(header);
@@ -56,6 +57,7 @@ public class MultiDataReceiver implements Receiver {
 
         int tmp = entry.read(channel);
         if (tmp < 0) {
+            log.error("recieve read returns -1");
             return Result.ERROR;
         }
 
@@ -115,6 +117,7 @@ public class MultiDataReceiver implements Receiver {
             for (ByteBuffer itemBuf : mItemData) {
                 int tmp = channel.read(itemBuf);
                 if (tmp < 0) {
+                    log.error("entry read retuns -1");
                     return -1;
                 }
                 readed += tmp;

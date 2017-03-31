@@ -1,11 +1,14 @@
 package jp.gr.java_conf.falius.communication.client;
 
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeoutException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
@@ -25,9 +28,10 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  *
  */
 public class JITClient implements Client {
+    private static final Logger log = LoggerFactory.getLogger(JITClient.class);
     private final ExecutorService mExecutor = Executors.newCachedThreadPool();
     private final Client mClient;
-    private final BlockingQueue<SendData> mSendDataQueue = new ArrayBlockingQueue<>(10);
+    private final BlockingQueue<SendData> mSendDataQueue = new LinkedBlockingQueue<>();
 
     /**
      *
@@ -37,7 +41,7 @@ public class JITClient implements Client {
      * @throws IOException
      * @throws TimeoutException
      */
-    public JITClient(String serverHost, int port, OnReceiveListener onReceiveListener) throws IOException, TimeoutException {
+    public JITClient(String serverHost, int port, OnReceiveListener onReceiveListener) {
         mClient = new NonBlockingClient(serverHost, port, createSwapper());
         mClient.addOnReceiveListener(onReceiveListener);
     }
@@ -56,7 +60,9 @@ public class JITClient implements Client {
         return new RepeatSwapper() {
             @Override
             public SendData swap(String remoteAddress, ReceiveData receiveData) throws InterruptedException {
-                return mSendDataQueue.take();
+                SendData data = mSendDataQueue.take();
+                log.debug("send data is null: {}", data == null);
+                return data;
             }
         };
     }
@@ -66,7 +72,8 @@ public class JITClient implements Client {
         return this;
     }
 
-    public void close() throws Exception {
+    public void close() throws IOException {
+        log.debug("jit client close");
         mClient.close();
     }
 

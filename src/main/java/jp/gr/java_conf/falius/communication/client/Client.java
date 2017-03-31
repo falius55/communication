@@ -49,4 +49,6 @@ public interface Client extends Callable<ReceiveData>, AutoCloseable {
      */
     void addOnDisconnectCallback(OnDisconnectCallback callback);
 
+    void close() throws IOException;
+
 }

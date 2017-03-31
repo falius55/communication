@@ -45,6 +45,7 @@ public class HeaderFactory {
         ByteBuffer headerSizeBuf = ByteBuffer.allocate(8);
         int tmp = channel.read(headerSizeBuf);
         if (tmp < 0) {
+            // TODO: -1を返した場合は例外ではなく正常終了
             throw new IOException("header reading error");
         }
         if (tmp < 8) {
