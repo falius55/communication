@@ -53,7 +53,7 @@ public class CollectionSendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         CollectionSendData data = new CollectionSendData(new BasicSendData());
         data.put(sendData);
-        ReceiveData receiveData = client.start(data);
+        ReceiveData receiveData = client.send(data);
         CollectionReceiveData collectionData = new CollectionReceiveData(receiveData);
         List<String> ret = collectionData.getList();
         assertThat(ret, is(contains(sendData.toArray(new String[0]))));
@@ -70,7 +70,7 @@ public class CollectionSendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         CollectionSendData data = new CollectionSendData(new BasicSendData());
         data.put(sendData);
-        ReceiveData receiveData = client.start(data);
+        ReceiveData receiveData = client.send(data);
         Map<String, String> ret = new CollectionReceiveData(receiveData).getMap();
         assertThat(ret.entrySet(), hasSize(sendData.size()));
         for (Map.Entry<String, String> entry : sendData.entrySet()) {

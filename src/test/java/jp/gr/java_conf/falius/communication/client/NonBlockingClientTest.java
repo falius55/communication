@@ -239,7 +239,7 @@ public class NonBlockingClientTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData data = new BasicSendData();
         data.put(sendData);
-        ReceiveData receiveData = client.start(data);
+        ReceiveData receiveData = client.send(data);
         assertThat(receiveData.getString(), is(sendData));
     }
 
@@ -260,7 +260,7 @@ public class NonBlockingClientTest {
             try {
                 SendData data = new BasicSendData();
                 data.put(sendData + i);
-                receiveData = client.start(data);
+                receiveData = client.send(data);
             } catch (IOException | TimeoutException e) {
                 throw new IllegalStateException();
             }
@@ -283,7 +283,7 @@ public class NonBlockingClientTest {
             SendData sendData = new BasicSendData();
             sendData.put(data[i]);
             try {
-                client.start(sendData);
+                client.send(sendData);
             } catch (IOException | TimeoutException e) {
                 assertThat(false, is(true));
             }

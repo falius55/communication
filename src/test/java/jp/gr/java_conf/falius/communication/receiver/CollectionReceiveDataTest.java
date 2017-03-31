@@ -41,7 +41,7 @@ public class CollectionReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
-        ReceiveData rcv = client.start(sendData);
+        ReceiveData rcv = client.send(sendData);
         CollectionReceiveData drcv = new CollectionReceiveData(rcv);
         drcv.getList();
     }
@@ -53,7 +53,7 @@ public class CollectionReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
-        ReceiveData rcv = client.start(sendData);
+        ReceiveData rcv = client.send(sendData);
         CollectionReceiveData drcv = new CollectionReceiveData(rcv);
         drcv.getMap();
     }

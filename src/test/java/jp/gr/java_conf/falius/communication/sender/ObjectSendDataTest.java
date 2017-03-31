@@ -43,7 +43,7 @@ public class ObjectSendDataTest {
         SerializableTest data = new SerializableTest("test sample", 25, SerializableTest.Sex.MALE);
         ObjectSendData sendData = new ObjectSendData(new BasicSendData());
         sendData.putObject(data);
-        ReceiveData rcv = client.start(sendData);
+        ReceiveData rcv = client.send(sendData);
         ObjectReceiveData receiveData = new ObjectReceiveData(rcv);
         Object obj = receiveData.getObject();
 

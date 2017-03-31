@@ -6,13 +6,12 @@ import java.util.concurrent.TimeoutException;
 
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
-import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
-public interface Client extends Callable<ReceiveData>, Disconnectable, AutoCloseable {
+public interface Client extends Callable<ReceiveData>, AutoCloseable {
 
     /**
      * 送受信を一度だけ行う場合の、start(Swapper)の簡易メソッドです。
@@ -21,7 +20,7 @@ public interface Client extends Callable<ReceiveData>, Disconnectable, AutoClose
      * @throws IOException
      * @throws TimeoutException
      */
-    ReceiveData start(SendData sendData) throws IOException, TimeoutException;
+    ReceiveData send(SendData sendData) throws IOException, TimeoutException;
 
     /**
      *

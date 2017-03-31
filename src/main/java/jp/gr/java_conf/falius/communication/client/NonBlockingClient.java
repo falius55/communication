@@ -21,6 +21,7 @@ import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.remote.Remote;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
@@ -39,7 +40,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  * @author "ymiyauchi"
  *
  */
-public class NonBlockingClient implements Client {
+public class NonBlockingClient implements Client, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
     private static final long POLL_TIMEOUT = 30000L;
 
@@ -132,7 +133,7 @@ public class NonBlockingClient implements Client {
      * @throws NullPointerException sendDataがnullの場合
      */
     @Override
-    public ReceiveData start(SendData sendData) throws IOException, TimeoutException {
+    public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
         Objects.requireNonNull(sendData);
         if (!sendData.hasRemain()) {
             throw new IllegalArgumentException("send data is empty");
