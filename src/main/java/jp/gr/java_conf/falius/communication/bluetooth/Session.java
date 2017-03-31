@@ -64,7 +64,11 @@ public class Session implements Runnable, AutoCloseable {
     }
 
     public void disconnect(Throwable cause) throws IOException {
+        log.debug("session disconnect by {}", cause == null ? "null" : cause.getMessage());
         mIsContinue = false;
+        mIn.close();
+        mOut.close();
+        mChannel.close();
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(mRemoteAddress, cause);
         }
@@ -113,9 +117,6 @@ public class Session implements Runnable, AutoCloseable {
 
     @Override
     public void close() throws IOException {
-        log.debug("visitor close");
-        mIn.close();
-        mOut.close();
-        mChannel.close();
+        disconnect(null);
     }
 }

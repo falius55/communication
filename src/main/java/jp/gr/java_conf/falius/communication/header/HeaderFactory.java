@@ -45,8 +45,7 @@ public class HeaderFactory {
         ByteBuffer headerSizeBuf = ByteBuffer.allocate(8);
         int tmp = channel.read(headerSizeBuf);
         if (tmp < 0) {
-            // TODO: -1を返した場合は例外ではなく正常終了
-            throw new IOException("header reading error");
+            return null;
         }
         if (tmp < 8) {
             throw new IOException("read less than 8 bytes");
@@ -66,7 +65,7 @@ public class HeaderFactory {
         byte[] headerBytes = new byte[8];
         int tmp = is.read(headerBytes);
         if (tmp < 0) {
-            throw new IOException("header reading error");
+            return null;
         }
         if (tmp < 8) {
             throw new IOException("read less than 8 bytes");

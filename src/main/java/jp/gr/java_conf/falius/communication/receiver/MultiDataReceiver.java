@@ -49,6 +49,9 @@ public class MultiDataReceiver implements Receiver {
                 log.error("header reading error", e);
                 return Result.ERROR;
             }
+            if (header == null) {
+                return Result.DISCONNECT;
+            }
             entry = new Entry(header);
         } else {
             header = mNonFinishedEntry.mHeader;

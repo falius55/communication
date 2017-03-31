@@ -30,6 +30,10 @@ public class BluetoothReadingHandler implements BluetoothHandler {
         log.debug("reading handler");
         InputStream is = mSession.getInputStream();
         Header header = HeaderFactory.from(is);
+        if (header == null) {
+            mSession.disconnect(null);
+            return;
+        }
         Entry entry = new Entry(header);
         int readBytes = entry.read(is);
         if (readBytes < 0) {
