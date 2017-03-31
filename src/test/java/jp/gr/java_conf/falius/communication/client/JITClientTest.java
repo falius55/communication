@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.AfterClass;
@@ -23,6 +25,8 @@ import jp.gr.java_conf.falius.communication.server.SocketServer;
 import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
+import jp.gr.java_conf.falius.util.check.CheckList;
+import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class JITClientTest {
     private static final Logger log = LoggerFactory.getLogger(JITClientTest.class);
@@ -76,12 +80,14 @@ public class JITClientTest {
     @Test
     public void testSend() throws IOException, TimeoutException, Exception {
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
+        CheckList<String> list = new CheckList<>(data);
         try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
                 String ret = receiveData.getString();
                 log.debug("ret: {}", ret);
+                list.check(ret);
                 assertThat(ret, isIn(data));
             }
 
@@ -98,11 +104,37 @@ public class JITClientTest {
     }
 
     @Test
-    public void testStartOnNewThread() {
-    }
+    public void testMatchCall() throws InterruptedException, IOException {
+        // スレッドの数、submitした数だけ接続が確立し、JITClientにsendされたデータを協力しながら処理される
+        String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
+        CheckList<String> list = new CheckList<>(data);
+        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
-    @Test
-    public void testCall() {
+            @Override
+            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+                String ret = receiveData.getString();
+                log.debug("receive by {}", Thread.currentThread().getName());
+                log.debug("ret: {}", ret);
+                assertThat(list.isChecked(ret), is(false));
+                list.check(ret);
+                assertThat(ret, isIn(data));
+            }
+
+        })) {
+            ExecutorService executor = Executors.newFixedThreadPool(3);
+            for (int i : new IntRange(10)) {
+                executor.submit(client);
+            }
+
+            for (String s : data) {
+                SendData sendData = new BasicSendData();
+                sendData.put(s);
+                client.send(sendData);
+                Thread.sleep(100);
+            }
+        }
+
+        assertThat(list.isCheckedAll(), is(true));
     }
 
     @Test

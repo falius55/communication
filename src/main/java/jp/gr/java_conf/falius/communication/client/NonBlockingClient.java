@@ -31,12 +31,19 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
- * ノンブロックな通信を行うクラスです
+ * <p>
+ * ノンブロックな通信を行うクラスです。
+ *
+ * <p>
  * 送信内容はコンストラクタかstartメソッドの引数に渡すSendDataオブジェクトに格納し、
- *  受信内容はOnReceiveListenerの引数かstartメソッドの戻り値で渡される
- *   ReceiveDataオブジェクトから取得してください。
+ *     受信内容はOnReceiveListenerの引数かstartメソッドの戻り値で渡される
+ *     ReceiveDataオブジェクトから取得してください。
+ * <p>
  * OnReceiverListenerの引数で渡されるReceiveDataオブジェクトから消費した受信データは
- *  start()メソッドの戻り値で渡されるReceiveDataオブジェクトには含まれていませんので注意してください。
+ *     start()メソッドの戻り値で渡されるReceiveDataオブジェクトには含まれていませんので注意してください。
+ *
+ * <p>
+ *  startメソッドを実行する度に新しい接続を確立して通信します。
  * @author "ymiyauchi"
  *
  */
