@@ -100,7 +100,7 @@ public class JITClientTest {
     public void testSend() throws IOException, TimeoutException, Exception {
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
         CheckList<String> list = new CheckList<>(data);
-        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
@@ -123,12 +123,12 @@ public class JITClientTest {
     }
 
     @Test
-    public void testMatchCall() throws InterruptedException, IOException {
+    public void testMatchCall() throws InterruptedException, IOException, TimeoutException {
         // スレッドの数、submitした数だけ接続が確立し、JITClientにsendされたデータを協力しながら処理される
         String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
         CheckList<String> list = new CheckList<>(data);
         CountDownLatch signal = new CountDownLatch(data.length);
-        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
@@ -160,9 +160,9 @@ public class JITClientTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void testStart() throws InterruptedException, IOException {
+    public void testStart() throws InterruptedException, IOException, TimeoutException {
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
-        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
@@ -199,7 +199,7 @@ public class JITClientTest {
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
         CheckList<String> list = new CheckList<>(data);
         CountDownLatch signal = new CountDownLatch(data.length);
-        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
@@ -243,7 +243,7 @@ public class JITClientTest {
         CountDownLatch signal = new CountDownLatch(data.length);
         CheckList<String> list = new CheckList<>(data);
         CheckList<String> check = new CheckList<>("check");
-        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
@@ -302,7 +302,7 @@ public class JITClientTest {
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
         CheckList<String> list = new CheckList<>(data);
         CheckList<String> check = new CheckList<>("check");
-        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
@@ -344,7 +344,7 @@ public class JITClientTest {
         String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
         CheckList<String> list = new CheckList<>(data);
         CountDownLatch signal = new CountDownLatch(data.length);
-        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
@@ -382,7 +382,7 @@ public class JITClientTest {
         CheckList<String> list = new CheckList<>(data);
         CountDownLatch signal = new CountDownLatch(data.length);
         Set<Future<ReceiveData>> futures = new HashSet<>();
-        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
@@ -416,6 +416,7 @@ public class JITClientTest {
             // 例外がスレッドで発生していればここでExecutionExceptionが投げられる
             ReceiveData receiveData = future.get();
             assertThat(receiveData, is(notNullValue()));
+            assertThat(future.isDone(), is(true));
             assertThat(receiveData.get(), is(nullValue()));
         }
     }

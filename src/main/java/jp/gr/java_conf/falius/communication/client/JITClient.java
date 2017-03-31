@@ -2,8 +2,6 @@ package jp.gr.java_conf.falius.communication.client;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeoutException;
@@ -20,17 +18,22 @@ import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
+ * <p>
  * 送信データのない状態でも接続を維持し、送信データがsendメソッドで与えられることで
  *     送信を行う方式をサポートしたソケットクライアント。
+ * <p>
  * 送信データがない間はスレッドをブロックするため、必ずマルチスレッドで動作させてください。
- * startメソッドはnullを返しますので、サーバーからの受信データを受け取る手段はOnReceiveListener#onReceiveメソッド
+ * <p>
+ * sendメソッドはnullを返しますので、サーバーからの受信データを受け取る手段はOnReceiveListener#onReceiveメソッド
  *     の引数に渡されるReceiveDataのみとなります。
+ * <P>
+ * 同一インスタンスを複数のスレッドで動作させた場合、sendメソッドによって与えられた送信データを各スレッドで共同して送信する
+ *     ことになります。
  * @author "ymiyauchi"
  *
  */
 public class JITClient implements Client {
     private static final Logger log = LoggerFactory.getLogger(JITClient.class);
-    private final ExecutorService mExecutor = Executors.newCachedThreadPool();
     private final Client mClient;
     private final BlockingQueue<SendData> mSendDataQueue = new LinkedBlockingQueue<>();
 
@@ -76,11 +79,10 @@ public class JITClient implements Client {
     /**
      * 新たなスレッドで新規に接続を確立して通信を行います。
      * @return 新規に確立した接続における最終受信データを含むFutureオブジェクト
-     * @throws IOException
-     * @throws TimeoutException
      */
-    public Future<ReceiveData> startOnNewThread() throws IOException, TimeoutException {
-        return mExecutor.submit(this);
+    @Override
+    public Future<ReceiveData> startOnNewThread() {
+        return mClient.startOnNewThread();
     }
 
     /**
@@ -89,7 +91,6 @@ public class JITClient implements Client {
     public void close() throws IOException {
         log.debug("jit client close");
         mClient.close();
-        mExecutor.shutdownNow();
     }
 
     @Override
