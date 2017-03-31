@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
@@ -19,6 +20,7 @@ import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
+import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.server.NonBlockingServer;
 import jp.gr.java_conf.falius.communication.server.Server;
 import jp.gr.java_conf.falius.communication.server.SocketServer;
@@ -108,6 +110,75 @@ public class JITClientTest {
         // スレッドの数、submitした数だけ接続が確立し、JITClientにsendされたデータを協力しながら処理される
         String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
         CheckList<String> list = new CheckList<>(data);
+        CountDownLatch signal = new CountDownLatch(data.length);
+        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+
+            @Override
+            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+                String ret = receiveData.getString();
+                log.debug("receive by {}", Thread.currentThread().getName());
+                log.debug("ret: {}", ret);
+                assertThat(list.isChecked(ret), is(false));
+                list.check(ret);
+                assertThat(ret, isIn(data));
+                signal.countDown();
+            }
+
+        })) {
+            ExecutorService executor = Executors.newFixedThreadPool(3);
+            for (int i : new IntRange(10)) {
+                executor.submit(client);
+            }
+
+            for (String s : data) {
+                SendData sendData = new BasicSendData();
+                sendData.put(s);
+                client.send(sendData);
+                Thread.sleep(10);
+            }
+            signal.await(); // すべて受信する前にcloseさせないため
+        }
+
+        assertThat(list.isCheckedAll(), is(true));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testStart() throws InterruptedException, IOException {
+        String[] data = { "a", "b", "c", "d", "e", "f", "g" };
+        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+
+            @Override
+            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+                String ret = receiveData.getString();
+                log.debug("receive by {}", Thread.currentThread().getName());
+                log.debug("ret: {}", ret);
+                assertThat(ret, isIn(data));
+            }
+
+        })) {
+            client.start(new RepeatSwapper() {
+
+                @Override
+                public SendData swap(String remoteAddress, ReceiveData receiveData) throws Exception {
+                    SendData sendData = new BasicSendData();
+                    sendData.put("data");
+                    return sendData;
+                }
+
+            });
+
+            for (String s : data) {
+                SendData sendData = new BasicSendData();
+                sendData.put(s);
+                client.send(sendData);
+                Thread.sleep(10);
+            }
+        }
+    }
+
+    public void testAddOnSendListener() throws IOException, InterruptedException, TimeoutException {
+        String[] data = { "a", "b", "c", "d", "e", "f", "g" };
+        CheckList<String> list = new CheckList<>(data);
         try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
@@ -121,32 +192,83 @@ public class JITClientTest {
             }
 
         })) {
-            ExecutorService executor = Executors.newFixedThreadPool(3);
-            for (int i : new IntRange(10)) {
-                executor.submit(client);
-            }
+            client.addOnSendListener(new OnSendListener() {
+
+                @Override
+                public void onSend(int writeBytes) {
+                    assertThat(writeBytes, is(4 + 4 + 4 + 1));
+                }
+
+            });
+            client.startOnNewThread();
 
             for (String s : data) {
                 SendData sendData = new BasicSendData();
                 sendData.put(s);
                 client.send(sendData);
-                Thread.sleep(100);
+                Thread.sleep(10);
             }
         }
 
         assertThat(list.isCheckedAll(), is(true));
     }
 
-    @Test
-    public void testStart() {
-    }
+    public void testAddOnReceiveListener() throws IOException, TimeoutException, InterruptedException {
+        // FIXME: ReceiveListenerが発動しない
+        String[] data = { "a", "b", "c", "d", "e", "f", "g" };
+        CountDownLatch signal = new CountDownLatch(data.length);
+        CheckList<String> list = new CheckList<>(data);
+        CheckList<Integer> check = new CheckList<>(0);
+        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
-    @Test
-    public void testAddOnSendListener() {
-    }
+            @Override
+            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+                assertThat(true, is(false));  // 一度でも通ったら失敗
+                String ret = receiveData.getString();
+                log.debug("receive by {}", Thread.currentThread().getName());
+                log.debug("ret: {}", ret);
+                assertThat(list.isChecked(ret), is(false));
+                list.check(ret);
+                assertThat(ret, isIn(data));
+            }
 
-    @Test
-    public void testAddOnReceiveListener() {
+        })) {
+            client.addOnDisconnectCallback(new OnDisconnectCallback() {
+
+                @Override
+                public void onDissconnect(String remote, Throwable cause) {
+                    log.debug("client disconnect by {}", cause == null ? "null" : cause.getMessage());
+                }
+
+            });
+            client.addOnReceiveListener(new OnReceiveListener() {
+
+                @Override
+                public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+                    check.check(0);  // 一度でも通ったことの確認
+                    String ret = receiveData.getString();
+                    log.debug("receive by {}", Thread.currentThread().getName());
+                    log.debug("ret: {}", ret);
+                    assertThat(list.isChecked(ret), is(false));
+                    list.check(ret);
+                    assertThat(ret, isIn(data));
+                    signal.countDown();
+                }
+
+            });
+            client.startOnNewThread();
+
+            for (String s : data) {
+                SendData sendData = new BasicSendData();
+                sendData.put(s);
+                client.send(sendData);
+                Thread.sleep(10);
+            }
+            signal.await();
+        }
+
+        assertThat(check.isChecked(0), is(true));
+        assertThat(list.isCheckedAll(), is(true));
     }
 
     @Test

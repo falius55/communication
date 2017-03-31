@@ -109,6 +109,7 @@ public class NonBlockingClient implements Client, Disconnectable {
         channel.close();
         key.selector().wakeup();
 
+        log.debug("mOnDisconnectCallback: {}", mOnDisconnectCallback);
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(remote, cause);
         }

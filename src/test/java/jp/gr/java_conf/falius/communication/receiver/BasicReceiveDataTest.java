@@ -47,10 +47,11 @@ public class BasicReceiveDataTest {
             sendData.put(b);
         }
         ReceiveData receiveData = client.send(sendData);
-        new IntRange(receiveData.dataCount()).forEach((i) -> {
+        assertThat(receiveData.dataCount(), is(data.length));
+        for (int i : new IntRange(receiveData.dataCount())) {
             boolean ret = receiveData.getBoolean();
             assertThat(ret, is(data[i]));
-        });;
+        }
     }
 
     @Test(expected=WrongMethodTypeException.class)
