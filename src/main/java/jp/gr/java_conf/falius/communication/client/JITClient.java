@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeoutException;
 
@@ -67,9 +68,8 @@ public class JITClient implements Client {
         };
     }
 
-    public Client startOnNewThread() throws IOException, TimeoutException {
-        mExecutor.submit(this);
-        return this;
+    public Future<ReceiveData> startOnNewThread() throws IOException, TimeoutException {
+        return mExecutor.submit(this);
     }
 
     public void close() throws IOException {

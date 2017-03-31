@@ -71,6 +71,19 @@ public class JITClientTest {
             }
 
         });
+        mServer.addOnReceiveListener(new OnReceiveListener() {
+
+            @Override
+            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+                log.debug("server on receive");
+            }
+
+            @Override
+            public String toString() {
+                return "server receive listener@JITClientTest";
+            }
+
+        });
         mServer.startOnNewThread();
     }
 
@@ -176,9 +189,12 @@ public class JITClientTest {
         }
     }
 
+    @Test
     public void testAddOnSendListener() throws IOException, InterruptedException, TimeoutException {
+        CheckList<String> check = new CheckList<>("check");
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
         CheckList<String> list = new CheckList<>(data);
+        CountDownLatch signal = new CountDownLatch(data.length);
         try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
@@ -189,6 +205,7 @@ public class JITClientTest {
                 assertThat(list.isChecked(ret), is(false));
                 list.check(ret);
                 assertThat(ret, isIn(data));
+                signal.countDown();
             }
 
         })) {
@@ -196,6 +213,7 @@ public class JITClientTest {
 
                 @Override
                 public void onSend(int writeBytes) {
+                    check.check(0);
                     assertThat(writeBytes, is(4 + 4 + 4 + 1));
                 }
 
@@ -208,28 +226,34 @@ public class JITClientTest {
                 client.send(sendData);
                 Thread.sleep(10);
             }
+            signal.await();
         }
 
         assertThat(list.isCheckedAll(), is(true));
+        assertThat(check.isChecked("check"), is(true));
     }
 
+    @Test
     public void testAddOnReceiveListener() throws IOException, TimeoutException, InterruptedException {
-        // FIXME: ReceiveListenerが発動しない
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
         CountDownLatch signal = new CountDownLatch(data.length);
         CheckList<String> list = new CheckList<>(data);
-        CheckList<Integer> check = new CheckList<>(0);
+        CheckList<String> check = new CheckList<>("check");
         try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
                 assertThat(true, is(false));  // 一度でも通ったら失敗
                 String ret = receiveData.getString();
-                log.debug("receive by {}", Thread.currentThread().getName());
                 log.debug("ret: {}", ret);
                 assertThat(list.isChecked(ret), is(false));
                 list.check(ret);
                 assertThat(ret, isIn(data));
+            }
+
+            @Override
+            public String toString() {
+                return "old receive listener@testAddOnReceiveListener";
             }
 
         })) {
@@ -245,7 +269,13 @@ public class JITClientTest {
 
                 @Override
                 public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
-                    check.check(0);  // 一度でも通ったことの確認
+                    log.debug("receive listener in new");
+                    try {
+                        check.check(0);  // 一度でも通ったことの確認
+                    } catch (Throwable e) {
+                        log.error("check error: {}", e);
+                    }
+                    log.debug("after check 0");
                     String ret = receiveData.getString();
                     log.debug("receive by {}", Thread.currentThread().getName());
                     log.debug("ret: {}", ret);
@@ -253,6 +283,11 @@ public class JITClientTest {
                     list.check(ret);
                     assertThat(ret, isIn(data));
                     signal.countDown();
+                }
+
+                @Override
+                public String toString() {
+                    return "new receive listener@testAddOnReceiveListener";
                 }
 
             });
@@ -267,7 +302,7 @@ public class JITClientTest {
             signal.await();
         }
 
-        assertThat(check.isChecked(0), is(true));
+        assertThat(check.isChecked("check"), is(true));
         assertThat(list.isCheckedAll(), is(true));
     }
 

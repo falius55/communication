@@ -50,6 +50,7 @@ public class MultiDataReceiver implements Receiver {
                 return Result.ERROR;
             }
             if (header == null) {
+                log.debug("header could not read. disconnect");
                 return Result.DISCONNECT;
             }
             entry = new Entry(header);
@@ -65,7 +66,6 @@ public class MultiDataReceiver implements Receiver {
         }
 
         if (entry.isFinished()) {
-            log.debug("reading finish");
             mLatestData = entry.getData();
             if (mListener != null) {
                 String remoteAddress = channel.socket().getRemoteSocketAddress().toString();

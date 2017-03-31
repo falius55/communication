@@ -85,7 +85,9 @@ public class NonBlockingClient implements Client, Disconnectable {
 
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
+        log.debug("add on receve listener: {}", listener);
         mOnReceiveListener = listener;
+        log.debug("new mOnReceiveListener: {}", mOnReceiveListener);
     }
 
     @Override
@@ -217,6 +219,7 @@ public class NonBlockingClient implements Client, Disconnectable {
             }
         };
         Remote remote = new Remote(remoteAddress, swapperFactory);
+        log.debug("mOnReceiveListener to remote: {}", mOnReceiveListener);
         remote.addOnSendListener(mOnSendListener);
         remote.addOnReceiveListener(mOnReceiveListener);
         return remote;
