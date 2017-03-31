@@ -20,14 +20,12 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
  */
 public class MultiDataSender implements Sender {
     private static final Logger log = LoggerFactory.getLogger(MultiDataSender.class);
-    private OnSendListener mListener = null;
+    private final OnSendListener mListener;
     private final ByteBuffer mData;
 
-    public MultiDataSender(SendData data) {
-        if (!data.hasRemain()) {
-            log.debug("data is empty");
-        }
+    public MultiDataSender(SendData data, OnSendListener listener) {
         mData = initBuffer(data);
+        mListener = listener;
     }
 
     private ByteBuffer initBuffer(SendData data) {
@@ -47,12 +45,6 @@ public class MultiDataSender implements Sender {
             throw new IllegalStateException();
         }
         return ret;
-    }
-
-    @Override
-    public Sender addOnSendListener(OnSendListener listener) {
-        mListener = listener;
-        return this;
     }
 
     @Override

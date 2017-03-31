@@ -140,6 +140,11 @@ public class NonBlockingClient implements Client, Disconnectable {
     }
 
     /**
+     * 送受信を一度だけ行う場合の、start(Swapper)の簡易メソッドです。
+     * @param sendData
+     * @return
+     * @throws IOException
+     * @throws TimeoutException
      * @throws NullPointerException sendDataがnullの場合
      */
     @Override

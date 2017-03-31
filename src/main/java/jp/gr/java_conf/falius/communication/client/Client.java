@@ -14,7 +14,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 public interface Client extends Callable<ReceiveData>, AutoCloseable {
 
     /**
-     * 送受信を一度だけ行う場合の、start(Swapper)の簡易メソッドです。
+     * データを送信します。具体的な処理は実装により異なります。
      * @param sendData
      * @return
      * @throws IOException

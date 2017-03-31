@@ -49,6 +49,7 @@ public class JITClient implements Client {
 
     /**
      * 送信データを与えます。
+     * 戻り値からは受信データを得られません。受信データはOnReceiveListener#onReceiveメソッドの引数から取得してください。
      * @return null
      */
     @Override
@@ -60,21 +61,35 @@ public class JITClient implements Client {
     private Swapper createSwapper() {
         return new RepeatSwapper() {
             @Override
-            public SendData swap(String remoteAddress, ReceiveData receiveData) throws InterruptedException {
-                SendData data = mSendDataQueue.take();
-                log.debug("send data is null: {}", data == null);
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                SendData data;
+                try {
+                    data = mSendDataQueue.take();
+                } catch (InterruptedException e) {
+                    return null;
+                }
                 return data;
             }
         };
     }
 
+    /**
+     * 新たなスレッドで新規に接続を確立して通信を行います。
+     * @return 新規に確立した接続における最終受信データを含むFutureオブジェクト
+     * @throws IOException
+     * @throws TimeoutException
+     */
     public Future<ReceiveData> startOnNewThread() throws IOException, TimeoutException {
         return mExecutor.submit(this);
     }
 
+    /**
+     * 確立した接続をすべて切断します。
+     */
     public void close() throws IOException {
         log.debug("jit client close");
         mClient.close();
+        mExecutor.shutdownNow();
     }
 
     @Override
@@ -83,7 +98,7 @@ public class JITClient implements Client {
     }
 
     /**
-     * サポーとされていません。
+     * サポートされていません。
      * @throws UnsupportedOperationException 常に投げられる
      */
     @Override
