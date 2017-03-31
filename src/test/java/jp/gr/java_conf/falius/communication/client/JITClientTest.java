@@ -243,7 +243,7 @@ public class JITClientTest {
 
             @Override
             public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
-                assertThat(true, is(false));  // 一度でも通ったら失敗
+                assertThat(true, is(false)); // 一度でも通ったら失敗
                 String ret = receiveData.getString();
                 log.debug("ret: {}", ret);
                 assertThat(list.isChecked(ret), is(false));
@@ -257,25 +257,12 @@ public class JITClientTest {
             }
 
         })) {
-            client.addOnDisconnectCallback(new OnDisconnectCallback() {
-
-                @Override
-                public void onDissconnect(String remote, Throwable cause) {
-                    log.debug("client disconnect by {}", cause == null ? "null" : cause.getMessage());
-                }
-
-            });
             client.addOnReceiveListener(new OnReceiveListener() {
 
                 @Override
                 public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
                     log.debug("receive listener in new");
-                    try {
-                        check.check(0);  // 一度でも通ったことの確認
-                    } catch (Throwable e) {
-                        log.error("check error: {}", e);
-                    }
-                    log.debug("after check 0");
+                    check.check(0); // 一度でも通ったことの確認
                     String ret = receiveData.getString();
                     log.debug("receive by {}", Thread.currentThread().getName());
                     log.debug("ret: {}", ret);
@@ -307,7 +294,44 @@ public class JITClientTest {
     }
 
     @Test
-    public void testAddOnDisconnectCallback() {
+    public void testAddOnDisconnectCallback() throws IOException, TimeoutException, InterruptedException {
+        String[] data = { "a", "b", "c", "d", "e", "f", "g" };
+        CheckList<String> list = new CheckList<>(data);
+        CheckList<String> check = new CheckList<>("check");
+        try (JITClient client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+
+            @Override
+            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+                String ret = receiveData.getString();
+                log.debug("ret: {}", ret);
+                assertThat(list.isChecked(ret), is(false));
+                list.check(ret);
+                assertThat(ret, isIn(data));
+            }
+
+        })) {
+            client.addOnDisconnectCallback(new OnDisconnectCallback() {
+
+                @Override
+                public void onDissconnect(String remote, Throwable cause) {
+                    assertThat(check.isChecked("check"), is(false));
+                    log.debug("client disconnect by {}", cause == null ? "null" : cause.getMessage());
+                    check.check(0);
+                }
+
+            });
+            client.startOnNewThread();
+
+            for (String s : data) {
+                SendData sendData = new BasicSendData();
+                sendData.put(s);
+                client.send(sendData);
+                Thread.sleep(10);
+                client.close();  // 送信途中でcloseすることでdisconnectさせる
+            }
+        }
+
+        assertThat(check.isChecked("check"), is(true));
     }
 
 }
