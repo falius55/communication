@@ -26,22 +26,25 @@ public class EchoServer implements ServerHelper {
     }
 
     private SocketServer init() {
-        return new NonBlockingServer(mPort++, new SwapperFactory() {
+        synchronized (EchoServer.class) {
+            SocketServer server = new NonBlockingServer(mPort++, new SwapperFactory() {
 
-            @Override
-            public Swapper get() {
-                return new OnceSwapper() {
+                @Override
+                public Swapper get() {
+                    return new OnceSwapper() {
 
-                    @Override
-                    public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                        SendData data = new BasicSendData();
-                        data.put(receiveData.getAll());
-                        return data;
-                    }
+                        @Override
+                        public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                            SendData data = new BasicSendData();
+                            data.put(receiveData.getAll());
+                            return data;
+                        }
 
-                };
-            }
-        });
+                    };
+                }
+            });
+            return server;
+        }
     }
 
     @Override

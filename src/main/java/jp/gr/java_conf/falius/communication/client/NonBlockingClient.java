@@ -21,6 +21,7 @@ import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.remote.Remote;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
@@ -30,16 +31,23 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
- * ノンブロックな通信を行うクラスです
+ * <p>
+ * ノンブロックな通信を行うクラスです。
+ *
+ * <p>
  * 送信内容はコンストラクタかstartメソッドの引数に渡すSendDataオブジェクトに格納し、
- *  受信内容はOnReceiveListenerの引数かstartメソッドの戻り値で渡される
- *   ReceiveDataオブジェクトから取得してください。
+ *     受信内容はOnReceiveListenerの引数かstartメソッドの戻り値で渡される
+ *     ReceiveDataオブジェクトから取得してください。
+ * <p>
  * OnReceiverListenerの引数で渡されるReceiveDataオブジェクトから消費した受信データは
- *  start()メソッドの戻り値で渡されるReceiveDataオブジェクトには含まれていませんので注意してください。
+ *     start()メソッドの戻り値で渡されるReceiveDataオブジェクトには含まれていませんので注意してください。
+ *
+ * <p>
+ *  startメソッドを実行する度に新しい接続を確立して通信します。
  * @author "ymiyauchi"
  *
  */
-public class NonBlockingClient implements Client {
+public class NonBlockingClient implements Client, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
     private static final long POLL_TIMEOUT = 30000L;
 
@@ -77,7 +85,9 @@ public class NonBlockingClient implements Client {
 
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
+        log.debug("add on receve listener: {}", listener);
         mOnReceiveListener = listener;
+        log.debug("new mOnReceiveListener: {}", mOnReceiveListener);
     }
 
     @Override
@@ -101,6 +111,7 @@ public class NonBlockingClient implements Client {
         channel.close();
         key.selector().wakeup();
 
+        log.debug("mOnDisconnectCallback: {}", mOnDisconnectCallback);
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(remote, cause);
         }
@@ -132,7 +143,7 @@ public class NonBlockingClient implements Client {
      * @throws NullPointerException sendDataがnullの場合
      */
     @Override
-    public ReceiveData start(SendData sendData) throws IOException, TimeoutException {
+    public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
         Objects.requireNonNull(sendData);
         if (!sendData.hasRemain()) {
             throw new IllegalArgumentException("send data is empty");
@@ -208,6 +219,7 @@ public class NonBlockingClient implements Client {
             }
         };
         Remote remote = new Remote(remoteAddress, swapperFactory);
+        log.debug("mOnReceiveListener to remote: {}", mOnReceiveListener);
         remote.addOnSendListener(mOnSendListener);
         remote.addOnReceiveListener(mOnReceiveListener);
         return remote;

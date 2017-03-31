@@ -46,7 +46,12 @@ public class MultiDataReceiver implements Receiver {
             try {
                 header = HeaderFactory.from(channel);
             } catch (IOException e) {
+                log.error("header reading error", e);
                 return Result.ERROR;
+            }
+            if (header == null) {
+                log.debug("header could not read. disconnect");
+                return Result.DISCONNECT;
             }
             entry = new Entry(header);
         } else {
@@ -56,11 +61,11 @@ public class MultiDataReceiver implements Receiver {
 
         int tmp = entry.read(channel);
         if (tmp < 0) {
+            log.error("recieve read returns -1");
             return Result.ERROR;
         }
 
         if (entry.isFinished()) {
-            log.debug("reading finish");
             mLatestData = entry.getData();
             if (mListener != null) {
                 String remoteAddress = channel.socket().getRemoteSocketAddress().toString();
@@ -115,6 +120,7 @@ public class MultiDataReceiver implements Receiver {
             for (ByteBuffer itemBuf : mItemData) {
                 int tmp = channel.read(itemBuf);
                 if (tmp < 0) {
+                    log.error("entry read retuns -1");
                     return -1;
                 }
                 readed += tmp;

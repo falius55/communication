@@ -4,9 +4,9 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -162,7 +162,7 @@ public class NonBlockingClientTest {
     public void testMultiCall() throws InterruptedException, ExecutionException {
         final int THREADPOOL_COUNT = 3;
         final int TASK_COUNT = 15;
-        String[] sendData = { "abc", "def", "ghi", "jkl" };
+        String[] sendData = { "a", "de", "ghi", "jklm" };
         Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {
 
             @Override
@@ -177,7 +177,7 @@ public class NonBlockingClientTest {
 
         });
 
-        Set<Future<ReceiveData>> futures = new HashSet<>();
+        List<Future<ReceiveData>> futures = new LinkedList<>();
         ExecutorService executor = Executors.newFixedThreadPool(THREADPOOL_COUNT);
 
         for (int i : new IntRange(TASK_COUNT)) {
@@ -239,7 +239,7 @@ public class NonBlockingClientTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData data = new BasicSendData();
         data.put(sendData);
-        ReceiveData receiveData = client.start(data);
+        ReceiveData receiveData = client.send(data);
         assertThat(receiveData.getString(), is(sendData));
     }
 
@@ -260,7 +260,7 @@ public class NonBlockingClientTest {
             try {
                 SendData data = new BasicSendData();
                 data.put(sendData + i);
-                receiveData = client.start(data);
+                receiveData = client.send(data);
             } catch (IOException | TimeoutException e) {
                 throw new IllegalStateException();
             }
@@ -283,7 +283,7 @@ public class NonBlockingClientTest {
             SendData sendData = new BasicSendData();
             sendData.put(data[i]);
             try {
-                client.start(sendData);
+                client.send(sendData);
             } catch (IOException | TimeoutException e) {
                 assertThat(false, is(true));
             }

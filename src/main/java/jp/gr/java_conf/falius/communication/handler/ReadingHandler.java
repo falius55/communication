@@ -40,6 +40,12 @@ class ReadingHandler implements Handler {
 
             Receiver.Result result = receiver.receive(channel);
 
+            if (result == Receiver.Result.DISCONNECT) {
+                // 接続相手がcloseした
+                mDisconnectable.disconnect(channel, key, null);
+                return;
+            }
+
             if (result == Receiver.Result.ERROR) {
                 log.warn("receive error");
                 mDisconnectable.disconnect(channel, key, new IOException("reading channel returns -1"));

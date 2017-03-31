@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.RemoteStarter;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
@@ -38,7 +39,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  * Timeoutの設定はなく、別のスレッドからshutdownメソッドあるいはcloseメソッドが実行されるまで起動を
  * 続けます。
  */
-public class NonBlockingServer implements SocketServer {
+public class NonBlockingServer implements SocketServer, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);
 
     private final int mServerPort;

@@ -72,7 +72,7 @@ public class FileReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
-        ReceiveData ret = client.start(sendData);
+        ReceiveData ret = client.send(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);
 
         Path targetFile = Paths.get(mTargetTmpDir.toString(), fileName);
@@ -88,7 +88,7 @@ public class FileReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
-        ReceiveData ret = client.start(sendData);
+        ReceiveData ret = client.send(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);
 
         File targetFile = new File(mTargetTmpDir.toString() + "\\" + fileName);
@@ -108,7 +108,7 @@ public class FileReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
-        ReceiveData ret = client.start(sendData);
+        ReceiveData ret = client.send(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);
 
         File targetFile = new File(mTargetTmpDir.toString() + "\\" + fileName);
@@ -125,7 +125,7 @@ public class FileReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
-        ReceiveData ret = client.start(sendData);
+        ReceiveData ret = client.send(sendData);
         FileReceiveData fileRcvData = new FileReceiveData(ret);
 
         fileRcvData.getAndSave(mTargetTmpDir.toString(), fileName);

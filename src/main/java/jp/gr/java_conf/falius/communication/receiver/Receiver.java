@@ -12,7 +12,7 @@ import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
  */
 public interface Receiver {
     enum Result {
-        ERROR, UNFINISHED, FINISHED,
+        ERROR, UNFINISHED, FINISHED, DISCONNECT,
     }
 
     void addOnReceiveListener(OnReceiveListener listener);
