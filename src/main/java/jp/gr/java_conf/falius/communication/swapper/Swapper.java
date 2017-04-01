@@ -49,7 +49,7 @@ public interface Swapper {
      * クライアントに限り、最初の一度だけreceiveDataにnullが渡されますので注意してください。
      *
      */
-    SendData swap(String remoteAddress, ReceiveData receiveData);
+    SendData swap(String remoteAddress, ReceiveData receiveData) throws Exception;
 
     /**
      * 通信を続けるかどうかを返すメソッドです。

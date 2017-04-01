@@ -1,6 +1,7 @@
 package jp.gr.java_conf.falius.communication.header;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
@@ -10,6 +11,12 @@ import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
+/**
+ * ヘッダを作成するファクトリクラス
+ * 相手がすでに切断していて読み取りができない場合はnullを返します。
+ * @author "ymiyauchi"
+ *
+ */
 public class HeaderFactory {
     private static final Logger log = LoggerFactory.getLogger(HeaderFactory.class);
 
@@ -44,7 +51,7 @@ public class HeaderFactory {
         ByteBuffer headerSizeBuf = ByteBuffer.allocate(8);
         int tmp = channel.read(headerSizeBuf);
         if (tmp < 0) {
-            throw new IOException("header reading error");
+            return null;
         }
         if (tmp < 8) {
             throw new IOException("read less than 8 bytes");
@@ -58,5 +65,38 @@ public class HeaderFactory {
         Header header = new UnFinishedHeader(headerSize, dataSize, headerBuf);
         return header.read(channel);
 
+    }
+
+    /**
+     *
+     * @param is
+     * @return 読み取りが完全に終わったヘッダ
+     * @throws IOException ヘッダの読み取りエラーが起きた場合、データが8バイト未満の場合
+     */
+    public static Header from(InputStream is) throws IOException {
+        byte[] headerBytes = new byte[8];
+        int tmp = is.read(headerBytes);
+        if (tmp < 0) {
+            return null;
+        }
+        if (tmp < 8) {
+            throw new IOException("read less than 8 bytes");
+        }
+        ByteBuffer headerSizeBuf = ByteBuffer.allocate(8);
+        headerSizeBuf.put(headerBytes);
+        headerSizeBuf.flip();
+        int headerSize = headerSizeBuf.getInt();
+        int dataSize = headerSizeBuf.getInt();
+
+        ByteBuffer headerBuf = ByteBuffer.allocate(headerSize - 8);
+        byte[] remainHeaderBytes = new byte[headerSize - 8];
+        tmp = is.read(remainHeaderBytes);
+        headerBuf.put(remainHeaderBytes);
+        headerBuf.flip();
+
+        IntBuffer dataSizes = UnFinishedHeader.datasizesFromHeaderBuf(headerSize, headerBuf);
+
+        Header header = new FinishedHeader(headerSize, dataSize, dataSizes);
+        return header;
     }
 }

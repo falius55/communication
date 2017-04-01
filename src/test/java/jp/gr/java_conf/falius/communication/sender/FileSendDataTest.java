@@ -49,7 +49,7 @@ public class FileSendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(path);
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
         String text = receiveData.getString().replace("\r\n", "").replace("\n", "");
         assertThat(text, is(Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining())));
     }
@@ -62,7 +62,7 @@ public class FileSendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(file);
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
         String text = receiveData.getString().replace("\r\n", "").replace("\n", "");
         assertThat(text, is(Files.lines(Paths.get(file.getAbsolutePath()), StandardCharsets.UTF_8)
                         .collect(Collectors.joining())));
@@ -75,7 +75,7 @@ public class FileSendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.putFile(curDir, fileName);
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
         String text = receiveData.getString().replace("\r\n", "").replace("\n", "");
         assertThat(text, is(Files.lines(Paths.get(curDir, fileName), StandardCharsets.UTF_8)
                         .collect(Collectors.joining())));

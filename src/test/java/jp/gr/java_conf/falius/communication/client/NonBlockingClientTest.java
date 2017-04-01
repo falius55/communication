@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -157,6 +159,46 @@ public class NonBlockingClientTest {
     }
 
     @Test
+    public void testMultiCall() throws InterruptedException, ExecutionException {
+        final int THREADPOOL_COUNT = 3;
+        final int TASK_COUNT = 15;
+        String[] sendData = { "a", "de", "ghi", "jklm" };
+        Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {
+
+            @Override
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                assertThat(receiveData, is(nullValue()));
+                SendData data = new BasicSendData();
+                for (int i : new IntRange(sendData.length)) {
+                    data.put(sendData[i]);
+                }
+                return data;
+            }
+
+        });
+
+        List<Future<ReceiveData>> futures = new LinkedList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(THREADPOOL_COUNT);
+
+        for (int i : new IntRange(TASK_COUNT)) {
+            Future<ReceiveData> future = executor.submit(client);
+            futures.add(future);
+        }
+
+        for (Future<ReceiveData> future : futures) {
+            ReceiveData receiveData = future.get();
+            assertThat(receiveData.dataCount(), is(sendData.length));
+            for (int i : new IntRange(sendData.length)) {
+                log.info("data: {} : {}", i, sendData[i]);
+                String ret = receiveData.getString();
+                log.info("ret : {} : {}", i, ret);
+                assertThat(ret, is(sendData[i]));
+            }
+            assertThat(future.isDone(), is(true));
+        }
+    }
+
+    @Test
     public void testMuchData() throws IOException, TimeoutException {
         String sendData = "sendData";
         int len = 10000;
@@ -192,12 +234,12 @@ public class NonBlockingClientTest {
     }
 
     @Test
-    public void testStartSendData() throws IOException, TimeoutException {
+    public void testSend() throws IOException, TimeoutException {
         String sendData = "data";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData data = new BasicSendData();
         data.put(sendData);
-        ReceiveData receiveData = client.start(data);
+        ReceiveData receiveData = client.send(data);
         assertThat(receiveData.getString(), is(sendData));
     }
 
@@ -218,7 +260,7 @@ public class NonBlockingClientTest {
             try {
                 SendData data = new BasicSendData();
                 data.put(sendData + i);
-                receiveData = client.start(data);
+                receiveData = client.send(data);
             } catch (IOException | TimeoutException e) {
                 throw new IllegalStateException();
             }
@@ -228,7 +270,7 @@ public class NonBlockingClientTest {
 
     @Test
     public void testChaengeReceiveListener() {
-        String[] data = {"data1", "data2", "data3"};
+        String[] data = { "data1", "data2", "data3" };
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         new IntRange(data.length).forEach(i -> {
             client.addOnReceiveListener(new OnReceiveListener() {
@@ -241,7 +283,7 @@ public class NonBlockingClientTest {
             SendData sendData = new BasicSendData();
             sendData.put(data[i]);
             try {
-                client.start(sendData);
+                client.send(sendData);
             } catch (IOException | TimeoutException e) {
                 assertThat(false, is(true));
             }

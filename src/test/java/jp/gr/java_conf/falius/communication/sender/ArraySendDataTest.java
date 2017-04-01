@@ -43,7 +43,7 @@ public class ArraySendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
-        ReceiveData rcv = client.start(sendData);
+        ReceiveData rcv = client.send(sendData);
         ArrayReceiveData ret = new ArrayReceiveData(rcv);
         int[] result = ret.getIntArray();
 
@@ -60,7 +60,7 @@ public class ArraySendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
-        ReceiveData rcv = client.start(sendData);
+        ReceiveData rcv = client.send(sendData);
         ArrayReceiveData ret = new ArrayReceiveData(rcv);
         String[] result = ret.getStringArray();
 
@@ -74,7 +74,7 @@ public class ArraySendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
-        ReceiveData rcv = client.start(sendData);
+        ReceiveData rcv = client.send(sendData);
         ArrayReceiveData ret = new ArrayReceiveData(rcv);
         long[] result = ret.getLongArray();
 
@@ -90,7 +90,7 @@ public class ArraySendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
-        ReceiveData rcv = client.start(sendData);
+        ReceiveData rcv = client.send(sendData);
         ArrayReceiveData ret = new ArrayReceiveData(rcv);
         double[] result = ret.getDoubleArray();
 
@@ -106,7 +106,7 @@ public class ArraySendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
-        ReceiveData rcv = client.start(sendData);
+        ReceiveData rcv = client.send(sendData);
         ArrayReceiveData ret = new ArrayReceiveData(rcv);
         float[] result = ret.getFloatArray();
 

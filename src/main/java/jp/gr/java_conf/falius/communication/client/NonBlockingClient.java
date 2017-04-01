@@ -3,11 +3,18 @@ package jp.gr.java_conf.falius.communication.client;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
@@ -17,6 +24,7 @@ import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.remote.Remote;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
@@ -26,30 +34,37 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
- * ノンブロックな通信を行うクラスです
+ * <p>
+ * ノンブロックな通信を行うクラスです。
+ *
+ * <p>
  * 送信内容はコンストラクタかstartメソッドの引数に渡すSendDataオブジェクトに格納し、
- *  受信内容はOnReceiveListenerの引数かstartメソッドの戻り値で渡される
- *   ReceiveDataオブジェクトから取得してください。
+ *     受信内容はOnReceiveListenerの引数かstartメソッドの戻り値で渡される
+ *     ReceiveDataオブジェクトから取得してください。
+ * <p>
  * OnReceiverListenerの引数で渡されるReceiveDataオブジェクトから消費した受信データは
- *  start()メソッドの戻り値で渡されるReceiveDataオブジェクトには含まれていませんので注意してください。
+ *     start()メソッドの戻り値で渡されるReceiveDataオブジェクトには含まれていませんので注意してください。
+ *
+ * <p>
+ *  startメソッドを実行する度に新しい接続を確立して通信します。
  * @author "ymiyauchi"
  *
  */
-public class NonBlockingClient implements Client {
+public class NonBlockingClient implements Client, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
     private static final long POLL_TIMEOUT = 30000L;
 
     private final String mServerHost;
     private final int mServerPort;
+    private final Set<SelectionKey> mKeys = Collections.synchronizedSet(new HashSet<>());
+
+    private ExecutorService mExecutor = null;
 
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
     private OnDisconnectCallback mOnDisconnectCallback = null;
 
     private Swapper mSwapper = null;
-
-    private boolean mIsExit = false;
-    private Selector mSelector = null;
 
     public NonBlockingClient(String serverHost, int serverPort) {
         this(serverHost, serverPort, null);
@@ -75,7 +90,9 @@ public class NonBlockingClient implements Client {
 
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
+        log.debug("add on receve listener: {}", listener);
         mOnReceiveListener = listener;
+        log.debug("new mOnReceiveListener: {}", mOnReceiveListener);
     }
 
     @Override
@@ -94,23 +111,67 @@ public class NonBlockingClient implements Client {
     }
 
     @Override
-    public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) {
-        mIsExit = true;
-        String remote = channel.socket().getInetAddress().toString();
-        if (mSelector != null) {
-            mSelector.wakeup();
+    public Future<ReceiveData> startOnNewThread() {
+        if (mExecutor == null) {
+            synchronized (this) {
+                if (mExecutor == null) {
+                    mExecutor = Executors.newCachedThreadPool();
+                }
+            }
         }
+        return mExecutor.submit(this);
+    }
 
+    @Override
+    public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) throws IOException {
+        String remote = channel.socket().getInetAddress().toString();
+        channel.close();
+        key.selector().wakeup();
+
+        log.debug("mOnDisconnectCallback: {}", mOnDisconnectCallback);
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(remote, cause);
         }
     }
 
+    /**
+     * このクライアントによる接続をすべて切断します。
+     * 現状では複数回のstartメソッドの呼び出しが同一スレッドにより行われた場合には
+     * 先の呼び出しによるチャネルが切断されてから次の呼び出しが行われますので、
+     * このメソッドを呼び出す必要はありません(このあたりは内部仕様を変更する可能性があります)。
+     * Swapper#swapメソッド内でfinishメソッドを呼んでいれば、このクラスをCallbleとして複数スレッドで動作した場合も同様です。
+     * しかし、startOnNewThreadメソッドによって実行された場合には呼び出される必要があります。
+     * また、異なるスレッドで実行している場合に外から処理を止める場合にも利用できます
+     * (リスナー内で処理がブロックされている場合などを除き、タスクを終了できます)。
+     * @throws IOException
+     */
     @Override
-    public ReceiveData start(SendData sendData) throws IOException, TimeoutException {
-        if (!sendData.hasRemain()) {
-            throw new IllegalArgumentException("send data is empty");
+    public void close() throws IOException {
+        synchronized (mKeys) {
+            for (SelectionKey key : mKeys) {
+                SelectableChannel channel = key.channel();
+                if (key.isValid() && channel instanceof SocketChannel) {
+                    disconnect((SocketChannel) channel, key, null);
+                }
+            }
+            mKeys.clear();
         }
+        if (mExecutor != null) {
+            mExecutor.shutdownNow();
+        }
+    }
+
+    /**
+     * 送受信を一度だけ行う場合の、start(Swapper)の簡易メソッドです。
+     * @param sendData
+     * @return 受信データ。受信に失敗するとnull
+     * @throws IOException
+     * @throws TimeoutException
+     * @throws NullPointerException sendDataがnullの場合
+     */
+    @Override
+    public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
+        Objects.requireNonNull(sendData);
         return start(new OnceSwapper() {
 
             @Override
@@ -121,22 +182,23 @@ public class NonBlockingClient implements Client {
     }
 
     /**
+     * @return 最終受信データ。受信に失敗するとnull
+     * @throws NullPointerException swapperがnullの場合
      * @throws ConnectException 接続に失敗した場合
-     * @throws IOException その他入出力エラーが発生した場合。接続がタイムアウトした場合も含まれます。
+     * @throws IOException その他入出力エラーが発生した場合
+     * @throws TimeoutException 接続がタイムアウトした場合
      */
     @Override
     public ReceiveData start(Swapper swapper) throws IOException, TimeoutException {
         log.debug("client start");
-        mIsExit = false;
         Objects.requireNonNull(swapper, "swapper is null");
         try (Selector selector = Selector.open(); SocketChannel channel = SocketChannel.open()) {
-            mSelector = selector;
             Remote remote = connect(channel, swapper); // 接続はブロッキングモード
             channel.configureBlocking(false);
             channel.register(selector, SelectionKey.OP_WRITE,
                     new WritingHandler(this, remote, true));
 
-            while (!mIsExit) {
+            while (channel.isOpen()) {
                 log.debug("client in loop");
                 if (selector.select(POLL_TIMEOUT) > 0 || selector.selectedKeys().size() > 0) {
                     log.debug("client selectedKeys: {}", selector.selectedKeys().size());
@@ -144,6 +206,7 @@ public class NonBlockingClient implements Client {
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
                         SelectionKey key = iter.next();
+                        mKeys.add(key);
                         Handler handler = (Handler) key.attachment();
                         log.debug("client handle");
                         handler.handle(key);
@@ -181,6 +244,7 @@ public class NonBlockingClient implements Client {
             }
         };
         Remote remote = new Remote(remoteAddress, swapperFactory);
+        log.debug("mOnReceiveListener to remote: {}", mOnReceiveListener);
         remote.addOnSendListener(mOnSendListener);
         remote.addOnReceiveListener(mOnReceiveListener);
         return remote;
