@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +18,15 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
  * <p>
- * 送信データのない状態でも接続を維持し、送信データがsendメソッドで与えられることで
- *     送信を行う方式をサポートしたソケットクライアント。
- *     素のNonBlockingClientがSwapperですぐに送信データが作成されるのに対して、
+ * 送信データのない状態でも接続を維持し、送信データが{@link send}メソッドで与えられることで
+ *     送信を行う方式をサポートしたソケットクライアント。<br>
+ *     素の{@link NonBlockingClient}が{@link Swapper}ですぐに送信データが作成されるのに対して、
  *     任意のタイミングで送信データを供給することができます。
  * <p>
  * 送信データがない間はスレッドをブロックするため、必ずマルチスレッドで動作させてください。
  * <p>
- * sendメソッドはnullを返しますので、サーバーからの受信データを受け取る手段はOnReceiveListener#onReceiveメソッド
- *     の引数に渡されるReceiveDataのみとなります。
+ * sendメソッドはnullを返しますので、サーバーからの受信データを受け取る手段は{@link OnReceiveListener#onReceive}メソッド
+ *     の引数に渡される{@link ReceiveData}のみとなります。
  * <P>
  * 同一インスタンスを複数のスレッドで動作させた場合、sendメソッドによって与えられた送信データを各スレッドで分担して送信する
  *     ことになります。
@@ -35,7 +34,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  * <p>
  * 以下に、基本的な使用例を示します。
  * <pre>
- * {@codei
+ * {@code
  * String HOST = "localhost";
  * int PORT = 10000;
  * try (Client client = new JITClient(HOST, PORT, new OnReceiveListener() {
@@ -54,7 +53,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  * }
  * </pre>
  * <p>
- * closeメソッドが呼ばれるまで接続を維持しているので、送信データを供給するタイミングに制限はありません。
+ * {@link close}メソッドが呼ばれるまで接続を維持しているので、送信データを供給するタイミングに制限はありません。
  *
  * @author "ymiyauchi"
  *
@@ -69,8 +68,6 @@ public class JITClient implements Client {
      * @param serverHost
      * @param port
      * @param onReceiveListener
-     * @throws IOException
-     * @throws TimeoutException
      */
     public JITClient(String serverHost, int port, OnReceiveListener onReceiveListener) {
         mClient = new NonBlockingClient(serverHost, port, createSwapper());

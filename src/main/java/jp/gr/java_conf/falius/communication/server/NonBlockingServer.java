@@ -29,19 +29,16 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 /**
  * {@inheritDoc}
  *
- * <p>
- * startOnNewThreadメソッドの呼び出すことで、新たにスレッドを立ち上げて起動します。
- * 同一のインスタンスで複数回実行するようには設計されていません。
- * 一度実行したインスタンスを使用して再度実行しようとした場合、
- * 二度目以降に実行したタスクはIllegalStateExceptionによって実行を停止します
- * (startOnNewThreadメソッドの戻り値であるFutureのgetメソッドによって実際に投げられるのはExecutionException)
- *
- * <p>
- * Timeoutの設定はなく、別のスレッドからshutdownメソッドあるいはcloseメソッドが実行されるまで起動を
- * 続けます。
+ *<p>
+ * ノンブロッキング通信を行うサーバー
  *
  * <p>
  * 以下に、基本的な使用例を示します。
+ * <p>
+ *  {@link Swapper}は送信直前に実行される処理を定義するためのインターフェースで、新たなセッションが確立するごとに
+ *      {@link SwapperFactory}によって作成されます。<br>
+ *      その引数から受信データを取得できますので、送信データを返すようにしてください。<br>
+ *      {@link Server#startOnNewThread}を実行することでサーバーが起動します。<br>
  * <pre>
  * {@code
  * int PORT = 10000;
@@ -65,23 +62,29 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *               }
  *      };
  * })) {
- *       server.addOnSendListener(new OnSendListener() {
- *            public void onSend() {
- *               System.out.println("send");
- *           }
+ *        server.addOnSendListener(new OnSendListener() {
+ *             public void onSend(String remoteAddress) {
+ *                System.out.println("send from " + remoteAddress);
+ *               }
  *
- *          Future<?> future = server.startOnNewThread();
- *          future.get();
- *      });
+ *           Future<?> future = server.startOnNewThread();
+ *           future.get();
+ *           });
+ *       }
  * }
  * }
  * </pre>
  *
  * <p>
- *  {@link Swapper}は送信直前に実行される処理を定義するためのインターフェースで、新たなセッションが確立するごとに
- *      {@link SwapperFactory}によって作成されます。
- *      その引数から受信データを取得できますので、送信データを返すようにしてください。<br>
- *      Server#startOnNewThreadを実行することでサーバーが起動します。<br>
+ * Timeoutの設定はなく、{@link shutdown}メソッドあるいは{@link close}メソッドが実行されるまで起動を
+ * 続けます。
+ *
+ * <p>
+ * 同一のインスタンスで複数回実行するようには設計されていません。<br>
+ * 一度実行したインスタンスを使用して再度実行しようとした場合、
+ * 二度目以降に実行したタスクは{@link IllegalStateException}によって実行を停止します
+ * (startOnNewThreadメソッドの戻り値であるFutureのgetメソッドによって実際に投げられるのはExecutionException)
+ *
  */
 public class NonBlockingServer implements SocketServer, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);

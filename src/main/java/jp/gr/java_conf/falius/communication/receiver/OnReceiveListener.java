@@ -6,8 +6,7 @@ public interface OnReceiveListener {
 
     /**
      *
-     * @param fromAddress 送信してきたリモートのアドレス
-     * @param readByte ヘッダを含めたすべてのデータの受信サイズ
+     * @param remoteAddress 送信してきたリモートのアドレス
      * @param receiveData 受信データ
      */
     void onReceive(String remoteAddress, ReceiveData receiveData);

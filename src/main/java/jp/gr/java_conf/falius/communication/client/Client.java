@@ -12,6 +12,12 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
+/**
+ * 通信におけるクライアントを表すインターフェースです。
+ * 詳細は各具象クラスをご覧ください。
+ * @author "ymiyauchi"
+ *
+ */
 public interface Client extends Callable<ReceiveData>, AutoCloseable {
 
     /**

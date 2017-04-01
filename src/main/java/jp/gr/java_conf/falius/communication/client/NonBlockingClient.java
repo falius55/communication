@@ -38,9 +38,9 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  * ノンブロックな通信を行うクラスです。
  *
  * <p>
- * 送信内容はコンストラクタかstartメソッドの引数に渡すSendDataオブジェクトに格納し、
- *     受信内容はOnReceiveListenerの引数かstartメソッドの戻り値で渡される
- *     ReceiveDataオブジェクトから取得してください。
+ * 送信内容はコンストラクタか{@link start}メソッドの引数に渡す{@link SendData}オブジェクトに格納し、
+ *     受信内容は{@link OnReceiveListener}の引数かstartメソッドの戻り値で渡される
+ *     {@link ReceiveData}オブジェクトから取得してください。
  * <p>
  * OnReceiverListenerの引数で渡されるReceiveDataオブジェクトから消費した受信データは
  *     start()メソッドの戻り値で渡されるReceiveDataオブジェクトには含まれていませんので注意してください。
@@ -70,17 +70,17 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *  String retStr = ret.getString();
  *  int retInt = ret.getInt();
  *  CollectionReceiveData crd = new CollectionReceiveData(ret);
- *  List<String> retList = crd.getList();
+ *  {@literal List<String> retList = crd.getList();}
  *  }
  *  </pre>
  *  <p>
  *  上記の例は送受信がそれぞれ一回のみで通信を終える場合のコードです。
- *  startメソッドにSwapperインターフェース実装オブジェクトを渡すことで複数回に渡るやりとりを行うことも可能です。
+ *  startメソッドに{@link Swapper}インターフェース実装オブジェクトを渡すことで複数回に渡るやりとりを行うことも可能です。
  *  <p>
  *  また、sendメソッドでは受信が完了するまで処理は戻ってきません。<br>
  *  非同期に通信を行いたい場合はコンストラクタからSwapperを渡し、受信データはOnReceiveListenerから取得するという形で、
- *  startOnNewThreadメソッドなどで別スレッドにて動作させるという方法もあります。<br>
- *  この場合、送受信がそれぞれ一度のみの場合はstartOnNewThreadメソッドの戻り値であるFutureオブジェクトから
+ *  {@link startOnNewThread}メソッドなどで別スレッドにて動作させるという方法もあります。<br>
+ *  この場合、送受信がそれぞれ一度のみの場合はstartOnNewThreadメソッドの戻り値である{@link Future}オブジェクトから
  *  受信データを取得することもできます。
  * @author "ymiyauchi"
  *
