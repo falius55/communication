@@ -30,11 +30,6 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 public class BluetoothServer implements Server, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(BluetoothServer.class);
-    /**
-     * UUIDは独自プロトコルのサービスの場合は固有に生成する。
-     * - 各種ツールで生成する。（ほぼ乱数）
-     * - 注：このまま使わないように。
-     */
     private static final String serverUUID = "11111111111111111111111111111123";
 
     private final ExecutorService mExecutor = Executors.newCachedThreadPool();
@@ -59,7 +54,7 @@ public class BluetoothServer implements Server, AutoCloseable {
         mConnection = (StreamConnectionNotifier) Connector.open(
                 "btspp://localhost:" + mServerUuid,
                 Connector.READ_WRITE, true);
-        // ローカルデバイスにサービスを登録。必須ではない。
+        // ローカルデバイスにサービスを登録
         // これによって、周囲の機器がこのアプリを探せるようになる(macアドレスの登録をいちいちしなくてよくなる)
         ServiceRecord record = LocalDevice.getLocalDevice().getRecord(mConnection);
         LocalDevice.getLocalDevice().updateRecord(record);
