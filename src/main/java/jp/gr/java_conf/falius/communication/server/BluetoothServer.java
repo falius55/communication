@@ -28,6 +28,11 @@ import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
+/**
+ * Bluetooth通信をするサーバーのクラスです。
+ * @author "ymiyauchi"
+ *
+ */
 public class BluetoothServer implements Server, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(BluetoothServer.class);
     private static final String serverUUID = "11111111111111111111111111111123";

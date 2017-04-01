@@ -78,7 +78,7 @@ public class JITClientTest {
         mServer.addOnReceiveListener(new OnReceiveListener() {
 
             @Override
-            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 log.debug("server on receive");
             }
 
@@ -103,7 +103,7 @@ public class JITClientTest {
         try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
-            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
                 log.debug("ret: {}", ret);
                 list.check(ret);
@@ -131,7 +131,7 @@ public class JITClientTest {
         try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
-            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
                 log.debug("receive by {}", Thread.currentThread().getName());
                 log.debug("ret: {}", ret);
@@ -165,7 +165,7 @@ public class JITClientTest {
         try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
-            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
                 log.debug("receive by {}", Thread.currentThread().getName());
                 log.debug("ret: {}", ret);
@@ -202,7 +202,7 @@ public class JITClientTest {
         try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
-            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
                 log.debug("receive by {}", Thread.currentThread().getName());
                 log.debug("ret: {}", ret);
@@ -216,9 +216,8 @@ public class JITClientTest {
             client.addOnSendListener(new OnSendListener() {
 
                 @Override
-                public void onSend(int writeBytes) {
-                    check.check(0);
-                    assertThat(writeBytes, is(4 + 4 + 4 + 1));
+                public void onSend(String remoteAddress) {
+                    check.check("check");
                 }
 
             });
@@ -246,7 +245,7 @@ public class JITClientTest {
         try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
-            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 assertThat(true, is(false)); // 一度でも通ったら失敗
                 String ret = receiveData.getString();
                 log.debug("ret: {}", ret);
@@ -264,9 +263,9 @@ public class JITClientTest {
             client.addOnReceiveListener(new OnReceiveListener() {
 
                 @Override
-                public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+                public void onReceive(String remoteAddress, ReceiveData receiveData) {
                     log.debug("receive listener in new");
-                    check.check(0); // 一度でも通ったことの確認
+                    check.check("check"); // 一度でも通ったことの確認
                     String ret = receiveData.getString();
                     log.debug("receive by {}", Thread.currentThread().getName());
                     log.debug("ret: {}", ret);
@@ -305,7 +304,7 @@ public class JITClientTest {
         try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
-            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
                 log.debug("ret: {}", ret);
                 assertThat(list.isChecked(ret), is(false));
@@ -320,7 +319,7 @@ public class JITClientTest {
                 public void onDissconnect(String remote, Throwable cause) {
                     assertThat(check.isChecked("check"), is(false));
                     log.debug("client disconnect by {}", cause == null ? "null" : cause.getMessage());
-                    check.check(0);
+                    check.check("check");
                 }
 
             });
@@ -347,7 +346,7 @@ public class JITClientTest {
         try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
-            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
                 log.debug("receive by {}", Thread.currentThread().getName());
                 log.debug("ret: {}", ret);
@@ -385,7 +384,7 @@ public class JITClientTest {
         try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
-            public void onReceive(String remoteAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
                 log.debug("receive by {}", Thread.currentThread().getName());
                 log.debug("ret: {}", ret);

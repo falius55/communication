@@ -78,15 +78,15 @@ public class Session implements Runnable, AutoCloseable {
         mNextHandler = handler;
     }
 
-    public void onSend(int writeBytes) {
+    public void onSend() {
         if (mOnSendListener != null) {
-            mOnSendListener.onSend(writeBytes);
+            mOnSendListener.onSend(mRemoteAddress);
         }
     }
 
-    public void onReceive(int readByte, ReceiveData receiveData) {
+    public void onReceive(ReceiveData receiveData) {
         if (mOnReceiveListener != null) {
-            mOnReceiveListener.onReceive(mRemoteAddress, readByte, receiveData);
+            mOnReceiveListener.onReceive(mRemoteAddress, receiveData);
         }
     }
 

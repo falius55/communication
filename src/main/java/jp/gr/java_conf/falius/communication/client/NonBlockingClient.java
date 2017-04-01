@@ -47,6 +47,41 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  * <p>
  *  startメソッドを実行する度に新しい接続を確立して通信します。
+ *
+ *  <p>
+ *  以下に、基本的な使用例を示します。
+ *  <pre>
+ *  {@code
+ *  String HOST = "localhost";
+ *  int PORT = 10000;
+ *  Client client = new NonBlockingClient(HOST, PORT);
+ *
+ *  SendData sendData = new BasicSendData();
+ *  sendData.put(10);
+ *  sendData.put("send from client");
+ *  {@literal List<String> list = new ArrayList<>();}
+ *  list.add("abc");
+ *  list.add("def");
+ *  list.add("ghi");
+ *  CollectionSendData csd = new CollectionSendData(sendData);
+ *  csd.put(list);
+ *
+ *  ReceiveData ret = client.send(csd);
+ *  String retStr = ret.getString();
+ *  int retInt = ret.getInt();
+ *  CollectionReceiveData crd = new CollectionReceiveData(ret);
+ *  List<String> retList = crd.getList();
+ *  }
+ *  </pre>
+ *  <p>
+ *  上記の例は送受信がそれぞれ一回のみで通信を終える場合のコードです。
+ *  startメソッドにSwapperインターフェース実装オブジェクトを渡すことで複数回に渡るやりとりを行うことも可能です。
+ *  <p>
+ *  また、sendメソッドでは受信が完了するまで処理は戻ってきません。<br>
+ *  非同期に通信を行いたい場合はコンストラクタからSwapperを渡し、受信データはOnReceiveListenerから取得するという形で、
+ *  startOnNewThreadメソッドなどで別スレッドにて動作させるという方法もあります。<br>
+ *  この場合、送受信がそれぞれ一度のみの場合はstartOnNewThreadメソッドの戻り値であるFutureオブジェクトから
+ *  受信データを取得することもできます。
  * @author "ymiyauchi"
  *
  */

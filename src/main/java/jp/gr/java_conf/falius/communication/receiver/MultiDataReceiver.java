@@ -69,7 +69,7 @@ public class MultiDataReceiver implements Receiver {
             mLatestData = entry.getData();
             if (mListener != null) {
                 String remoteAddress = channel.socket().getRemoteSocketAddress().toString();
-                mListener.onReceive(remoteAddress, header.allDataSize(), getData());
+                mListener.onReceive(remoteAddress, getData());
             }
             mNonFinishedEntry = null;
             return Result.FINISHED;

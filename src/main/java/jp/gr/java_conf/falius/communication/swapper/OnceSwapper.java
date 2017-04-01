@@ -11,7 +11,7 @@ package jp.gr.java_conf.falius.communication.swapper;
 public abstract class OnceSwapper implements Swapper {
 
     @Override
-    public boolean doContinue() {
+    public final boolean doContinue() {
         return false;
     }
 

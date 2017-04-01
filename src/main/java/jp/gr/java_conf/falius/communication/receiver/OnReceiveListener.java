@@ -10,5 +10,5 @@ public interface OnReceiveListener {
      * @param readByte ヘッダを含めたすべてのデータの受信サイズ
      * @param receiveData 受信データ
      */
-    void onReceive(String remoteAddress, int readByte, ReceiveData receiveData);
+    void onReceive(String remoteAddress, ReceiveData receiveData);
 }

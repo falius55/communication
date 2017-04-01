@@ -40,7 +40,7 @@ public class BluetoothWritingHandler implements BluetoothHandler {
 
         log.debug("write size: {}", writeBytes);
         log.debug("on send listener");
-        mSession.onSend(writeBytes);
+        mSession.onSend();
 
         if (mSession.doContinue()) {
             log.debug("do continue");

@@ -23,6 +23,7 @@ import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
@@ -38,6 +39,49 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  * <p>
  * Timeoutの設定はなく、別のスレッドからshutdownメソッドあるいはcloseメソッドが実行されるまで起動を
  * 続けます。
+ *
+ * <p>
+ * 以下に、基本的な使用例を示します。
+ * <pre>
+ * {@code
+ * int PORT = 10000;
+ * try (Server server = new NonBlockingServer(PORT, new SwapperFactory() {
+ *
+ *      public void Swapper get() {
+ *          return new OnceSwapper() {
+ *
+ *              public SendData swap(String remoteAddress, ReceiveData receiveData) {
+ *                  int retInt = receiveData.getInt();
+ *                  String retStr = receiveData.getString();
+ *                  CollectionReceiveData crd = new CollectionReceiveData(receiveData);
+ *                  {@literal List<String>} retList = crd.getList();
+ *
+ *                  SendData sendData = new BasicSendData();
+ *                  sendData.put("data");
+ *                  sendData.put(retInt * 1);
+ *                  ArraySendData asd = new ArraySendData(sendData);
+ *                  asd.put(retList.toArray(new String[0]));
+ *                  return asd;
+ *               }
+ *      };
+ * })) {
+ *       server.addOnSendListener(new OnSendListener() {
+ *            public void onSend() {
+ *               System.out.println("send");
+ *           }
+ *
+ *          Future<?> future = server.startOnNewThread();
+ *          future.get();
+ *      });
+ * }
+ * }
+ * </pre>
+ *
+ * <p>
+ *  {@link Swapper}は送信直前に実行される処理を定義するためのインターフェースで、新たなセッションが確立するごとに
+ *      {@link SwapperFactory}によって作成されます。
+ *      その引数から受信データを取得できますので、送信データを返すようにしてください。<br>
+ *      Server#startOnNewThreadを実行することでサーバーが起動します。<br>
  */
 public class NonBlockingServer implements SocketServer, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);
@@ -98,7 +142,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
     }
 
     /**
-     * @throws IllegalStateException
+     * @throws IllegalStateException すでに実行済にもかかわらず実行した場合
      */
     @Override
     public Future<?> startOnNewThread() {
@@ -128,6 +172,9 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         }
     }
 
+    /**
+     * shutdownメソッドと同義です。
+     */
     @Override
     public void close() throws IOException {
         shutdown();

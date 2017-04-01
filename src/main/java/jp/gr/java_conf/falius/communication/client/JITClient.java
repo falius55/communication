@@ -31,6 +31,31 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  * <P>
  * 同一インスタンスを複数のスレッドで動作させた場合、sendメソッドによって与えられた送信データを各スレッドで分担して送信する
  *     ことになります。
+ *
+ * <p>
+ * 以下に、基本的な使用例を示します。
+ * <pre>
+ * {@codei
+ * String HOST = "localhost";
+ * int PORT = 10000;
+ * try (Client client = new JITClient(HOST, PORT, new OnReceiveListener() {
+ *      public void onReceive(String remoteAddress, ReceiveData receiveData) {
+ *          System.out.println(receiveData.getString());
+ *      }
+ * })) {
+ *      client.startOnNewThread();
+ *
+ *      for (int i = 0; i < 10; i++) {
+ *          SendData sendData = new BasicSendData();
+ *          sendData.put(i);
+ *          client.send(sendData);
+ *      }
+ * }
+ * }
+ * </pre>
+ * <p>
+ * closeメソッドが呼ばれるまで接続を維持しているので、送信データを供給するタイミングに制限はありません。
+ *
  * @author "ymiyauchi"
  *
  */
