@@ -142,7 +142,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         mSelector.wakeup();
         mServerSocketChannel.close();
         if (mExecutor != null) {
-            mExecutor.shutdown();
+            mExecutor.shutdownNow();
             log.info("executor shutdown");
         }
 

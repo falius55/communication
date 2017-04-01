@@ -62,7 +62,7 @@ public class HeaderFactory {
 
         ByteBuffer headerBuf = ByteBuffer.allocate(headerSize - 8);
 
-        UnFinishedHeader header = new UnFinishedHeader(headerSize, dataSize, headerBuf);
+        Header header = new UnFinishedHeader(headerSize, dataSize, headerBuf);
         return header.read(channel);
 
     }
