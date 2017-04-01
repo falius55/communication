@@ -115,7 +115,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         if (mExecutor == null) {
             synchronized (this) {
                 if (mExecutor == null) {
-                    mExecutor = Executors.newCachedThreadPool();
+                    mExecutor = Executors.newSingleThreadExecutor();
                 }
 
             }

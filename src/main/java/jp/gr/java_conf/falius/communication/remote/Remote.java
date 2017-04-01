@@ -73,8 +73,7 @@ public class Remote {
         if (sendData == null) {
             return null;
         }
-        Sender sender = new MultiDataSender(sendData);
-        sender.addOnSendListener(mOnSendListener);
+        Sender sender = new MultiDataSender(sendData, mOnSendListener);
         return sender;
     }
 

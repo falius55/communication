@@ -234,7 +234,7 @@ public class NonBlockingClientTest {
     }
 
     @Test
-    public void testStartSendData() throws IOException, TimeoutException {
+    public void testSend() throws IOException, TimeoutException {
         String sendData = "data";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData data = new BasicSendData();

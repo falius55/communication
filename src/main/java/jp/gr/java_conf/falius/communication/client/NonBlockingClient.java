@@ -12,6 +12,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
@@ -54,6 +57,8 @@ public class NonBlockingClient implements Client, Disconnectable {
     private final String mServerHost;
     private final int mServerPort;
     private final Set<SelectionKey> mKeys = Collections.synchronizedSet(new HashSet<>());
+
+    private ExecutorService mExecutor = null;
 
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
@@ -106,6 +111,18 @@ public class NonBlockingClient implements Client, Disconnectable {
     }
 
     @Override
+    public Future<ReceiveData> startOnNewThread() {
+        if (mExecutor == null) {
+            synchronized (this) {
+                if (mExecutor == null) {
+                    mExecutor = Executors.newCachedThreadPool();
+                }
+            }
+        }
+        return mExecutor.submit(this);
+    }
+
+    @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) throws IOException {
         String remote = channel.socket().getInetAddress().toString();
         channel.close();
@@ -123,7 +140,9 @@ public class NonBlockingClient implements Client, Disconnectable {
      * 先の呼び出しによるチャネルが切断されてから次の呼び出しが行われますので、
      * このメソッドを呼び出す必要はありません(このあたりは内部仕様を変更する可能性があります)。
      * Swapper#swapメソッド内でfinishメソッドを呼んでいれば、このクラスをCallbleとして複数スレッドで動作した場合も同様です。
-     * 異なるスレッドで実行している場合に外から処理を止める場合に利用します。
+     * しかし、startOnNewThreadメソッドによって実行された場合には呼び出される必要があります。
+     * また、異なるスレッドで実行している場合に外から処理を止める場合にも利用できます
+     * (リスナー内で処理がブロックされている場合などを除き、タスクを終了できます)。
      * @throws IOException
      */
     @Override
@@ -137,17 +156,22 @@ public class NonBlockingClient implements Client, Disconnectable {
             }
             mKeys.clear();
         }
+        if (mExecutor != null) {
+            mExecutor.shutdownNow();
+        }
     }
 
     /**
+     * 送受信を一度だけ行う場合の、start(Swapper)の簡易メソッドです。
+     * @param sendData
+     * @return 受信データ。受信に失敗するとnull
+     * @throws IOException
+     * @throws TimeoutException
      * @throws NullPointerException sendDataがnullの場合
      */
     @Override
     public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
         Objects.requireNonNull(sendData);
-        if (!sendData.hasRemain()) {
-            throw new IllegalArgumentException("send data is empty");
-        }
         return start(new OnceSwapper() {
 
             @Override
@@ -158,6 +182,7 @@ public class NonBlockingClient implements Client, Disconnectable {
     }
 
     /**
+     * @return 最終受信データ。受信に失敗するとnull
      * @throws NullPointerException swapperがnullの場合
      * @throws ConnectException 接続に失敗した場合
      * @throws IOException その他入出力エラーが発生した場合

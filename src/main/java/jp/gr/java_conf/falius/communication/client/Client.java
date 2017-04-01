@@ -2,6 +2,7 @@ package jp.gr.java_conf.falius.communication.client;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
@@ -14,9 +15,9 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 public interface Client extends Callable<ReceiveData>, AutoCloseable {
 
     /**
-     * 送受信を一度だけ行う場合の、start(Swapper)の簡易メソッドです。
+     * データを送信します。具体的な処理は実装により異なります。
      * @param sendData
-     * @return
+     * @return 同期通信であれば受信データ。非同期通信であればnull
      * @throws IOException
      * @throws TimeoutException
      */
@@ -30,6 +31,12 @@ public interface Client extends Callable<ReceiveData>, AutoCloseable {
      * @throws TimeoutException
      */
     ReceiveData start(Swapper swapper) throws IOException, TimeoutException;
+
+    /**
+     * 内部のスレッドプールに自身のタスクを追加します。
+     * @return
+     */
+    Future<ReceiveData> startOnNewThread();
 
     /**
      * 一度の送信で書き込みが完了した直後に実行されるリスナーを登録します。
