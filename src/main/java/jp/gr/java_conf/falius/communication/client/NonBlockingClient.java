@@ -59,7 +59,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *  SendData sendData = new BasicSendData();
  *  sendData.put(10);
  *  sendData.put("send from client");
- *  {@literal List<String> list = new ArrayList<>();}
+ *  List<String> list = new ArrayList<>();
  *  list.add("abc");
  *  list.add("def");
  *  list.add("ghi");
@@ -70,7 +70,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *  String retStr = ret.getString();
  *  int retInt = ret.getInt();
  *  CollectionReceiveData crd = new CollectionReceiveData(ret);
- *  {@literal List<String> retList = crd.getList();}
+ *  List<String> retList = crd.getList();
  *  }
  *  </pre>
  *  <p>
