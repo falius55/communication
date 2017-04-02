@@ -46,12 +46,8 @@ public class BasicReceiveDataTest {
         for (boolean b : data) {
             sendData.put(b);
         }
-<<<<<<< HEAD
-        ReceiveData receiveData = client.start(sendData);
-=======
         ReceiveData receiveData = client.send(sendData);
         assertThat(receiveData.dataCount(), is(data.length));
->>>>>>> refs/heads/maintenance-doc
         for (int i : new IntRange(receiveData.dataCount())) {
             boolean ret = receiveData.getBoolean();
             assertThat(ret, is(data[i]));
@@ -67,14 +63,9 @@ public class BasicReceiveDataTest {
         for (int i : data) {
             sendData.put(i);
         }
-<<<<<<< HEAD
-        ReceiveData receiveData = client.start(sendData);
-        for (int i : new IntRange(receiveData.dataCount())) {
-=======
         ReceiveData receiveData = client.send(sendData);
         assertThat(receiveData.dataCount(), is(data.length));
-        new IntRange(receiveData.dataCount()).forEach((i) -> {
->>>>>>> refs/heads/maintenance-doc
+        for (int i : new IntRange(receiveData.dataCount())) {
             String str = receiveData.getString();
             log.debug("get string: {}", str);
         }
@@ -88,14 +79,9 @@ public class BasicReceiveDataTest {
         for (int i : data) {
             sendData.put(i);
         }
-<<<<<<< HEAD
-        ReceiveData receiveData = client.start(sendData);
-        for (int i : new IntRange(receiveData.dataCount())) {
-=======
         ReceiveData receiveData = client.send(sendData);
         assertThat(receiveData.dataCount(), is(data.length));
-        new IntRange(receiveData.dataCount()).forEach((i) -> {
->>>>>>> refs/heads/maintenance-doc
+        for (int i : new IntRange(receiveData.dataCount())) {
             int ret = receiveData.getInt();
             assertThat(ret, is(data[i]));
         }
@@ -122,14 +108,9 @@ public class BasicReceiveDataTest {
         for (long i : data) {
             sendData.put(i);
         }
-<<<<<<< HEAD
-        ReceiveData receiveData = client.start(sendData);
-        for (int i : new IntRange(receiveData.dataCount())) {
-=======
         ReceiveData receiveData = client.send(sendData);
         assertThat(receiveData.dataCount(), is(data.length));
-        new IntRange(receiveData.dataCount()).forEach((i) -> {
->>>>>>> refs/heads/maintenance-doc
+        for (int i : new IntRange(receiveData.dataCount())) {
             long ret = receiveData.getLong();
             assertThat(ret, is(data[i]));
         }
@@ -156,14 +137,9 @@ public class BasicReceiveDataTest {
         for (double i : data) {
             sendData.put(i);
         }
-<<<<<<< HEAD
-        ReceiveData receiveData = client.start(sendData);
-        for (int i : new IntRange(receiveData.dataCount())) {
-=======
         ReceiveData receiveData = client.send(sendData);
         assertThat(receiveData.dataCount(), is(data.length));
-        new IntRange(receiveData.dataCount()).forEach((i) -> {
->>>>>>> refs/heads/maintenance-doc
+        for (int i : new IntRange(receiveData.dataCount())) {
             double ret = receiveData.getDouble();
             assertThat(ret, is(data[i]));
         }
@@ -190,14 +166,9 @@ public class BasicReceiveDataTest {
         for (float i : data) {
             sendData.put(i);
         }
-<<<<<<< HEAD
-        ReceiveData receiveData = client.start(sendData);
-        for (int i : new IntRange(receiveData.dataCount())) {
-=======
         ReceiveData receiveData = client.send(sendData);
         assertThat(receiveData.dataCount(), is(data.length));
-        new IntRange(receiveData.dataCount()).forEach((i) -> {
->>>>>>> refs/heads/maintenance-doc
+        for (int i : new IntRange(receiveData.dataCount())) {
             float ret = receiveData.getFloat();
             assertThat(ret, is(data[i]));
         }

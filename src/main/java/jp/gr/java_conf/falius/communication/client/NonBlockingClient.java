@@ -214,7 +214,7 @@ public class NonBlockingClient implements Client, Disconnectable {
      * @throws NullPointerException sendDataがnullの場合
      */
     @Override
-    public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
+    public ReceiveData send(final SendData sendData) throws IOException, TimeoutException {
         Objects.requireNonNull(sendData);
         return start(new OnceSwapper() {
 

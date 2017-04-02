@@ -4,12 +4,8 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
-<<<<<<< HEAD
-=======
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
->>>>>>> refs/heads/maintenance-doc
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -73,8 +69,8 @@ public class NonBlockingClientTest {
     @Test
     public void testAddOnSendListener() throws IOException, TimeoutException {
         final String sendData = "send data";
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
-        CheckList<String> check = new CheckList<>("check");
+        final Client client = new NonBlockingClient(HOST, mServer.getPort());
+        final CheckList<String> check = new CheckList<>("check");
         client.addOnSendListener(new OnSendListener() {
 
             @Override
@@ -168,8 +164,8 @@ public class NonBlockingClientTest {
     public void testMultiCall() throws InterruptedException, ExecutionException {
         final int THREADPOOL_COUNT = 3;
         final int TASK_COUNT = 15;
-        String[] sendData = { "a", "de", "ghi", "jklm" };
-        Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {
+        final String[] sendData = { "a", "de", "ghi", "jklm" };
+        final Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {
 
             @Override
             public SendData swap(String remoteAddress, ReceiveData receiveData) {
