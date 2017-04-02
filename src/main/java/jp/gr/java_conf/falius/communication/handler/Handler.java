@@ -1,5 +1,6 @@
 package jp.gr.java_conf.falius.communication.handler;
 
+import java.io.IOException;
 import java.nio.channels.SelectionKey;
 
 /**
@@ -9,5 +10,5 @@ import java.nio.channels.SelectionKey;
  */
 public interface Handler {
 
-    void handle(SelectionKey key);
+    void handle(SelectionKey key) throws IOException;
 }

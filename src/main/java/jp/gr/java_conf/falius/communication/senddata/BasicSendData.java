@@ -9,6 +9,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Queue;
 
+/**
+ * 送信データを格納するクラスです。
+ * @author "ymiyauchi"
+ *
+ */
 public class BasicSendData implements SendData {
     private final Queue<ByteBuffer> mData = new ArrayDeque<>();
 

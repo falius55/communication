@@ -19,8 +19,6 @@ public interface Sender {
         FINISHED, UNFINISHED,
     }
 
-    Sender addOnSendListener(OnSendListener listener);
-
     /**
      * Client及びServerの内部で使用します。
      * 実際の送信を行うメソッドです。

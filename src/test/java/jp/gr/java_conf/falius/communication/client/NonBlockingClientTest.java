@@ -4,6 +4,12 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
+<<<<<<< HEAD
+=======
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+>>>>>>> refs/heads/maintenance-doc
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,6 +31,7 @@ import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
+import jp.gr.java_conf.falius.util.check.CheckList;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingClientTest {
@@ -67,12 +74,13 @@ public class NonBlockingClientTest {
     public void testAddOnSendListener() throws IOException, TimeoutException {
         final String sendData = "send data";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
+        CheckList<String> check = new CheckList<>("check");
         client.addOnSendListener(new OnSendListener() {
 
             @Override
-            public void onSend(int writeSize) {
+            public void onSend(String remoteAddress) {
                 // 送信データ + ヘッダーサイズなので、送信データと同じにはならない。
-                assertThat(writeSize, is(greaterThan(sendData.getBytes().length)));
+                check.check("check");
             }
 
         });
@@ -87,6 +95,7 @@ public class NonBlockingClientTest {
             }
 
         });
+        assertThat(check.isChecked("check"), is(true));
     }
 
     @Test
@@ -96,7 +105,7 @@ public class NonBlockingClientTest {
         client.addOnReceiveListener(new OnReceiveListener() {
 
             @Override
-            public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String fromAddress, ReceiveData receiveData) {
                 assertThat(receiveData.getString(), is(sendData[0]));
                 assertThat(receiveData.getString(), is(sendData[1]));
             }
@@ -156,19 +165,50 @@ public class NonBlockingClientTest {
     }
 
     @Test
+    public void testMultiCall() throws InterruptedException, ExecutionException {
+        final int THREADPOOL_COUNT = 3;
+        final int TASK_COUNT = 15;
+        String[] sendData = { "a", "de", "ghi", "jklm" };
+        Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {
+
+            @Override
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                assertThat(receiveData, is(nullValue()));
+                SendData data = new BasicSendData();
+                for (int i : new IntRange(sendData.length)) {
+                    data.put(sendData[i]);
+                }
+                return data;
+            }
+
+        });
+
+        List<Future<ReceiveData>> futures = new LinkedList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(THREADPOOL_COUNT);
+
+        for (int i : new IntRange(TASK_COUNT)) {
+            Future<ReceiveData> future = executor.submit(client);
+            futures.add(future);
+        }
+
+        for (Future<ReceiveData> future : futures) {
+            ReceiveData receiveData = future.get();
+            assertThat(receiveData.dataCount(), is(sendData.length));
+            for (int i : new IntRange(sendData.length)) {
+                log.info("data: {} : {}", i, sendData[i]);
+                String ret = receiveData.getString();
+                log.info("ret : {} : {}", i, ret);
+                assertThat(ret, is(sendData[i]));
+            }
+            assertThat(future.isDone(), is(true));
+        }
+    }
+
+    @Test
     public void testMuchData() throws IOException, TimeoutException {
         final String sendData = "sendData";
         final int len = 10000;
         Client client = new NonBlockingClient(HOST, mServer.getPort());
-
-        client.addOnReceiveListener(new OnReceiveListener() {
-
-            @Override
-            public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
-                log.debug("much data readByte : {}", readByte);
-
-            }
-        });
 
         ReceiveData receiveData = client.start(new OnceSwapper() {
 
@@ -194,12 +234,12 @@ public class NonBlockingClientTest {
     }
 
     @Test
-    public void testStartSendData() throws IOException, TimeoutException {
+    public void testSend() throws IOException, TimeoutException {
         String sendData = "data";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData data = new BasicSendData();
         data.put(sendData);
-        ReceiveData receiveData = client.start(data);
+        ReceiveData receiveData = client.send(data);
         assertThat(receiveData.getString(), is(sendData));
     }
 
@@ -220,7 +260,7 @@ public class NonBlockingClientTest {
             try {
                 SendData data = new BasicSendData();
                 data.put(sendData + i);
-                receiveData = client.start(data);
+                receiveData = client.send(data);
             } catch (IOException | TimeoutException e) {
                 throw new IllegalStateException();
             }
@@ -236,14 +276,14 @@ public class NonBlockingClientTest {
             client.addOnReceiveListener(new OnReceiveListener() {
 
                 @Override
-                public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
+                public void onReceive(String fromAddress, ReceiveData receiveData) {
                     assertThat(receiveData.getString(), is(data[i]));
                 }
             });
             SendData sendData = new BasicSendData();
             sendData.put(data[i]);
             try {
-                client.start(sendData);
+                client.send(sendData);
             } catch (IOException | TimeoutException e) {
                 assertThat(false, is(true));
             }

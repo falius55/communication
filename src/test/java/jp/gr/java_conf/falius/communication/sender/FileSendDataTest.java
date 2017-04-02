@@ -47,7 +47,7 @@ public class FileSendDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(file);
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
         String text = receiveData.getString().replace("\r\n", "").replace("\n", "");
 
         StringBuilder sb = new StringBuilder();

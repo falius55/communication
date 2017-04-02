@@ -3,14 +3,19 @@ package jp.gr.java_conf.falius.communication.helper;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 
 public class OnceClient implements ClientHelper {
+    private static final Logger log = LoggerFactory.getLogger(OnceClient.class);
     private final String mHost;
     private final int mPort;
 
@@ -22,6 +27,14 @@ public class OnceClient implements ClientHelper {
     @SuppressWarnings("unchecked")
     public <T> ReceiveData send(final T... sendData) throws IOException, TimeoutException {
         Client client = new NonBlockingClient(mHost, mPort);
+        client.addOnDisconnectCallback(new OnDisconnectCallback() {
+
+            @Override
+            public void onDissconnect(String remote, Throwable cause) {
+                log.debug("client disconnect by {}", cause == null ? "non" : cause.getMessage());
+            }
+
+        });
         return client.start(new OnceSwapper() {
 
             @Override
