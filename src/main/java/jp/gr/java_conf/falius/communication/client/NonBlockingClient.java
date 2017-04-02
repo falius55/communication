@@ -87,10 +87,10 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  */
 public class NonBlockingClient implements Client, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
-    private static final long POLL_TIMEOUT = 30000L;
 
     private final String mServerHost;
     private final int mServerPort;
+    private final long mPollTimeout;
     private final Set<SelectionKey> mKeys = Collections.synchronizedSet(new HashSet<>());
 
     private ExecutorService mExecutor = null;
@@ -102,7 +102,15 @@ public class NonBlockingClient implements Client, Disconnectable {
     private Swapper mSwapper = null;
 
     public NonBlockingClient(String serverHost, int serverPort) {
-        this(serverHost, serverPort, null);
+        this(serverHost, serverPort, 0L);
+    }
+
+    public NonBlockingClient(String serverHost, int serverPort, long timeout) {
+        this(serverHost, serverPort, timeout, null);
+    }
+
+    public NonBlockingClient(String serverHost, int serverPort, Swapper swapper) {
+        this(serverHost, serverPort, 0L, swapper);
     }
 
     /**
@@ -111,10 +119,11 @@ public class NonBlockingClient implements Client, Disconnectable {
      * @param serverPort
      * @param swapper
      */
-    public NonBlockingClient(String serverHost, int serverPort,
+    public NonBlockingClient(String serverHost, int serverPort, long timeout,
             Swapper swapper) {
         mServerHost = serverHost;
         mServerPort = serverPort;
+        mPollTimeout = timeout;
         mSwapper = swapper;
     }
 
@@ -235,7 +244,7 @@ public class NonBlockingClient implements Client, Disconnectable {
 
             while (channel.isOpen()) {
                 log.debug("client in loop");
-                if (selector.select(POLL_TIMEOUT) > 0 || selector.selectedKeys().size() > 0) {
+                if (selector.select(mPollTimeout) > 0 || selector.selectedKeys().size() > 0) {
                     log.debug("client selectedKeys: {}", selector.selectedKeys().size());
 
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
@@ -250,7 +259,7 @@ public class NonBlockingClient implements Client, Disconnectable {
 
                 } else {
                     throw new TimeoutException("could not get selected operation during " +
-                            ((int) (double) POLL_TIMEOUT / 1000) + " sec.");
+                            ((int) (double) mPollTimeout / 1000) + " sec.");
                 }
             }
             log.debug("client end");
