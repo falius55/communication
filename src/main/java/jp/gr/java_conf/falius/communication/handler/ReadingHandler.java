@@ -30,7 +30,7 @@ class ReadingHandler implements Handler {
     }
 
     @Override
-    public void handle(SelectionKey key) {
+    public void handle(SelectionKey key) throws  IOException {
         log.debug("reading handle");
         SocketChannel channel = (SocketChannel) key.channel();
 
@@ -39,6 +39,12 @@ class ReadingHandler implements Handler {
             Receiver receiver = mRemote.receiver();
 
             Receiver.Result result = receiver.receive(channel);
+
+            if (result == Receiver.Result.DISCONNECT) {
+                // 接続相手がcloseした
+                mDisconnectable.disconnect(channel, key, null);
+                return;
+            }
 
             if (result == Receiver.Result.ERROR) {
                 log.warn("receive error");

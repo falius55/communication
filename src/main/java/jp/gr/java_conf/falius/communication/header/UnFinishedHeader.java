@@ -12,6 +12,12 @@ class UnFinishedHeader implements Header {
     private final int mAllDataSize;  // ヘッダー含む全データサイズ
     private final ByteBuffer mHeaderBuf;
 
+    /**
+     *
+     * @param headerSize
+     * @param allDataSize
+     * @param headerBuf 必要な容量を確保した、空のバッファ
+     */
     UnFinishedHeader(int headerSize, int allDataSize, ByteBuffer headerBuf) {
         mHeaderSize = headerSize;
         mAllDataSize = allDataSize;
@@ -34,7 +40,7 @@ class UnFinishedHeader implements Header {
         return new FinishedHeader(mHeaderSize, mAllDataSize, dataSizes);
     }
 
-    private static IntBuffer datasizesFromHeaderBuf(int headerSize, ByteBuffer headerBuf) {
+    static IntBuffer datasizesFromHeaderBuf(int headerSize, ByteBuffer headerBuf) {
         int dataCount = headerSize / 4 - 2;
         IntBuffer dataSizes = IntBuffer.allocate(dataCount);
         while (headerBuf.hasRemaining()) {

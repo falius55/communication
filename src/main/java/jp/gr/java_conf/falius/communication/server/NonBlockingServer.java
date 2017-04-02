@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,27 +20,79 @@ import org.slf4j.LoggerFactory;
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.RemoteStarter;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
+import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
+import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
  * {@inheritDoc}
  *
- * <p>
- * startOnNewThreadメソッドの呼び出し一回につき、ひとつのスレッドで起動します。
+ *<p>
+ * ノンブロッキング通信を行うサーバー
  *
  * <p>
- * Timeoutの設定はなく、別のスレッドからshutdownメソッドあるいはcloseメソッドが実行されるまで起動を
+ * 以下に、基本的な使用例を示します。
+ * <p>
+ *  {@link Swapper}は送信直前に実行される処理を定義するためのインターフェースで、新たなセッションが確立するごとに
+ *      {@link SwapperFactory}によって作成されます。<br>
+ *      その引数から受信データを取得できますので、送信データを返すようにしてください。<br>
+ *      {@link Server#startOnNewThread}を実行することでサーバーが起動します。<br>
+ * <pre>
+ * {@code
+ * int PORT = 10000;
+ * try (Server server = new NonBlockingServer(PORT, new SwapperFactory() {
+ *
+ *      public void Swapper get() {
+ *          return new OnceSwapper() {
+ *
+ *              public SendData swap(String remoteAddress, ReceiveData receiveData) {
+ *                  int retInt = receiveData.getInt();
+ *                  String retStr = receiveData.getString();
+ *                  CollectionReceiveData crd = new CollectionReceiveData(receiveData);
+ *                  {@literal List<String>} retList = crd.getList();
+ *
+ *                  SendData sendData = new BasicSendData();
+ *                  sendData.put("data");
+ *                  sendData.put(retInt * 1);
+ *                  ArraySendData asd = new ArraySendData(sendData);
+ *                  asd.put(retList.toArray(new String[0]));
+ *                  return asd;
+ *               }
+ *      };
+ * })) {
+ *        server.addOnSendListener(new OnSendListener() {
+ *             public void onSend(String remoteAddress) {
+ *                System.out.println("send from " + remoteAddress);
+ *               }
+ *
+ *           Future<?> future = server.startOnNewThread();
+ *           future.get();
+ *           });
+ *       }
+ * }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Timeoutの設定はなく、{@link shutdown}メソッドあるいは{@link close}メソッドが実行されるまで起動を
  * 続けます。
+ *
+ * <p>
+ * 同一のインスタンスで複数回実行するようには設計されていません。<br>
+ * 一度実行したインスタンスを使用して再度実行しようとした場合、
+ * 二度目以降に実行したタスクは{@link IllegalStateException}によって実行を停止します
+ * (startOnNewThreadメソッドの戻り値であるFutureのgetメソッドによって実際に投げられるのはExecutionException)
+ *
  */
-public class NonBlockingServer implements Server {
+public class NonBlockingServer implements SocketServer, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);
 
     private final int mServerPort;
 
-    private ServerSocketChannel mServerSocketChannel = null;
-    private Selector mSelector = null;
+    private volatile ServerSocketChannel mServerSocketChannel = null;
+    private volatile Selector mSelector = null;
 
     private ExecutorService mExecutor = null;
 
@@ -49,7 +102,6 @@ public class NonBlockingServer implements Server {
     private OnDisconnectCallback mOnDisconnectCallback = null;
 
     private volatile boolean mIsStarted = false;
-    private volatile boolean mIsShutdowned = false;
 
     public NonBlockingServer(int serverPort, SwapperFactory swapperFactory) {
         mServerPort = serverPort;
@@ -82,6 +134,8 @@ public class NonBlockingServer implements Server {
     }
 
     /**
+     * 独自に作成したスレッドで実行する際に利用します。
+     * しかし、同一インスタンスを並列実行することは想定されていませんので注意してください。
      * @return null
      */
     @Override
@@ -90,18 +144,40 @@ public class NonBlockingServer implements Server {
         return null;
     }
 
+    /**
+     * @throws IllegalStateException すでに実行済にもかかわらず実行した場合
+     */
     @Override
     public Future<?> startOnNewThread() {
         // Handler内で発生したIOExceptionは個別の接続先との問題であると判断し、
         // 内部でcatchした後発生先との接続を切断して続行する。
         // それ以外の箇所で発生したIOExceptionはサーバー全体に問題が発生していると判断し、
         // スレッドを停止して例外を外に伝播させている
-        if (mExecutor == null) {
-            mExecutor = Executors.newCachedThreadPool();
+        synchronized (this) {
+            if (mIsStarted) {
+                throw new IllegalStateException("server is already executed.");
+            }
         }
-        return mExecutor.submit(this);
+
+        if (mExecutor == null) {
+            synchronized (this) {
+                if (mExecutor == null) {
+                    mExecutor = Executors.newSingleThreadExecutor();
+                }
+
+            }
+        }
+        try {
+            return mExecutor.submit(this);
+        } catch (RejectedExecutionException e) {
+            // shutdownメソッドによってmExecutorもシャットダウンされている
+            throw new IllegalStateException("already shutdown");
+        }
     }
 
+    /**
+     * shutdownメソッドと同義です。
+     */
     @Override
     public void close() throws IOException {
         shutdown();
@@ -109,32 +185,29 @@ public class NonBlockingServer implements Server {
 
     @Override
     public void shutdown() throws IOException {
-        if (mIsShutdowned) {
+        if (mServerSocketChannel == null || mSelector == null) {
             return;
         }
-        if (mServerSocketChannel == null) {
-            return;
-        }
-
-        mIsShutdowned = true;
 
         mSelector.wakeup();
         mServerSocketChannel.close();
         if (mExecutor != null) {
-            mExecutor.shutdown();
+            mExecutor.shutdownNow();
+            log.info("executor shutdown");
         }
 
         if (mOnShutdownCallback != null) {
             mOnShutdownCallback.onShutdown();
         }
-        mIsStarted = false;
     }
 
     private void exec() throws IOException {
-        if (mIsStarted) {
-            throw new IllegalStateException("server is already executed. if you want restart, should shutdown.");
+        synchronized (this) {
+            if (mIsStarted) {
+                throw new IllegalStateException("server is already executed.");
+            }
+            mIsStarted = true;
         }
-        mIsStarted = true;
         log.debug("exec");
         try (Selector selector = Selector.open();
                 ServerSocketChannel channel = ServerSocketChannel.open()) {
@@ -145,7 +218,7 @@ public class NonBlockingServer implements Server {
             channel.configureBlocking(false);
             channel.register(selector, SelectionKey.OP_ACCEPT, mRemoteStarter);
 
-            while (!mIsShutdowned) {
+            while (channel.isOpen()) {
                 // select()メソッドの戻り値は新しく通知(OP_ACCEPT)のあったキーの数
                 // selectedKeys(Setオブジェクト)から明示的に削除しない限り、
                 // キーはselectedKeysに格納されたままになる
@@ -172,7 +245,7 @@ public class NonBlockingServer implements Server {
     private void bind(ServerSocketChannel channel) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerPort);
         log.info("bind to ... {} : {}", getLocalHostAddress(), address.getPort());
-        channel.bind(address);  // ポートが競合したら処理が返ってこない？
+        channel.bind(address); // ポートが競合したら処理が返ってこない？
         log.info("success binding");
     }
 

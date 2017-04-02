@@ -11,6 +11,7 @@ import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.server.NonBlockingServer;
 import jp.gr.java_conf.falius.communication.server.Server;
+import jp.gr.java_conf.falius.communication.server.SocketServer;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
@@ -18,29 +19,32 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 public class EchoServer implements ServerHelper {
     private static final Logger log = LoggerFactory.getLogger(EchoServer.class);
     private static int mPort = 9001;
-    private final Server mServer;
+    private final SocketServer mServer;
 
     public EchoServer() {
         mServer = init();
     }
 
-    private Server init() {
-        return new NonBlockingServer(mPort++, new SwapperFactory() {
+    private SocketServer init() {
+        synchronized (EchoServer.class) {
+            SocketServer server = new NonBlockingServer(mPort++, new SwapperFactory() {
 
-            @Override
-            public Swapper get() {
-                return new OnceSwapper() {
+                @Override
+                public Swapper get() {
+                    return new OnceSwapper() {
 
-                    @Override
-                    public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                        SendData data = new BasicSendData();
-                        data.put(receiveData.getAll());
-                        return data;
-                    }
+                        @Override
+                        public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                            SendData data = new BasicSendData();
+                            data.put(receiveData.getAll());
+                            return data;
+                        }
 
-                };
-            }
-        });
+                    };
+                }
+            });
+            return server;
+        }
     }
 
     @Override

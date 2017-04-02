@@ -22,7 +22,7 @@ public abstract class FixedRepeatSwapper extends RepeatSwapper {
     }
 
     @Override
-    public final SendData swap(String remoteAddress, ReceiveData receiveData) {
+    public final SendData swap(String remoteAddress, ReceiveData receiveData) throws Exception {
         SendData sendData = onSwap(remoteAddress, receiveData);
         mCount++;
         if (mCount == mLimit) {
@@ -33,5 +33,5 @@ public abstract class FixedRepeatSwapper extends RepeatSwapper {
         return sendData;
     }
 
-    public abstract SendData onSwap(String remoteAddress, ReceiveData receiveData);
+    public abstract SendData onSwap(String remoteAddress, ReceiveData receiveData) throws Exception;
 }

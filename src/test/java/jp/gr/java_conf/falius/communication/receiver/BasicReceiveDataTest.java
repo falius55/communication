@@ -46,11 +46,12 @@ public class BasicReceiveDataTest {
         for (boolean b : data) {
             sendData.put(b);
         }
-        ReceiveData receiveData = client.start(sendData);
-        new IntRange(receiveData.dataCount()).forEach((i) -> {
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
+        for (int i : new IntRange(receiveData.dataCount())) {
             boolean ret = receiveData.getBoolean();
             assertThat(ret, is(data[i]));
-        });;
+        }
     }
 
     @Test(expected=WrongMethodTypeException.class)
@@ -62,7 +63,8 @@ public class BasicReceiveDataTest {
         for (int i : data) {
             sendData.put(i);
         }
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             String str = receiveData.getString();
             log.debug("get string: {}", str);
@@ -78,7 +80,8 @@ public class BasicReceiveDataTest {
         for (int i : data) {
             sendData.put(i);
         }
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             int ret = receiveData.getInt();
             assertThat(ret, is(data[i]));
@@ -93,7 +96,8 @@ public class BasicReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(1));
         receiveData.getInt();
     }
 
@@ -105,7 +109,8 @@ public class BasicReceiveDataTest {
         for (long i : data) {
             sendData.put(i);
         }
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             long ret = receiveData.getLong();
             assertThat(ret, is(data[i]));
@@ -120,7 +125,8 @@ public class BasicReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(1));
         receiveData.getLong();
     }
 
@@ -132,7 +138,8 @@ public class BasicReceiveDataTest {
         for (double i : data) {
             sendData.put(i);
         }
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             double ret = receiveData.getDouble();
             assertThat(ret, is(data[i]));
@@ -147,7 +154,8 @@ public class BasicReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(1));
         receiveData.getDouble();
     }
 
@@ -159,7 +167,8 @@ public class BasicReceiveDataTest {
         for (float i : data) {
             sendData.put(i);
         }
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             float ret = receiveData.getFloat();
             assertThat(ret, is(data[i]));
@@ -174,7 +183,8 @@ public class BasicReceiveDataTest {
         Client client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
-        ReceiveData receiveData = client.start(sendData);
+        ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(1));
         receiveData.getFloat();
     }
 }
