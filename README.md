@@ -20,7 +20,7 @@ dependencies {
 ```
 
 ## Usage
-基本的な使用例は下記の通りです。各クラスの詳細に関してはdoc/javadocないのindex.htmlからjavadocがご覧になれます。
+基本的な使用例は下記の通りです。各クラスの詳細に関してはdoc/javadoc内のindex.htmlからjavadocがご覧になれます。
 ### クライアントが送信した文字列をサーバーが大文字にした文字列と文字数を送り返す例
 #### サーバーサイド
 ```
@@ -78,7 +78,7 @@ ReceiveData receiveData = client.send(sendData);
 System.out.println(receiveData.getString());  // -> "ABCD"
 System.out.println(receiveData.getInt());  // -> 4
 ```
-クライアントのstartメソッドは同一スレッドで動くので、下記のようにClient自体をCallableとして扱う方法もあります。
+クライアントのsendメソッドは同一スレッドで動くので、下記のようにClient自体をCallableとして扱う方法もあります。
 ```
 String host = "localhost";
 int port = 9001;
