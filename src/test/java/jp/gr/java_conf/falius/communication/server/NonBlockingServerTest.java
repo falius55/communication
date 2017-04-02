@@ -37,7 +37,7 @@ public class NonBlockingServerTest {
 
     @Test
     public void testReceiveValueInSwapper() throws IOException, TimeoutException {
-        String[] receiveData = { "1", "2", "3" };
+        final String[] data = { "1", "2", "3" };
         try (Server server = new NonBlockingServer(PORT, new SwapperFactory() {
 
             @Override
@@ -45,16 +45,16 @@ public class NonBlockingServerTest {
                 return new OnceSwapper() {
 
                     @Override
-                    public SendData swap(String remoteAddress, ReceiveData receiver) {
+                    public SendData swap(String remoteAddress, ReceiveData receiveData) {
                         log.info("swap from {}", remoteAddress);
-                        assertThat(receiver, is(not(nullValue())));
+                        assertThat(receiveData, is(not(nullValue())));
                         SendData sender = new BasicSendData();
-                        for (String data : receiveData) {
-                            String rev = receiver.getString();
-                            assertThat(rev, is(data));
+                        for (String d : data) {
+                            String rev = receiveData.getString();
+                            assertThat(rev, is(d));
                             sender.put(Integer.parseInt(rev));
                         }
-                        assertThat(receiver.getString(), is(nullValue()));
+                        assertThat(receiveData.getString(), is(nullValue()));
                         return sender;
                     }
                 };
@@ -63,11 +63,11 @@ public class NonBlockingServerTest {
             server.startOnNewThread();
 
             ClientHelper client = new OnceClient(HOST, PORT);
-            ReceiveData ret = client.send(receiveData);
+            ReceiveData ret = client.send(data);
             assertThat(ret, is(not(nullValue())));
-            assertThat(ret.dataCount(), is(receiveData.length));
-            for (String data : receiveData) {
-                assertThat(ret.getInt(), is(Integer.parseInt(data)));
+            assertThat(ret.dataCount(), is(data.length));
+            for (String d : data) {
+                assertThat(ret.getInt(), is(Integer.parseInt(d)));
             }
             assertThat(ret.get(), is(nullValue()));
         }
@@ -75,7 +75,7 @@ public class NonBlockingServerTest {
 
     @Test
     public void testAddOnReceiveListener() throws IOException, TimeoutException {
-        String[] receiveData = { "data1", "data2", "data3" };
+        final String[] receiveData = { "data1", "data2", "data3" };
         try (Server server = new NonBlockingServer(PORT, new SwapperFactory() {
 
             @Override
@@ -99,9 +99,9 @@ public class NonBlockingServerTest {
                 public void onReceive(String fromAddress, ReceiveData receiver) {
                     assertThat(receiver, is(not(nullValue())));
                     SendData sender = new BasicSendData();
-                    for (String data : receiveData) {
+                    for (String d : receiveData) {
                         String rev = receiver.getString();
-                        assertThat(rev, is(data));
+                        assertThat(rev, is(d));
                         sender.put(rev);
                     }
                     assertThat(receiver.getString(), is(nullValue()));
@@ -118,7 +118,7 @@ public class NonBlockingServerTest {
     public void testCall() throws IOException, TimeoutException, InterruptedException, ExecutionException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<?> future = null;
-        String[] receiveData = { "1", "2", "3" };
+        final String[] receiveData = { "1", "2", "3" };
         try (Server server = new NonBlockingServer(PORT, new SwapperFactory() {
 
             @Override
