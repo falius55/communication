@@ -11,7 +11,7 @@ import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 /**
  *
  * <p>
- * サーバーを表すクラスです。
+ * サーバーを表すインターフェースです。
  *
  * <p>
  * インスタンスを作成した後、startOnNewThreadメソッドを実行することで起動します。

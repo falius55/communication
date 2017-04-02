@@ -28,6 +28,7 @@ import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
+import jp.gr.java_conf.falius.util.check.CheckList;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingClientTest {
@@ -70,12 +71,13 @@ public class NonBlockingClientTest {
     public void testAddOnSendListener() throws IOException, TimeoutException {
         String sendData = "send data";
         Client client = new NonBlockingClient(HOST, mServer.getPort());
+        CheckList<String> check = new CheckList<>("check");
         client.addOnSendListener(new OnSendListener() {
 
             @Override
-            public void onSend(int writeSize) {
+            public void onSend(String remoteAddress) {
                 // 送信データ + ヘッダーサイズなので、送信データと同じにはならない。
-                assertThat(writeSize, is(greaterThan(sendData.getBytes().length)));
+                check.check("check");
             }
 
         });
@@ -90,6 +92,7 @@ public class NonBlockingClientTest {
             }
 
         });
+        assertThat(check.isChecked("check"), is(true));
     }
 
     @Test
@@ -99,7 +102,7 @@ public class NonBlockingClientTest {
         client.addOnReceiveListener(new OnReceiveListener() {
 
             @Override
-            public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
+            public void onReceive(String fromAddress, ReceiveData receiveData) {
                 assertThat(receiveData.getString(), is(sendData[0]));
                 assertThat(receiveData.getString(), is(sendData[1]));
             }
@@ -204,15 +207,6 @@ public class NonBlockingClientTest {
         int len = 10000;
         Client client = new NonBlockingClient(HOST, mServer.getPort());
 
-        client.addOnReceiveListener(new OnReceiveListener() {
-
-            @Override
-            public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
-                log.debug("much data readByte : {}", readByte);
-
-            }
-        });
-
         ReceiveData receiveData = client.start(new OnceSwapper() {
 
             @Override
@@ -276,7 +270,7 @@ public class NonBlockingClientTest {
             client.addOnReceiveListener(new OnReceiveListener() {
 
                 @Override
-                public void onReceive(String fromAddress, int readByte, ReceiveData receiveData) {
+                public void onReceive(String fromAddress, ReceiveData receiveData) {
                     assertThat(receiveData.getString(), is(data[i]));
                 }
             });

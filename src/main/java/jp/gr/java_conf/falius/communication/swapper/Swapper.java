@@ -1,29 +1,32 @@
 package jp.gr.java_conf.falius.communication.swapper;
 
+import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
+import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 /**
  * <p>
- * 受信内容を受け取り、送信内容を格納したSenderオブジェクトを作成するクラスのインターフェースです。
+ * 受信内容を受け取り、送信内容を格納した{@link SendData}オブジェクトを作成するクラスのインターフェースです。
  * データの受信と送信を繋ぎ、送信データのファクトリとしての役割を担います。
  *
  * <p>
  * Swapperは一つの接続に対して一つのオブジェクトがあてられます。
  *
  *<p>
- * 受信内容をもとに送信内容を決定するためにReceiverオブジェクトを引数に受け取りますが、
- * クライアントにおいては最初の一度はreceiverにnullが入り、最後の受信内容はswap()メソッドで
- * 受け取れないなど不便なものとなっています。そのため、Swapperは純粋にSenderオブジェクトを生成するための
- * オブジェクトとし、受信内容の処理は一度の送受信ならClient#startメソッドの戻り値、複数の送受信を行うなら
- * OnReceiveListener#onReceiveの引数に渡されるReceiverオブジェクトを利用するのが確実です。
+ * 受信内容をもとに送信内容を決定するために{@link ReceiveData}オブジェクトを引数に受け取りますが、
+ * クライアントにおいては最初の一度はreceiveDataにnullが入り、最後の受信内容はswap()メソッドで
+ * 受け取れないなど不便なものとなっています。そのため、Swapperは純粋にSendDataオブジェクトを生成するための
+ * オブジェクトとし、受信内容の処理は一度の送受信なら{@link Client#start}メソッドなどの戻り値、複数の送受信を行うなら
+ * {@link OnReceiveListener#onReceive}の引数に渡されるReceiveDataオブジェクトを利用するのが確実です。
  *
  *<p>
- * サーバーとクライアントが同じ回数だけswapメソッドが呼ばれるようにisContinueメソッドがfalseを返すように調整する
- * ことで、お互いに受信失敗が発生せず自然に通信を終えることができます。
+ * サーバーとクライアントが同じ回数だけswapメソッドが呼ばれるように{@link doContinue}メソッドがfalseを返すように調整する
+ * ことで、お互い自然に通信を終えることができます。
  *
  *<p>
- * 具象クラスは、一度の送受信であればOnceSwapper、送受信を繰り返す場合はRepeatSwapperが利用できます。
+ * 具象クラスは、一度の送受信であれば{@link OnceSwapper}、送受信を繰り返す場合は{@link RepeatSwapper}などが
+ * 利用できます。
  *
  * @author "ymiyauchi"
  *

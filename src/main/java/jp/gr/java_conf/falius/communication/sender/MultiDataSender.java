@@ -54,7 +54,8 @@ public class MultiDataSender implements Sender {
             return Result.UNFINISHED;
         }
             if (mListener != null) {
-                mListener.onSend(mData.limit());
+                String remoteAddress = channel.socket().getInetAddress().toString();
+                mListener.onSend(remoteAddress);
             }
             log.debug("writing finish");
             return Result.FINISHED;

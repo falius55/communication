@@ -4,6 +4,11 @@ import java.util.Arrays;
 
 import org.json.JSONArray;
 
+/**
+ * 配列を送信する際に利用するSendData
+ * @author "ymiyauchi"
+ *
+ */
 public class ArraySendData extends ExtendableSendData {
 
     public ArraySendData(SendData sender) {

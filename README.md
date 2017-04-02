@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.falius55:communication:1.4.0'
+    compile 'com.github.falius55:communication:1.4.1'
 }
 
 ```
@@ -70,8 +70,8 @@ Client client = new NonBlockingClient(host, port);
 SendData sendData = new BasicSendData();
 sendData.put("abcd");
 
-// Client#start(SendData)は送信が一回のみの場合の簡易メソッド
-ReceiveData receiveData = client.start(sendData);
+// NonBclockingClient#send(SendData)は送信が一回のみの場合の簡易メソッド
+ReceiveData receiveData = client.send(sendData);
 
 // データは送信相手がputした順序で格納されているので、
 //   同じ順序でgetして取得する
@@ -117,6 +117,7 @@ ReceiveData ret = future.get();
 ```
 /*
  * 上の例と違うのはSwapperの種類とswapメソッド内での処理(回数管理)
+ * クライアント側の接続切断を検知するとサーバー側も切断するので、回数管理は必須ではない。
  */
 int repeatLen = 10;
 int port = 9001;
@@ -224,7 +225,6 @@ ReceiveData receiveData = client.start(new FixedRepeatSwapper(repeatLen) {
 
 System.out.println(receiveData.getInt());  // -> 19
 ```
-
 ### 扱えるデータの拡張
 ExtendableSendData及びExtendableReceiveDataを継承したクラスを使うことで扱えるデータを増やすことができます。
 ```
@@ -245,3 +245,4 @@ fileData.getAndSave(file);  // 送信されてきたsample.txtの内容をrcv.tx
 * ファイル
 * List, Map
 * Serializable
+* 配列

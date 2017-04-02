@@ -96,7 +96,7 @@ public class NonBlockingServerTest {
             server.addOnReceiveListener(new OnReceiveListener() {
 
                 @Override
-                public void onReceive(String fromAddress, int readByte, ReceiveData receiver) {
+                public void onReceive(String fromAddress, ReceiveData receiver) {
                     assertThat(receiver, is(not(nullValue())));
                     SendData sender = new BasicSendData();
                     for (String data : receiveData) {

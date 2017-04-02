@@ -7,9 +7,5 @@ package jp.gr.java_conf.falius.communication.sender;
  */
 public interface OnSendListener {
 
-    /**
-     *
-     * @param writeBytes ヘッダも含めたすべての書き込みデータのサイズ
-     */
-    void onSend(int writeBytes);
+    void onSend(String remoteAddress);
 }

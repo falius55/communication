@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
+import jp.gr.java_conf.falius.communication.rcvdata.BasicReceiveData;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 
 /**
@@ -69,7 +70,7 @@ public class MultiDataReceiver implements Receiver {
             mLatestData = entry.getData();
             if (mListener != null) {
                 String remoteAddress = channel.socket().getRemoteSocketAddress().toString();
-                mListener.onReceive(remoteAddress, header.allDataSize(), getData());
+                mListener.onReceive(remoteAddress, getData());
             }
             mNonFinishedEntry = null;
             return Result.FINISHED;
