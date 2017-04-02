@@ -64,6 +64,7 @@ public class BasicReceiveDataTest {
             sendData.put(i);
         }
         ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             String str = receiveData.getString();
             log.debug("get string: {}", str);
@@ -80,6 +81,7 @@ public class BasicReceiveDataTest {
             sendData.put(i);
         }
         ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             int ret = receiveData.getInt();
             assertThat(ret, is(data[i]));
@@ -95,6 +97,7 @@ public class BasicReceiveDataTest {
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(1));
         receiveData.getInt();
     }
 
@@ -107,6 +110,7 @@ public class BasicReceiveDataTest {
             sendData.put(i);
         }
         ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             long ret = receiveData.getLong();
             assertThat(ret, is(data[i]));
@@ -122,6 +126,7 @@ public class BasicReceiveDataTest {
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(1));
         receiveData.getLong();
     }
 
@@ -134,6 +139,7 @@ public class BasicReceiveDataTest {
             sendData.put(i);
         }
         ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             double ret = receiveData.getDouble();
             assertThat(ret, is(data[i]));
@@ -149,6 +155,7 @@ public class BasicReceiveDataTest {
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(1));
         receiveData.getDouble();
     }
 
@@ -161,6 +168,7 @@ public class BasicReceiveDataTest {
             sendData.put(i);
         }
         ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(data.length));
         new IntRange(receiveData.dataCount()).forEach((i) -> {
             float ret = receiveData.getFloat();
             assertThat(ret, is(data[i]));
@@ -176,6 +184,7 @@ public class BasicReceiveDataTest {
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData receiveData = client.send(sendData);
+        assertThat(receiveData.dataCount(), is(1));
         receiveData.getFloat();
     }
 }

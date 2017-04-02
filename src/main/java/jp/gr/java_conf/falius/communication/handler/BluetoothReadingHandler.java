@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import jp.gr.java_conf.falius.communication.bluetooth.Session;
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
+import jp.gr.java_conf.falius.communication.rcvdata.BasicReceiveData;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
-import jp.gr.java_conf.falius.communication.receiver.BasicReceiveData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 public class BluetoothReadingHandler implements BluetoothHandler {
