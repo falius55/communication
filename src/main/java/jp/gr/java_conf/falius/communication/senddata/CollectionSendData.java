@@ -13,8 +13,8 @@ import org.json.JSONObject;
  */
 public class CollectionSendData extends ExtendableSendData {
 
-    public CollectionSendData(SendData sender) {
-        super(sender);
+    public CollectionSendData(SendData sendData) {
+        super(sendData);
     }
 
     public SendData put(List<?> list) {

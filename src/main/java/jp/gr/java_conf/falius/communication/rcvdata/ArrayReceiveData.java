@@ -10,8 +10,8 @@ import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class ArrayReceiveData extends ExtendableReceiveData {
 
-    public ArrayReceiveData(ReceiveData receiver) {
-        super(receiver);
+    public ArrayReceiveData(ReceiveData receiveData) {
+        super(receiveData);
     }
 
     public int[] getIntArray() {

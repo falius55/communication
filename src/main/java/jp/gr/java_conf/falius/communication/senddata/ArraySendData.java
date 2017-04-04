@@ -11,8 +11,8 @@ import org.json.JSONArray;
  */
 public class ArraySendData extends ExtendableSendData {
 
-    public ArraySendData(SendData sender) {
-        super(sender);
+    public ArraySendData(SendData sendData) {
+        super(sendData);
     }
 
     public SendData put(int[] data) {
