@@ -14,8 +14,8 @@ import java.nio.file.Paths;
  */
 public class FileSendData extends ExtendableSendData {
 
-    public FileSendData(SendData sender) {
-        super(sender);
+    public FileSendData(SendData sendData) {
+        super(sendData);
     }
 
     public SendData put(Path filePath) throws IOException {

@@ -13,8 +13,8 @@ import java.util.Iterator;
 public abstract class ExtendableSendData implements SendData {
     private final SendData mSource;
 
-    public ExtendableSendData(SendData sender) {
-        mSource = sender;
+    public ExtendableSendData(SendData sendData) {
+        mSource = sendData;
     }
 
     @Override

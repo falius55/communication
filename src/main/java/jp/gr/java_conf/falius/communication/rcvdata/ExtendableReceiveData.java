@@ -7,8 +7,8 @@ import java.nio.ByteBuffer;
 public abstract class ExtendableReceiveData implements ReceiveData {
     private final ReceiveData mSource;
 
-    public ExtendableReceiveData(ReceiveData receiver) {
-        mSource = receiver;
+    public ExtendableReceiveData(ReceiveData receiveData) {
+        mSource = receiveData;
     }
 
     @Override
