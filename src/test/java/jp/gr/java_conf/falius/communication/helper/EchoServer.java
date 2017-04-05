@@ -89,4 +89,9 @@ public class EchoServer implements ServerHelper {
     public int getPort() {
         return mServer.getPort();
     }
+
+    @Override
+    public String getAddress() {
+        return mServer.getLocalHostAddress();
+    }
 }

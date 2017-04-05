@@ -62,6 +62,12 @@ public interface Client extends Callable<ReceiveData>, AutoCloseable {
      */
     void addOnDisconnectCallback(OnDisconnectCallback callback);
 
+    void addOnConnectListener(OnConnectListener listener);
+
     void close() throws IOException;
 
+    public interface OnConnectListener  {
+
+        void onConnect(String remoteAddress);
+    }
 }
