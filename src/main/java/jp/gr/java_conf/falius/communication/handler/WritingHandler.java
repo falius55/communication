@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.Remote;
 import jp.gr.java_conf.falius.communication.sender.Sender;
@@ -17,7 +14,6 @@ import jp.gr.java_conf.falius.communication.sender.Sender;
  *
  */
 public class WritingHandler implements Handler {
-    private static final Logger log = LoggerFactory.getLogger(WritingHandler.class);
 
     private final Disconnectable mDisconnectable;
     private final Remote mRemote;
@@ -32,12 +28,10 @@ public class WritingHandler implements Handler {
 
     @Override
     public void handle(SelectionKey key) throws IOException {
-        log.debug("writing handle");
         SocketChannel channel = (SocketChannel) key.channel();
         try {
             if (!channel.isOpen()) {
                 // チャンネルが閉じられている場合、書き込みを中止して正常終了させる
-                log.warn("channel is closed. cancel writting.");
                 mDisconnectable.disconnect(channel, key,
                         new IllegalStateException("channel is not open@writing handler"));
                 return;
@@ -51,7 +45,6 @@ public class WritingHandler implements Handler {
             }
 
             if (sender == null) {
-                log.info("disconnect by send data returned null");
                 mDisconnectable.disconnect(channel, key, null);
                 return;
             }
@@ -59,7 +52,6 @@ public class WritingHandler implements Handler {
             Sender.Result result = sender.send(channel);
 
             if (result == Sender.Result.UNFINISHED) {
-                log.debug("!sender.isWrittenFinished()");
                 return;
             }
 
@@ -72,7 +64,6 @@ public class WritingHandler implements Handler {
 
         } catch (Exception e) {
             mDisconnectable.disconnect(channel, key, new IOException("writing handler exception", e));
-            log.error("writing handler error", e);
         }
 
     }

@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.receiver.Receiver;
 import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.Remote;
@@ -17,7 +14,6 @@ import jp.gr.java_conf.falius.communication.remote.Remote;
  *
  */
 class ReadingHandler implements Handler {
-    private static final Logger log = LoggerFactory.getLogger(ReadingHandler.class);
 
     private final Disconnectable mDisconnectable;
     private final Remote mRemote;
@@ -31,7 +27,6 @@ class ReadingHandler implements Handler {
 
     @Override
     public void handle(SelectionKey key) throws  IOException {
-        log.debug("reading handle");
         SocketChannel channel = (SocketChannel) key.channel();
 
         try {
@@ -47,7 +42,6 @@ class ReadingHandler implements Handler {
             }
 
             if (result == Receiver.Result.ERROR) {
-                log.warn("receive error");
                 mDisconnectable.disconnect(channel, key, new IOException("reading channel returns -1"));
                 return;
             }
@@ -65,7 +59,6 @@ class ReadingHandler implements Handler {
 
         } catch (Exception e) {
             mDisconnectable.disconnect(channel, key, new IOException("reading handler exception", e));
-            log.error("handle error", e);
         }
     }
 }

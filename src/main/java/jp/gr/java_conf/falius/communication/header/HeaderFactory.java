@@ -6,9 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 /**
@@ -18,7 +15,6 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
  *
  */
 public class HeaderFactory {
-    private static final Logger log = LoggerFactory.getLogger(HeaderFactory.class);
 
     /**
      *
@@ -35,8 +31,6 @@ public class HeaderFactory {
             buf.put(size);
         }
         buf.flip();
-        log.debug("send header size : {}", headerSize);
-        log.debug("send all data size: {}", dataSize);
         return new FinishedHeader(headerSize, dataSize, buf);
     }
 

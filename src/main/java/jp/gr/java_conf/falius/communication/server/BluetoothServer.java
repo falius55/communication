@@ -14,9 +14,6 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.bluetooth.Session;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
@@ -34,7 +31,6 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  */
 public class BluetoothServer implements Server, AutoCloseable {
-    private static final Logger log = LoggerFactory.getLogger(BluetoothServer.class);
     private static final String serverUUID = "11111111111111111111111111111123";
 
     private final ExecutorService mExecutor = Executors.newCachedThreadPool();
@@ -64,7 +60,6 @@ public class BluetoothServer implements Server, AutoCloseable {
         ServiceRecord record = LocalDevice.getLocalDevice().getRecord(mConnection);
         LocalDevice.getLocalDevice().updateRecord(record);
 
-        log.debug("server start");
     }
 
     @Override
@@ -103,7 +98,6 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     @Override
     public Future<?> startOnNewThread() {
-        log.debug("start on new thread");
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -116,12 +110,10 @@ public class BluetoothServer implements Server, AutoCloseable {
     private void exec() {
         try {
             while (!mIsShutdowned) {
-                log.debug("in loop");
                 Session session = accept();
                 mExecutor.submit(session);
             }
         } catch (IOException e) {
-            log.error("I/O error in exec : {}", e.getMessage());
         }
     }
 
@@ -130,9 +122,7 @@ public class BluetoothServer implements Server, AutoCloseable {
      * @return 接続されたたセッションを返す。
      */
     private Session accept() throws IOException {
-        log.debug("Accept");
         StreamConnection channel = mConnection.acceptAndOpen();
-        log.debug("Connect");
         if (mOnAcceptListener != null) {
             RemoteDevice remote = RemoteDevice.getRemoteDevice(channel);
             mOnAcceptListener.onAccept(remote.getBluetoothAddress());
@@ -143,7 +133,6 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     @Override
     public void shutdown() throws IOException {
-        log.debug("shutdown");
         if (mConnection != null) {
             mConnection.close();
         }
@@ -170,14 +159,11 @@ public class BluetoothServer implements Server, AutoCloseable {
                     @Override
                     public SendData swap(String remoteAddress, ReceiveData receiveData) {
                         try {
-                            log.debug("swap");
                             String rcv = receiveData.getString();
-                            log.debug("receive: {}", rcv);
                             SendData sendData = new BasicSendData();
                             sendData.put(rcv.toUpperCase());
                             return sendData;
                         } catch (Exception e) {
-                            log.error("swapper error", e);
                             throw new NullPointerException();
                         }
                     }
@@ -190,7 +176,6 @@ public class BluetoothServer implements Server, AutoCloseable {
 
                 @Override
                 public void onAccept(String remoteAddress) {
-                    log.debug("accept to {}", remoteAddress);
                 }
 
             });
@@ -198,14 +183,12 @@ public class BluetoothServer implements Server, AutoCloseable {
             future.get();
 
             while (true) {
-                log.debug("main loop");
                 System.out.println("please type stop if you want to stop server");
                 if ((sc.nextLine()).equals("stop")) {
                     break;
                 }
             }
 
-            log.debug("main end");
         } catch (IOException e) {
             e.printStackTrace();
         }

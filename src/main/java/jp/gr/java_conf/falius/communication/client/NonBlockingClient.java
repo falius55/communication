@@ -17,9 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.handler.Handler;
 import jp.gr.java_conf.falius.communication.handler.WritingHandler;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
@@ -86,7 +83,6 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  */
 public class NonBlockingClient implements Client, Disconnectable {
-    private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
 
     private final String mServerHost;
     private final int mServerPort;
@@ -134,9 +130,7 @@ public class NonBlockingClient implements Client, Disconnectable {
 
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
-        log.debug("add on receve listener: {}", listener);
         mOnReceiveListener = listener;
-        log.debug("new mOnReceiveListener: {}", mOnReceiveListener);
     }
 
     @Override
@@ -172,7 +166,6 @@ public class NonBlockingClient implements Client, Disconnectable {
         channel.close();
         key.selector().wakeup();
 
-        log.debug("mOnDisconnectCallback: {}", mOnDisconnectCallback);
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(remote, cause);
         }
@@ -234,7 +227,6 @@ public class NonBlockingClient implements Client, Disconnectable {
      */
     @Override
     public ReceiveData start(Swapper swapper) throws IOException, TimeoutException {
-        log.debug("client start");
         Objects.requireNonNull(swapper, "swapper is null");
         try (Selector selector = Selector.open(); SocketChannel channel = SocketChannel.open()) {
             Remote remote = connect(channel, swapper); // 接続はブロッキングモード
@@ -243,16 +235,13 @@ public class NonBlockingClient implements Client, Disconnectable {
                     new WritingHandler(this, remote, true));
 
             while (channel.isOpen()) {
-                log.debug("client in loop");
                 if (selector.select(mPollTimeout) > 0 || selector.selectedKeys().size() > 0) {
-                    log.debug("client selectedKeys: {}", selector.selectedKeys().size());
 
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
                         SelectionKey key = iter.next();
                         mKeys.add(key);
                         Handler handler = (Handler) key.attachment();
-                        log.debug("client handle");
                         handler.handle(key);
                         iter.remove();
                     }
@@ -262,7 +251,6 @@ public class NonBlockingClient implements Client, Disconnectable {
                             ((int) (double) mPollTimeout / 1000) + " sec.");
                 }
             }
-            log.debug("client end");
             return remote.receiver().getData();
         }
     }
@@ -288,7 +276,6 @@ public class NonBlockingClient implements Client, Disconnectable {
             }
         };
         Remote remote = new Remote(remoteAddress, swapperFactory);
-        log.debug("mOnReceiveListener to remote: {}", mOnReceiveListener);
         remote.addOnSendListener(mOnSendListener);
         remote.addOnReceiveListener(mOnReceiveListener);
         return remote;
