@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
@@ -19,7 +16,6 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
  *
  */
 public class MultiDataSender implements Sender {
-    private static final Logger log = LoggerFactory.getLogger(MultiDataSender.class);
     private final OnSendListener mListener;
     private final ByteBuffer mData;
 
@@ -57,7 +53,6 @@ public class MultiDataSender implements Sender {
                 String remoteAddress = channel.socket().getInetAddress().toString();
                 mListener.onSend(remoteAddress);
             }
-            log.debug("writing finish");
             return Result.FINISHED;
     }
 }

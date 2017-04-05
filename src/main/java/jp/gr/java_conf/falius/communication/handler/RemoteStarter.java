@@ -5,9 +5,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.remote.Disconnectable;
 import jp.gr.java_conf.falius.communication.remote.Remote;
@@ -24,7 +21,6 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  */
 public class RemoteStarter implements Handler {
-    private static final Logger log = LoggerFactory.getLogger(RemoteStarter.class);
     private final SwapperFactory mSwapperFactory;
     private final Disconnectable mDisconnectable;
 
@@ -63,7 +59,6 @@ public class RemoteStarter implements Handler {
                 mDisconnectable.disconnect(clientChannel, key,
                         new IOException("remote starter failed accept:" + remoteAddress, e));
             }
-            log.warn("accept error to disconnect", e);
         }
     }
 

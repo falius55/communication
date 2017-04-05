@@ -7,9 +7,6 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 import jp.gr.java_conf.falius.communication.rcvdata.BasicReceiveData;
@@ -22,7 +19,6 @@ import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
  *
  */
 public class MultiDataReceiver implements Receiver {
-    private static final Logger log = LoggerFactory.getLogger(MultiDataReceiver.class);
 
     private ReceiveData mLatestData = null;
     private Entry mNonFinishedEntry = null;
@@ -47,11 +43,9 @@ public class MultiDataReceiver implements Receiver {
             try {
                 header = HeaderFactory.from(channel);
             } catch (IOException e) {
-                log.error("header reading error", e);
                 return Result.ERROR;
             }
             if (header == null) {
-                log.debug("header could not read. disconnect");
                 return Result.DISCONNECT;
             }
             entry = new Entry(header);
@@ -62,7 +56,6 @@ public class MultiDataReceiver implements Receiver {
 
         int tmp = entry.read(channel);
         if (tmp < 0) {
-            log.error("recieve read returns -1");
             return Result.ERROR;
         }
 
@@ -93,7 +86,6 @@ public class MultiDataReceiver implements Receiver {
         private Entry(Header header) {
             mHeader = header;
             mRemain = mHeader.allDataSize() - mHeader.size();
-            log.debug("all data size: {}", mHeader.allDataSize());
         }
 
         private void initItemData() {
@@ -112,7 +104,6 @@ public class MultiDataReceiver implements Receiver {
         private int read(SocketChannel channel) throws IOException {
             mHeader = mHeader.read(channel);
             if (!mHeader.isReadFinished()) {
-                log.debug("header unfinish reading");
                 return 0;
             }
             initItemData();
@@ -121,7 +112,6 @@ public class MultiDataReceiver implements Receiver {
             for (ByteBuffer itemBuf : mItemData) {
                 int tmp = channel.read(itemBuf);
                 if (tmp < 0) {
-                    log.error("entry read retuns -1");
                     return -1;
                 }
                 readed += tmp;

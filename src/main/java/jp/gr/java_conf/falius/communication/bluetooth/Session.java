@@ -7,9 +7,6 @@ import java.io.OutputStream;
 import javax.bluetooth.RemoteDevice;
 import javax.microedition.io.StreamConnection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.handler.BluetoothHandler;
 import jp.gr.java_conf.falius.communication.handler.BluetoothReadingHandler;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
@@ -20,7 +17,6 @@ import jp.gr.java_conf.falius.communication.sender.OnSendListener;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 public class Session implements Runnable, AutoCloseable {
-    private static final Logger log = LoggerFactory.getLogger(Session.class);
 
     private final StreamConnection mChannel;
     private final String mRemoteAddress;
@@ -57,14 +53,16 @@ public class Session implements Runnable, AutoCloseable {
                 handler.handle();
             }
         } catch (Exception e) {
-            log.error("handle error :\n{}", e.getMessage());
+            try {
+                disconnect(e);
+            } catch (IOException ie) {
+                ie.printStackTrace();
+            }
         }
 
-        log.debug("session run end");
     }
 
     public void disconnect(Throwable cause) throws IOException {
-        log.debug("session disconnect by {}", cause == null ? "null" : cause.getMessage());
         mIsContinue = false;
         mIn.close();
         mOut.close();

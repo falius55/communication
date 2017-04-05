@@ -4,16 +4,12 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 受信時に読み取りが完全に完了したヘッダ、あるいは書き込み時のヘッダを表すクラス
  * @author "ymiyauchi"
  *
  */
 class FinishedHeader implements Header {
-    private static final Logger log = LoggerFactory.getLogger(FinishedHeader.class);
     // ヘッダーのサイズ(自身を含む), 全データのサイズ(ヘッダーを含む), データ１のサイズ, データ２のサイズ...
     private final int mHeaderSize;  // ヘッダー自身のサイズ
     private final int mAllDataSize;  // ヘッダー含む全データサイズ
