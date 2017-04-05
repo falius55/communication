@@ -11,8 +11,8 @@ import java.io.IOException;
  */
 public class FileSendData extends ExtendableSendData {
 
-    public FileSendData(SendData sender) {
-        super(sender);
+    public FileSendData(SendData sendData) {
+        super(sendData);
     }
 
     public SendData put(File file) throws IOException {

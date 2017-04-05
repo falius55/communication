@@ -12,8 +12,8 @@ import java.nio.ByteBuffer;
  */
 public class ObjectReceiveData extends ExtendableReceiveData {
 
-    public ObjectReceiveData(ReceiveData receiver) {
-        super(receiver);
+    public ObjectReceiveData(ReceiveData receiveData) {
+        super(receiveData);
     }
 
     public Object getObject() throws IOException, ClassNotFoundException {

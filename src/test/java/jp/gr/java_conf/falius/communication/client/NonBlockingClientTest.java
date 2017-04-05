@@ -136,6 +136,36 @@ public class NonBlockingClientTest {
     }
 
     @Test
+    public void testAddOnConnectListener() throws IOException, TimeoutException {
+        final String[] sendData = { "data1", "data2", "data3", "data4" };
+        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        final CheckList<String> check = new CheckList<>("check");
+        client.addOnConnectListener(new Client.OnConnectListener() {
+
+            @Override
+            public void onConnect(String remoteAddress) {
+                check.check("check");
+//                assertThat(remoteAddress, is(mServer.getAddress()));
+            }
+        });
+
+        ReceiveData receiveData = client.start(new OnceSwapper() {
+
+            @Override
+            public SendData swap(String remoteAddress, ReceiveData receiveData) {
+                SendData data = new BasicSendData();
+                for (String s : sendData) {
+                    data.put(s);
+                }
+                return data;
+            }
+
+        });
+
+        assertThat(check.isChecked("check"), is(true));
+    }
+
+    @Test
     public void testCall() throws InterruptedException, ExecutionException {
         final String[] sendData = { "abc", "def", "ghi", "jkl" };
         Client client = new NonBlockingClient(HOST, mServer.getPort(), new OnceSwapper() {

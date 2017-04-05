@@ -140,4 +140,9 @@ public class JITClient implements Client {
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
         mClient.addOnDisconnectCallback(callback);
     }
+
+    @Override
+    public void addOnConnectListener(Client.OnConnectListener listener) {
+        mClient.addOnConnectListener(listener);
+    }
 }

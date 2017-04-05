@@ -377,7 +377,9 @@ public class JITClientTest {
     @Test
     public void testCloseNotThrow() throws IOException, InterruptedException, ExecutionException, TimeoutException {
         // closeメソッドによって割り込みが発生しても正常終了することの確認
-        final String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
+        final String[] data
+        = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+                "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
         final CheckList<String> list = new CheckList<>(data);
         final CountDownLatch signal = new CountDownLatch(data.length);
         Set<Future<ReceiveData>> futures = new HashSet<>();
@@ -395,7 +397,7 @@ public class JITClientTest {
             }
 
         })) {
-            for (int i : new IntRange(10)) {
+            for (int i : new IntRange(3)) {
                 Future<ReceiveData> future = client.startOnNewThread();
                 futures.add(future);
             }

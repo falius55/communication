@@ -12,8 +12,8 @@ import java.io.Serializable;
  */
 public class ObjectSendData extends ExtendableSendData {
 
-    public ObjectSendData(SendData sender) {
-        super(sender);
+    public ObjectSendData(SendData sendData) {
+        super(sendData);
     }
 
     public SendData putObject(Serializable obj) throws IOException {
