@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.Server;
-import jp.gr.java_conf.falius.communication.core.SocketServer;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.listener.OnSendListener;

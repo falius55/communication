@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.Client;
+import jp.gr.java_conf.falius.communication.core.JITClient;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.listener.OnSendListener;
@@ -78,7 +79,6 @@ public class NonBlockingJITClient implements JITClient {
     /**
      * 送信データを与えます。
      * 戻り値からは受信データを得られません。受信データはOnReceiveListener#onReceiveメソッドの引数から取得してください。
-     * @return null
      */
     @Override
     public void send(SendData data) {

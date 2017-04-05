@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-public interface Disconnectable {
+interface Disconnectable {
 
     /**
      *

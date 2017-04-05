@@ -1,9 +1,8 @@
-package jp.gr.java_conf.falius.communication.core.socket;
+package jp.gr.java_conf.falius.communication.core;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import jp.gr.java_conf.falius.communication.core.Client;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 /**
