@@ -54,7 +54,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *  {@code
  *  String HOST = "localhost";
  *  int PORT = 10000;
- *  Client client = new NonBlockingClient(HOST, PORT);
+ *  SwapClient client = new NonBlockingClient(HOST, PORT);
  *
  *  SendData sendData = new BasicSendData();
  *  sendData.put(10);

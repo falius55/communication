@@ -37,7 +37,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  * {@code
  * String HOST = "localhost";
  * int PORT = 10000;
- * try (Client client = new NonBlockingJITClient(HOST, PORT, new OnReceiveListener() {
+ * try (JITClient client = new NonBlockingJITClient(HOST, PORT, new OnReceiveListener() {
  *      public void onReceive(String remoteAddress, ReceiveData receiveData) {
  *          System.out.println(receiveData.getString());
  *      }
