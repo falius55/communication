@@ -9,4 +9,6 @@ public interface ServerHelper {
     void afterClass() throws IOException;
 
     int getPort();
+
+    String getAddress();
 }

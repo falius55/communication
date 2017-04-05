@@ -98,6 +98,7 @@ public class NonBlockingClient implements Client, Disconnectable {
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
     private OnDisconnectCallback mOnDisconnectCallback = null;
+    private Client.OnConnectListener mOnConnectListener = null;
 
     private Swapper mSwapper = null;
 
@@ -142,6 +143,11 @@ public class NonBlockingClient implements Client, Disconnectable {
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
         mOnDisconnectCallback = callback;
+    }
+
+    @Override
+    public void addOnConnectListener(Client.OnConnectListener listener) {
+        mOnConnectListener = listener;
     }
 
     /**
@@ -280,6 +286,9 @@ public class NonBlockingClient implements Client, Disconnectable {
         channel.connect(address);
 
         String remoteAddress = channel.getRemoteAddress().toString();
+        if (mOnConnectListener != null) {
+            mOnConnectListener.onConnect(remoteAddress);
+        }
         SwapperFactory swapperFactory = new SwapperFactory() {
 
             @Override
