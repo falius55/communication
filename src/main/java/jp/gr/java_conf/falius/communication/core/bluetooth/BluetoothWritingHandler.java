@@ -16,7 +16,7 @@ class BluetoothWritingHandler implements BluetoothHandler {
     private final Session mSession;
     private final SendData mSendData;
 
-    public BluetoothWritingHandler(Session session, SendData data) {
+    BluetoothWritingHandler(Session session, SendData data) {
         mSession = session;
         mSendData = data;
     }

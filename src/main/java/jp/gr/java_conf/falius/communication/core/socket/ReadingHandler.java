@@ -19,7 +19,7 @@ class ReadingHandler implements SocketHandler {
     private final Remote mRemote;
     private final boolean mIsClient;
 
-    public ReadingHandler(Disconnectable disconnectable, Remote remote, boolean isClient) {
+    ReadingHandler(Disconnectable disconnectable, Remote remote, boolean isClient) {
         mDisconnectable = disconnectable;
         mRemote = remote;
         mIsClient = isClient;

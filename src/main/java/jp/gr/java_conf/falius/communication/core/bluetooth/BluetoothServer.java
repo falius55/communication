@@ -40,7 +40,7 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     private final ExecutorService mExecutor = Executors.newCachedThreadPool();
     private final SwapperFactory mSwapperFactory;
-    private final String mServerUuid;
+    private final String mUuid;
 
     private OnSendListener mOnSendListener = null;
     private Server.OnAcceptListener mOnAcceptListener = null;
@@ -52,13 +52,12 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     private StreamConnectionNotifier mConnection = null;
 
-    public BluetoothServer(String serverUuid, SwapperFactory swapperFactory) throws IOException {
-        mServerUuid = serverUuid;
+    public BluetoothServer(String uuid, SwapperFactory swapperFactory) throws IOException {
+        mUuid = uuid;
         mSwapperFactory = swapperFactory;
-        // RFCOMMベースのサーバの開始。
         // - btspp:は PRCOMM 用なのでベースプロトコルによって変わる。
         mConnection = (StreamConnectionNotifier) Connector.open(
-                "btspp://localhost:" + mServerUuid,
+                "btspp://localhost:" + mUuid,
                 Connector.READ_WRITE, true);
         // ローカルデバイスにサービスを登録することによって、周囲の機器がこのアプリを探せるようになる(macアドレスの登録をいちいちしなくてよくなる)
         ServiceRecord record = LocalDevice.getLocalDevice().getRecord(mConnection);

@@ -34,9 +34,6 @@ class Receiver {
 
     private OnReceiveListener mListener = null;
 
-    public Receiver() {
-    }
-
     public void addOnReceiveListener(OnReceiveListener listener) {
         mListener = listener;
     }

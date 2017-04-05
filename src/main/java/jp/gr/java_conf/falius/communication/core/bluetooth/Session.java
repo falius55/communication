@@ -29,11 +29,11 @@ class Session implements Runnable, AutoCloseable {
 
     private final InputStream mIn;
     private final OutputStream mOut;
-    private BluetoothHandler mNextHandler = null;
+    private BluetoothHandler mNextHandler;
 
     private boolean mIsContinue = true;
 
-    public Session(StreamConnection channel, Swapper swapper,
+    Session(StreamConnection channel, Swapper swapper,
             OnSendListener onSendListener, OnReceiveListener onReceiveListener,
             OnDisconnectCallback onDisconnectCallback) throws IOException {
         mChannel = channel;

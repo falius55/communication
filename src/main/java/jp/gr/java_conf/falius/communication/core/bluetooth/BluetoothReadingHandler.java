@@ -21,7 +21,7 @@ class BluetoothReadingHandler implements BluetoothHandler {
 
     private final Session mSession;
 
-    public BluetoothReadingHandler(Session session) {
+    BluetoothReadingHandler(Session session) {
         mSession = session;
     }
 

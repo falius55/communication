@@ -94,7 +94,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
 
     private ExecutorService mExecutor = null;
 
-    private final RemoteStarter mRemoteStarter;
+    private final AcceptHandler mAcceptHandler;
 
     private Server.OnShutdownCallback mOnShutdownCallback = null;
     private OnDisconnectCallback mOnDisconnectCallback = null;
@@ -103,22 +103,22 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
 
     public NonBlockingServer(int serverPort, SwapperFactory swapperFactory) {
         mServerPort = serverPort;
-        mRemoteStarter = new RemoteStarter(this, swapperFactory);
+        mAcceptHandler = new AcceptHandler(this, swapperFactory);
     }
 
     @Override
     public void addOnSendListener(OnSendListener listener) {
-        mRemoteStarter.addOnSendListener(listener);
+        mAcceptHandler.addOnSendListener(listener);
     }
 
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
-        mRemoteStarter.addOnReceiveListener(listener);
+        mAcceptHandler.addOnReceiveListener(listener);
     }
 
     @Override
     public void addOnAcceptListener(Server.OnAcceptListener listener) {
-        mRemoteStarter.addOnAcceptListener(listener);
+        mAcceptHandler.addOnAcceptListener(listener);
     }
 
     @Override
@@ -214,7 +214,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
             bind(channel);
 
             channel.configureBlocking(false);
-            channel.register(selector, SelectionKey.OP_ACCEPT, mRemoteStarter);
+            channel.register(selector, SelectionKey.OP_ACCEPT, mAcceptHandler);
 
             while (channel.isOpen()) {
                 // select()メソッドの戻り値は新しく通知(OP_ACCEPT)のあったキーの数

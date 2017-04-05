@@ -31,7 +31,7 @@ class Sender {
     private final OnSendListener mListener;
     private final ByteBuffer mData;
 
-    public Sender(SendData data, OnSendListener listener) {
+    Sender(SendData data, OnSendListener listener) {
         mData = initBuffer(data);
         mListener = listener;
     }

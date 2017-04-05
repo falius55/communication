@@ -26,7 +26,7 @@ class Remote {
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
 
-    public Remote(String remoteAddress, SwapperFactory swapperFactory) {
+    Remote(String remoteAddress, SwapperFactory swapperFactory) {
         mRemoteAddress = remoteAddress;
         mSwapper = swapperFactory.get();
     }

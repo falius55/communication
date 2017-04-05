@@ -32,4 +32,12 @@ public interface SwapClient extends Client {
      * @throws TimeoutException
      */
     ReceiveData start(Swapper swapper) throws IOException, TimeoutException;
+
+    /**
+     * 同一スレッドで実行されている場合は処理の終了タイミングはSwapperにより判断され、自動で終了処理が行われます。
+     * 内部にスレッiドプールを作成する場合({@link Client#startOnNewThread}および{@link Client#call}を実行する場合)
+     *     にのみ明示的に実行する必要があります。
+     */
+    @Override
+    void close() throws IOException;
 }

@@ -20,7 +20,7 @@ class WritingHandler implements SocketHandler {
     private final boolean mIsClient;
     private Sender mSender = null;
 
-    public WritingHandler(Disconnectable disconnectable, Remote remote, boolean isClient) {
+    WritingHandler(Disconnectable disconnectable, Remote remote, boolean isClient) {
         mDisconnectable = disconnectable;
         mRemote = remote;
         mIsClient = isClient;

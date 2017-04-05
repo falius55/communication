@@ -112,6 +112,7 @@ public class NonBlockingJITClient implements JITClient {
     /**
      * 確立した接続をすべて切断します。
      */
+    @Override
     public void close() throws IOException {
         log.debug("jit client close");
         mClient.close();

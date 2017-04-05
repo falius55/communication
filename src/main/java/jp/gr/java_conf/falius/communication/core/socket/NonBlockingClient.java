@@ -89,6 +89,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
     private final String mServerHost;
     private final int mServerPort;
     private final long mPollTimeout;
+    private final Swapper mSwapper;
     private final Set<SelectionKey> mKeys = Collections.synchronizedSet(new HashSet<>());
 
     private ExecutorService mExecutor = null;
@@ -97,8 +98,6 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
     private OnReceiveListener mOnReceiveListener = null;
     private OnDisconnectCallback mOnDisconnectCallback = null;
     private Client.OnConnectListener mOnConnectListener = null;
-
-    private Swapper mSwapper = null;
 
     public NonBlockingClient(String serverHost, int serverPort) {
         this(serverHost, serverPort, 0L);

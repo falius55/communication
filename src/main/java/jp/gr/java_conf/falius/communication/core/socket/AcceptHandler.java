@@ -21,8 +21,8 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  * @author "ymiyauchi"
  *
  */
-class RemoteStarter implements SocketHandler {
-    private static final Logger log = LoggerFactory.getLogger(RemoteStarter.class);
+class AcceptHandler implements SocketHandler {
+    private static final Logger log = LoggerFactory.getLogger(AcceptHandler.class);
     private final SwapperFactory mSwapperFactory;
     private final Disconnectable mDisconnectable;
 
@@ -30,7 +30,7 @@ class RemoteStarter implements SocketHandler {
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
 
-    public RemoteStarter(Disconnectable disconnectable, SwapperFactory swapperFactory) {
+    AcceptHandler(Disconnectable disconnectable, SwapperFactory swapperFactory) {
         mDisconnectable = disconnectable;
         mSwapperFactory = swapperFactory;
     }
