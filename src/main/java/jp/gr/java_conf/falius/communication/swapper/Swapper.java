@@ -1,8 +1,8 @@
 package jp.gr.java_conf.falius.communication.swapper;
 
-import jp.gr.java_conf.falius.communication.client.Client;
+import jp.gr.java_conf.falius.communication.core.SwapClient;
+import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
-import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 /**
@@ -17,7 +17,7 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
  * 受信内容をもとに送信内容を決定するために{@link ReceiveData}オブジェクトを引数に受け取りますが、
  * クライアントにおいては最初の一度はreceiveDataにnullが入り、最後の受信内容はswap()メソッドで
  * 受け取れないなど不便なものとなっています。そのため、Swapperは純粋にSendDataオブジェクトを生成するための
- * オブジェクトとし、受信内容の処理は一度の送受信なら{@link Client#start}メソッドなどの戻り値、複数の送受信を行うなら
+ * オブジェクトとし、受信内容の処理は一度の送受信なら{@link SwapClient#start}メソッドなどの戻り値、複数の送受信を行うなら
  * {@link OnReceiveListener#onReceive}の引数に渡されるReceiveDataオブジェクトを利用するのが確実です。
  *
  *<p>
