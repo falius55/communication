@@ -25,7 +25,7 @@ public class OnceClient implements ClientHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> ReceiveData send(T... sendData) throws IOException, TimeoutException {
+    public <T> ReceiveData send(final T... sendData) throws IOException, TimeoutException {
         SwapClient client = new NonBlockingClient(mHost, mPort);
         client.addOnDisconnectCallback(new OnDisconnectCallback() {
 

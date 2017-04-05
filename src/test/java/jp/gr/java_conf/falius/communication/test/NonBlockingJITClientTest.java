@@ -100,8 +100,8 @@ public class NonBlockingJITClientTest {
 
     @Test
     public void testSend() throws IOException, TimeoutException, Exception {
-        String[] data = { "a", "b", "c", "d", "e", "f", "g" };
-        CheckList<String> list = new CheckList<>(data);
+        final String[] data = { "a", "b", "c", "d", "e", "f", "g" };
+        final CheckList<String> list = new CheckList<>(data);
         try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
@@ -127,9 +127,9 @@ public class NonBlockingJITClientTest {
     @Test
     public void testMatchCall() throws InterruptedException, IOException, TimeoutException {
         // スレッドの数、submitした数だけ接続が確立し、JITClientにsendされたデータを協力しながら処理される
-        String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
-        CheckList<String> list = new CheckList<>(data);
-        CountDownLatch signal = new CountDownLatch(data.length);
+        final String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
+        final CheckList<String> list = new CheckList<>(data);
+        final CountDownLatch signal = new CountDownLatch(data.length);
         try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
@@ -163,10 +163,10 @@ public class NonBlockingJITClientTest {
 
     @Test
     public void testAddOnSendListener() throws IOException, InterruptedException, TimeoutException {
-        CheckList<String> check = new CheckList<>("check");
-        String[] data = { "a", "b", "c", "d", "e", "f", "g" };
-        CheckList<String> list = new CheckList<>(data);
-        CountDownLatch signal = new CountDownLatch(data.length);
+        final CheckList<String> check = new CheckList<>("check");
+        final String[] data = { "a", "b", "c", "d", "e", "f", "g" };
+        final CheckList<String> list = new CheckList<>(data);
+        final CountDownLatch signal = new CountDownLatch(data.length);
         try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
@@ -206,10 +206,10 @@ public class NonBlockingJITClientTest {
 
     @Test
     public void testAddOnReceiveListener() throws IOException, TimeoutException, InterruptedException {
-        String[] data = { "a", "b", "c", "d", "e", "f", "g" };
-        CountDownLatch signal = new CountDownLatch(data.length);
-        CheckList<String> list = new CheckList<>(data);
-        CheckList<String> check = new CheckList<>("check");
+        final String[] data = { "a", "b", "c", "d", "e", "f", "g" };
+        final CountDownLatch signal = new CountDownLatch(data.length);
+        final CheckList<String> list = new CheckList<>(data);
+        final CheckList<String> check = new CheckList<>("check");
         try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
@@ -266,9 +266,9 @@ public class NonBlockingJITClientTest {
 
     @Test
     public void testAddOnDisconnectCallback() throws IOException, TimeoutException, InterruptedException {
-        String[] data = { "a", "b", "c", "d", "e", "f", "g" };
-        CheckList<String> list = new CheckList<>(data);
-        CheckList<String> check = new CheckList<>("check");
+        final String[] data = { "a", "b", "c", "d", "e", "f", "g" };
+        final CheckList<String> list = new CheckList<>(data);
+        final CheckList<String> check = new CheckList<>("check");
         try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
@@ -308,9 +308,9 @@ public class NonBlockingJITClientTest {
     @Test
     public void testMultiStart() throws IOException, TimeoutException, InterruptedException, ExecutionException {
         // スレッドの数、submitした数だけ接続が確立し、JITClientにsendされたデータを協力しながら処理される
-        String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
-        CheckList<String> list = new CheckList<>(data);
-        CountDownLatch signal = new CountDownLatch(data.length);
+        final String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
+        final CheckList<String> list = new CheckList<>(data);
+        final CountDownLatch signal = new CountDownLatch(data.length);
         try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
@@ -345,12 +345,12 @@ public class NonBlockingJITClientTest {
     @Test
     public void testCloseNotThrow() throws IOException, InterruptedException, ExecutionException, TimeoutException {
         // closeメソッドによって割り込みが発生しても正常終了することの確認
-        String[] data
+        final String[] data
         = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
                 "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
-        CheckList<String> list = new CheckList<>(data);
-        CountDownLatch signal = new CountDownLatch(data.length);
-        Set<Future<ReceiveData>> futures = new HashSet<>();
+        final CheckList<String> list = new CheckList<>(data);
+        final CountDownLatch signal = new CountDownLatch(data.length);
+        final Set<Future<ReceiveData>> futures = new HashSet<>();
         try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override

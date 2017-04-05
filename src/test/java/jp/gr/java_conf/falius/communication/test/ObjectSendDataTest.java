@@ -49,7 +49,7 @@ public class ObjectSendDataTest {
 
         assertThat(obj, is(instanceOf(SerializableTest.class)));
         assertThat(obj.toString(), is(data.toString()));
-        assertThat(obj, is(not(sameInstance(data))));
+        assertThat((SerializableTest) obj, is(not(sameInstance(data))));
     }
 
 }

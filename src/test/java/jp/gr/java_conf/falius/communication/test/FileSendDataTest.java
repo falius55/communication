@@ -1,4 +1,4 @@
-package jp.gr.java_conf.falius.communication.sender;
+package jp.gr.java_conf.falius.communication.test;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -26,6 +26,8 @@ import jp.gr.java_conf.falius.communication.test.helper.ServerHelper;
 
 public class FileSendDataTest {
     private static Logger log = LoggerFactory.getLogger(FileSendDataTest.class);
+    private static final String PACKAGE_PATH
+        = "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication\\test";
     private static final String HOST = "localhost";
     private static final ServerHelper mServer = new EchoServer();
 
@@ -41,9 +43,7 @@ public class FileSendDataTest {
 
     @Test
     public void testPutOfFile() throws IOException, TimeoutException {
-        File file = new File(
-                "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication"
-                + "\\sender\\FileSendDataTest.java");
+        File file = new File( PACKAGE_PATH + "\\FileSendDataTest.java");
         SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(file);

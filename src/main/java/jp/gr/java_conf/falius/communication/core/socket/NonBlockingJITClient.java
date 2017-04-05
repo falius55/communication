@@ -91,11 +91,10 @@ public class NonBlockingJITClient implements JITClient {
             public SendData swap(String remoteAddress, ReceiveData receiveData) {
                 SendData data;
                 try {
-                    data = mSendDataQueue.take();
+                    return mSendDataQueue.take();
                 } catch (InterruptedException e) {
                     return null;
                 }
-                return data;
             }
         };
     }

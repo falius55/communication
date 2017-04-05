@@ -266,7 +266,7 @@ public class NonBlockingServerTest {
         // shutdownメソッドが呼ばれたら再度startOnNewThradできないことの確認
         // 動作が不安定。例外を投げることもあれば、動作が止まってしまうこともある。
         int port = 8997;
-        String data = "data";
+        final String data = "data";
         try (Server server = new NonBlockingServer(port, new SwapperFactory() {
 
             @Override
@@ -305,7 +305,7 @@ public class NonBlockingServerTest {
     public void testSequenceCall() throws IOException, InterruptedException, ExecutionException {
         // ExecutorServiceに複数回submit
         int port = 8997;
-        String data = "data";
+        final String data = "data";
         try (Server server = new NonBlockingServer(port, new SwapperFactory() {
 
             @Override
@@ -336,7 +336,7 @@ public class NonBlockingServerTest {
     public void testSequenceStart() throws IOException, InterruptedException, ExecutionException {
         // ExecutionExceptionが投げられることもあれば、IllegalStateExceptionが投げられることもある
         int port = 8997;
-        String data = "data";
+        final String data = "data";
         try (Server server = new NonBlockingServer(port, new SwapperFactory() {
 
             @Override

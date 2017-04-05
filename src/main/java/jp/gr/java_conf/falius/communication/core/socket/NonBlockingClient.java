@@ -90,7 +90,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
     private final int mServerPort;
     private final long mPollTimeout;
     private final Swapper mSwapper;
-    private final Set<SelectionKey> mKeys = Collections.synchronizedSet(new HashSet<>());
+    private final Set<SelectionKey> mKeys = Collections.synchronizedSet(new HashSet<SelectionKey>());
 
     private ExecutorService mExecutor = null;
 
@@ -217,7 +217,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
      * @throws NullPointerException sendDataがnullの場合
      */
     @Override
-    public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
+    public ReceiveData send(final SendData sendData) throws IOException, TimeoutException {
         Objects.requireNonNull(sendData);
         return start(new OnceSwapper() {
 
@@ -278,7 +278,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
      * @throws IOException
      * @throws ConnectException 接続に失敗した場合
      */
-    private Remote connect(SocketChannel channel, Swapper swapper) throws IOException {
+    private Remote connect(SocketChannel channel, final Swapper swapper) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerHost, mServerPort);
         channel.connect(address);
 
