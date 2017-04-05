@@ -16,13 +16,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
-import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
-import jp.gr.java_conf.falius.communication.helper.EchoServer;
-import jp.gr.java_conf.falius.communication.helper.ServerHelper;
+import jp.gr.java_conf.falius.communication.core.SwapClient;
+import jp.gr.java_conf.falius.communication.core.socket.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.FileSendData;
+import jp.gr.java_conf.falius.communication.test.helper.EchoServer;
+import jp.gr.java_conf.falius.communication.test.helper.ServerHelper;
 
 public class FileSendDataTest {
     private static Logger log = LoggerFactory.getLogger(FileSendDataTest.class);
@@ -44,7 +44,7 @@ public class FileSendDataTest {
         File file = new File(
                 "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication"
                 + "\\sender\\FileSendDataTest.java");
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(file);
         ReceiveData receiveData = client.send(sendData);

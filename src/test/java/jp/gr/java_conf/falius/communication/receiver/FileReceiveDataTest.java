@@ -22,14 +22,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
-import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
-import jp.gr.java_conf.falius.communication.helper.EchoServer;
-import jp.gr.java_conf.falius.communication.helper.ServerHelper;
+import jp.gr.java_conf.falius.communication.core.SwapClient;
+import jp.gr.java_conf.falius.communication.core.socket.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.rcvdata.FileReceiveData;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
 import jp.gr.java_conf.falius.communication.senddata.FileSendData;
+import jp.gr.java_conf.falius.communication.test.helper.EchoServer;
+import jp.gr.java_conf.falius.communication.test.helper.ServerHelper;
 
 public class FileReceiveDataTest {
     private static Logger log = LoggerFactory.getLogger(FileReceiveDataTest.class);
@@ -72,7 +72,7 @@ public class FileReceiveDataTest {
     public void testGetAndSaveFile() throws IOException, TimeoutException {
         String fileName = "test_testGetAndSaveFile";
         Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile.toFile());
         ReceiveData ret = client.send(sendData);
@@ -96,7 +96,7 @@ public class FileReceiveDataTest {
         Path target = Paths.get(mTargetTmpDir.toString(), fileName);
         Files.copy(originFile, target);
 
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile.toFile());
         ReceiveData ret = client.send(sendData);
