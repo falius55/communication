@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
+import jp.gr.java_conf.falius.communication.client.SwapClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
@@ -41,7 +41,7 @@ public class BasicReceiveDataTest {
     @Test
     public void testGetBoolean() throws IOException, TimeoutException {
         boolean[] data = {true, false, false, true};
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         for (boolean b : data) {
             sendData.put(b);
@@ -58,7 +58,7 @@ public class BasicReceiveDataTest {
     public void testGetStringException() throws IOException, TimeoutException {
         // getString内で-15がデコードできたりできなかったり...??
         int[] data = {-15, 1, 2, 3};
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         for (int i : data) {
             sendData.put(i);
@@ -74,7 +74,7 @@ public class BasicReceiveDataTest {
     @Test(expected=NoSuchElementException.class)
     public void testGetIntNoDataException() throws IOException, TimeoutException {
         int[] data = {1, 2};
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         for (int i : data) {
             sendData.put(i);
@@ -92,7 +92,7 @@ public class BasicReceiveDataTest {
     @Test(expected=WrongMethodTypeException.class)
     public void testGetIntWrongMethodException() throws IOException, TimeoutException {
         byte[] data = {2, 3};
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData receiveData = client.send(sendData);
@@ -103,7 +103,7 @@ public class BasicReceiveDataTest {
     @Test(expected=NoSuchElementException.class)
     public void testGetLongNoDataException() throws IOException, TimeoutException {
         long[] data = {1, 2};
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         for (long i : data) {
             sendData.put(i);
@@ -121,7 +121,7 @@ public class BasicReceiveDataTest {
     @Test(expected=WrongMethodTypeException.class)
     public void testGetLongWrongMethodException() throws IOException, TimeoutException {
         int data = 10;
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData receiveData = client.send(sendData);
@@ -132,7 +132,7 @@ public class BasicReceiveDataTest {
     @Test(expected=NoSuchElementException.class)
     public void testGetDoubleNoDataException() throws IOException, TimeoutException {
         double[] data = {1.4, 2.1};
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         for (double i : data) {
             sendData.put(i);
@@ -150,7 +150,7 @@ public class BasicReceiveDataTest {
     @Test(expected=WrongMethodTypeException.class)
     public void testGetDoubleWrongMethodException() throws IOException, TimeoutException {
         int data = 10;
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData receiveData = client.send(sendData);
@@ -161,7 +161,7 @@ public class BasicReceiveDataTest {
     @Test(expected=NoSuchElementException.class)
     public void testGetFloatNoDataException() throws IOException, TimeoutException {
         float[] data = {1.4f, 2.1f};
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         for (float i : data) {
             sendData.put(i);
@@ -179,7 +179,7 @@ public class BasicReceiveDataTest {
     @Test(expected=WrongMethodTypeException.class)
     public void testGetFloatWrongMethodException() throws IOException, TimeoutException {
         byte[] data = {4, 9};
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData receiveData = client.send(sendData);

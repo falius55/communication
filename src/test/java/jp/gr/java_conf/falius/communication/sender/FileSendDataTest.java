@@ -18,8 +18,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
+import jp.gr.java_conf.falius.communication.client.SwapClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
@@ -46,7 +46,7 @@ public class FileSendDataTest {
         Path path = Paths.get(new File(
                 "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication\\sender")
                 .getAbsolutePath(), "FileSendDataTest.java");
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(path);
         ReceiveData receiveData = client.send(sendData);
@@ -59,7 +59,7 @@ public class FileSendDataTest {
         File file = new File(
                 "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication"
                 + "\\sender\\FileSendDataTest.java");
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(file);
         ReceiveData receiveData = client.send(sendData);
@@ -72,7 +72,7 @@ public class FileSendDataTest {
     public void testPutFile() throws IOException, TimeoutException {
         String curDir = "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication\\sender";
         String fileName = "FileSendDataTest.java";
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.putFile(curDir, fileName);
         ReceiveData receiveData = client.send(sendData);

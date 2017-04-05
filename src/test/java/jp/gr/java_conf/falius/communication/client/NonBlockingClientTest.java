@@ -49,7 +49,7 @@ public class NonBlockingClientTest {
     @Test
     public void testStart() throws IOException, TimeoutException {
         String sendData = "sendData";
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
 
         ReceiveData receiveData = client.start(new OnceSwapper() {
 
@@ -70,7 +70,7 @@ public class NonBlockingClientTest {
     @Test
     public void testAddOnSendListener() throws IOException, TimeoutException {
         String sendData = "send data";
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         CheckList<String> check = new CheckList<>("check");
         client.addOnSendListener(new OnSendListener() {
 
@@ -98,7 +98,7 @@ public class NonBlockingClientTest {
     @Test
     public void testAddOnReceiveListener() throws IOException, TimeoutException {
         String[] sendData = { "data1", "data2", "data3", "data4" };
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         client.addOnReceiveListener(new OnReceiveListener() {
 
             @Override
@@ -139,14 +139,14 @@ public class NonBlockingClientTest {
     @Test
     public void testAddOnConnectListener() throws IOException, TimeoutException {
         String[] sendData = { "data1", "data2", "data3", "data4" };
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         CheckList<String> check = new CheckList<>("check");
         client.addOnConnectListener(new Client.OnConnectListener() {
 
             @Override
             public void onConnect(String remoteAddress) {
                 check.check("check");
-//                assertThat(remoteAddress, is(mServer.getAddress()));
+                //                assertThat(remoteAddress, is(mServer.getAddress()));
             }
         });
 
@@ -235,7 +235,7 @@ public class NonBlockingClientTest {
     public void testMuchData() throws IOException, TimeoutException {
         String sendData = "sendData";
         int len = 10000;
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
 
         ReceiveData receiveData = client.start(new OnceSwapper() {
 
@@ -260,7 +260,7 @@ public class NonBlockingClientTest {
     @Test
     public void testSend() throws IOException, TimeoutException {
         String sendData = "data";
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData data = new BasicSendData();
         data.put(sendData);
         ReceiveData receiveData = client.send(data);
@@ -270,7 +270,7 @@ public class NonBlockingClientTest {
     @Test
     public void testMultiSend() {
         String sendData = "data";
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         client.addOnDisconnectCallback(new OnDisconnectCallback() {
 
             @Override
@@ -293,24 +293,25 @@ public class NonBlockingClientTest {
     }
 
     @Test
-    public void testChaengeReceiveListener() {
+    public void testChaengeReceiveListener() throws IOException {
         String[] data = { "data1", "data2", "data3" };
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
-        new IntRange(data.length).forEach(i -> {
-            client.addOnReceiveListener(new OnReceiveListener() {
+        try (SwapClient client = new NonBlockingClient(HOST, mServer.getPort())) {
+            new IntRange(data.length).forEach(i -> {
+                client.addOnReceiveListener(new OnReceiveListener() {
 
-                @Override
-                public void onReceive(String fromAddress, ReceiveData receiveData) {
-                    assertThat(receiveData.getString(), is(data[i]));
+                    @Override
+                    public void onReceive(String fromAddress, ReceiveData receiveData) {
+                        assertThat(receiveData.getString(), is(data[i]));
+                    }
+                });
+                SendData sendData = new BasicSendData();
+                sendData.put(data[i]);
+                try {
+                    client.send(sendData);
+                } catch (IOException | TimeoutException e) {
+                    assertThat(false, is(true));
                 }
             });
-            SendData sendData = new BasicSendData();
-            sendData.put(data[i]);
-            try {
-                client.send(sendData);
-            } catch (IOException | TimeoutException e) {
-                assertThat(false, is(true));
-            }
-        });
+        }
     }
 }

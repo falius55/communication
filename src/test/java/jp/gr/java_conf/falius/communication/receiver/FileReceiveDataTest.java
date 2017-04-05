@@ -21,8 +21,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
+import jp.gr.java_conf.falius.communication.client.SwapClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.rcvdata.FileReceiveData;
@@ -69,7 +69,7 @@ public class FileReceiveDataTest {
     public void testGetAndSavePathOpenOptionArray() throws IOException, TimeoutException {
         String fileName = "test_testGetAndSavePathOpenOptionArray";
         Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
         ReceiveData ret = client.send(sendData);
@@ -85,7 +85,7 @@ public class FileReceiveDataTest {
     public void testGetAndSaveFile() throws IOException, TimeoutException {
         String fileName = "test_testGetAndSaveFile";
         Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
         ReceiveData ret = client.send(sendData);
@@ -105,7 +105,7 @@ public class FileReceiveDataTest {
         Path target = Paths.get(mTargetTmpDir.toString(), fileName);
         Files.copy(originFile, target);
 
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
         ReceiveData ret = client.send(sendData);
@@ -122,7 +122,7 @@ public class FileReceiveDataTest {
     public void testGetAndSaveStringStringArray() throws IOException, TimeoutException {
         String fileName = "test_testGetAndSaveStringStringArray";
         Path originFile = Paths.get(mOriginTmpDir.toString(), fileName);
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         FileSendData sendData = new FileSendData(new BasicSendData());
         sendData.put(originFile);
         ReceiveData ret = client.send(sendData);

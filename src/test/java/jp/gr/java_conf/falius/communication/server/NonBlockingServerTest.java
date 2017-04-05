@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
+import jp.gr.java_conf.falius.communication.client.SwapClient;
 import jp.gr.java_conf.falius.communication.helper.ClientHelper;
 import jp.gr.java_conf.falius.communication.helper.OnceClient;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
@@ -185,7 +185,7 @@ public class NonBlockingServerTest {
         })) {
             server.startOnNewThread();
 
-            Client client = new NonBlockingClient(HOST, port);
+            SwapClient client = new NonBlockingClient(HOST, port);
             ReceiveData receiveData = client.start(new RepeatSwapper() {
                 private int count = 0;
 
@@ -237,7 +237,7 @@ public class NonBlockingServerTest {
         })) {
             server.startOnNewThread();
 
-            Client client = new NonBlockingClient(HOST, port);
+            SwapClient client = new NonBlockingClient(HOST, port);
             ReceiveData result = client.start(new FixedRepeatSwapper(repeatLen) {
 
                 @Override

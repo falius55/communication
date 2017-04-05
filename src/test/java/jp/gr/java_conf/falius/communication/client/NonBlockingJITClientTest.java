@@ -34,8 +34,8 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 import jp.gr.java_conf.falius.util.check.CheckList;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
-public class JITClientTest {
-    private static final Logger log = LoggerFactory.getLogger(JITClientTest.class);
+public class NonBlockingJITClientTest {
+    private static final Logger log = LoggerFactory.getLogger(NonBlockingJITClientTest.class);
     private static final String HOST = "localhost";
     private static final int PORT = 10000;
     private static SocketServer mServer;
@@ -84,7 +84,7 @@ public class JITClientTest {
 
             @Override
             public String toString() {
-                return "server receive listener@JITClientTest";
+                return "server receive listener@NonBlockingJITClientTest";
             }
 
         });
@@ -100,7 +100,7 @@ public class JITClientTest {
     public void testSend() throws IOException, TimeoutException, Exception {
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
         CheckList<String> list = new CheckList<>(data);
-        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
@@ -128,7 +128,7 @@ public class JITClientTest {
         String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
         CheckList<String> list = new CheckList<>(data);
         CountDownLatch signal = new CountDownLatch(data.length);
-        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
@@ -159,47 +159,13 @@ public class JITClientTest {
         assertThat(list.isCheckedAll(), is(true));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testStart() throws InterruptedException, IOException, TimeoutException {
-        String[] data = { "a", "b", "c", "d", "e", "f", "g" };
-        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
-
-            @Override
-            public void onReceive(String remoteAddress, ReceiveData receiveData) {
-                String ret = receiveData.getString();
-                log.debug("receive by {}", Thread.currentThread().getName());
-                log.debug("ret: {}", ret);
-                assertThat(ret, isIn(data));
-            }
-
-        })) {
-            client.start(new RepeatSwapper() {
-
-                @Override
-                public SendData swap(String remoteAddress, ReceiveData receiveData) throws Exception {
-                    SendData sendData = new BasicSendData();
-                    sendData.put("data");
-                    return sendData;
-                }
-
-            });
-
-            for (String s : data) {
-                SendData sendData = new BasicSendData();
-                sendData.put(s);
-                client.send(sendData);
-                Thread.sleep(10);
-            }
-        }
-    }
-
     @Test
     public void testAddOnSendListener() throws IOException, InterruptedException, TimeoutException {
         CheckList<String> check = new CheckList<>("check");
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
         CheckList<String> list = new CheckList<>(data);
         CountDownLatch signal = new CountDownLatch(data.length);
-        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
@@ -242,7 +208,7 @@ public class JITClientTest {
         CountDownLatch signal = new CountDownLatch(data.length);
         CheckList<String> list = new CheckList<>(data);
         CheckList<String> check = new CheckList<>("check");
-        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
@@ -301,7 +267,7 @@ public class JITClientTest {
         String[] data = { "a", "b", "c", "d", "e", "f", "g" };
         CheckList<String> list = new CheckList<>(data);
         CheckList<String> check = new CheckList<>("check");
-        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
@@ -343,7 +309,7 @@ public class JITClientTest {
         String[] data = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r" };
         CheckList<String> list = new CheckList<>(data);
         CountDownLatch signal = new CountDownLatch(data.length);
-        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
@@ -383,7 +349,7 @@ public class JITClientTest {
         CheckList<String> list = new CheckList<>(data);
         CountDownLatch signal = new CountDownLatch(data.length);
         Set<Future<ReceiveData>> futures = new HashSet<>();
-        try (Client client = new JITClient(HOST, mServer.getPort(), new OnReceiveListener() {
+        try (JITClient client = new NonBlockingJITClient(HOST, mServer.getPort(), new OnReceiveListener() {
 
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {

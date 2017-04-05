@@ -6,8 +6,8 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
+import jp.gr.java_conf.falius.communication.client.SwapClient;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.remote.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.senddata.BasicSendData;
@@ -26,7 +26,7 @@ public class OnceClient implements ClientHelper {
 
     @SuppressWarnings("unchecked")
     public <T> ReceiveData send(T... sendData) throws IOException, TimeoutException {
-        Client client = new NonBlockingClient(mHost, mPort);
+        SwapClient client = new NonBlockingClient(mHost, mPort);
         client.addOnDisconnectCallback(new OnDisconnectCallback() {
 
             @Override

@@ -85,7 +85,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  * @author "ymiyauchi"
  *
  */
-public class NonBlockingClient implements Client, Disconnectable {
+public class NonBlockingClient implements SwapClient, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
 
     private final String mServerHost;

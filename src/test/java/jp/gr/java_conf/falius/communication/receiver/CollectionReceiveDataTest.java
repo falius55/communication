@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
+import jp.gr.java_conf.falius.communication.client.SwapClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.rcvdata.CollectionReceiveData;
@@ -38,7 +38,7 @@ public class CollectionReceiveDataTest {
     public void testGetListException() throws IOException, TimeoutException {
         int data = 10;
 
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData rcv = client.send(sendData);
@@ -50,7 +50,7 @@ public class CollectionReceiveDataTest {
     public void testGetMapException() throws IOException, TimeoutException {
         String data = "data";
 
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SendData sendData = new BasicSendData();
         sendData.put(data);
         ReceiveData rcv = client.send(sendData);

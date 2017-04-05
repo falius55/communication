@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
+import jp.gr.java_conf.falius.communication.client.SwapClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.SerializableTest;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
@@ -39,7 +39,7 @@ public class ObjectSendDataTest {
 
     @Test
     public void testPutAndGetObject() throws IOException, TimeoutException, ClassNotFoundException {
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         SerializableTest data = new SerializableTest("test sample", 25, SerializableTest.Sex.MALE);
         ObjectSendData sendData = new ObjectSendData(new BasicSendData());
         sendData.putObject(data);

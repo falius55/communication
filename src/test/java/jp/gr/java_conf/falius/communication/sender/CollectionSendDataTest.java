@@ -16,8 +16,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
+import jp.gr.java_conf.falius.communication.client.SwapClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.rcvdata.CollectionReceiveData;
@@ -50,7 +50,7 @@ public class CollectionSendDataTest {
                 add("jldkajfkl");
             }
         };
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         CollectionSendData data = new CollectionSendData(new BasicSendData());
         data.put(sendData);
         ReceiveData receiveData = client.send(data);
@@ -67,7 +67,7 @@ public class CollectionSendDataTest {
         sendData.put("key1", "data1");
         sendData.put("key2", "data2");
         sendData.put("abc", "def");
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         CollectionSendData data = new CollectionSendData(new BasicSendData());
         data.put(sendData);
         ReceiveData receiveData = client.send(data);

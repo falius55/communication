@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.gr.java_conf.falius.communication.client.Client;
 import jp.gr.java_conf.falius.communication.client.NonBlockingClient;
+import jp.gr.java_conf.falius.communication.client.SwapClient;
 import jp.gr.java_conf.falius.communication.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.helper.ServerHelper;
 import jp.gr.java_conf.falius.communication.rcvdata.ArrayReceiveData;
@@ -40,7 +40,7 @@ public class ArraySendDataTest {
     @Test
     public void testPutIntArray() throws IOException, TimeoutException {
         int[] data = { 1, 2, 3, 4, 5 };
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
         ReceiveData rcv = client.send(sendData);
@@ -57,7 +57,7 @@ public class ArraySendDataTest {
     @Test
     public void testPutStringArray() throws IOException, TimeoutException {
         String[] data = { "data1", "data2", "data3" };
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
         ReceiveData rcv = client.send(sendData);
@@ -71,7 +71,7 @@ public class ArraySendDataTest {
     @Test
     public void testPutLongArray() throws IOException, TimeoutException {
         long[] data = { 112L, 22342L, 3796L, 479843279L, 512839L };
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
         ReceiveData rcv = client.send(sendData);
@@ -87,7 +87,7 @@ public class ArraySendDataTest {
     @Test
     public void testPutDoubleArray() throws IOException, TimeoutException {
         double[] data = { 11.2, 2.2342, 0.3796, 4798.43279, 0.00512839 };
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
         ReceiveData rcv = client.send(sendData);
@@ -103,7 +103,7 @@ public class ArraySendDataTest {
     @Test
     public void testPutFloatArray() throws IOException, TimeoutException {
         float[] data = { 11.2f, 2.2342f, 0.3796f, 4798.43279f, 0.00512839f };
-        Client client = new NonBlockingClient(HOST, mServer.getPort());
+        SwapClient client = new NonBlockingClient(HOST, mServer.getPort());
         ArraySendData sendData = new ArraySendData(new BasicSendData());
         sendData.put(data);
         ReceiveData rcv = client.send(sendData);
