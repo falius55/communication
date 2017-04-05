@@ -1,8 +1,8 @@
 package jp.gr.java_conf.falius.communication.swapper;
 
-import jp.gr.java_conf.falius.communication.client.Client;
+import jp.gr.java_conf.falius.communication.core.Client;
+import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
-import jp.gr.java_conf.falius.communication.receiver.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 /**
