@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 import jp.gr.java_conf.falius.communication.listener.OnSendListener;
@@ -24,7 +21,6 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
  *
  */
 class Sender {
-    private static final Logger log = LoggerFactory.getLogger(Sender.class);
     enum Result {
         FINISHED, UNFINISHED,
     }
@@ -71,7 +67,6 @@ class Sender {
                 String remoteAddress = channel.socket().getInetAddress().toString();
                 mListener.onSend(remoteAddress);
             }
-            log.debug("writing finish");
             return Result.FINISHED;
     }
 }

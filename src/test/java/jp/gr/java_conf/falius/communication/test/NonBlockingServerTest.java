@@ -11,8 +11,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.Server;
 import jp.gr.java_conf.falius.communication.core.SwapClient;
@@ -33,7 +31,6 @@ import jp.gr.java_conf.falius.communication.test.helper.OnceClient;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingServerTest {
-    private static Logger log = LoggerFactory.getLogger(NonBlockingServerTest.class);
     private static final String HOST = "localhost";
     private static final int PORT = 8999;
 
@@ -48,7 +45,6 @@ public class NonBlockingServerTest {
 
                     @Override
                     public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                        log.info("swap from {}", remoteAddress);
                         assertThat(receiveData, is(not(nullValue())));
                         SendData sender = new BasicSendData();
                         for (String d : data) {
@@ -86,7 +82,6 @@ public class NonBlockingServerTest {
 
                     @Override
                     public SendData swap(String remoteAddress, ReceiveData receiver) {
-                        log.info("swap from {}", remoteAddress);
                         assertThat(receiver, is(not(nullValue())));
                         assertThat(receiver.get(), is(nullValue()));
                         SendData sender = new BasicSendData();
@@ -129,7 +124,6 @@ public class NonBlockingServerTest {
 
                     @Override
                     public SendData swap(String remoteAddress, ReceiveData receiver) {
-                        log.info("swap from {}", remoteAddress);
                         assertThat(receiver, is(not(nullValue())));
                         SendData sender = new BasicSendData();
                         for (String data : receiveData) {
@@ -289,7 +283,7 @@ public class NonBlockingServerTest {
                 @Override
                 public void onDissconnect(String remote, Throwable cause) {
                     if (cause != null) {
-                        log.error("disconnect caused by {}", cause.getMessage());
+                        System.out.printf("disconnect caused by %s%n", cause.getMessage());
                     }
                 }
 

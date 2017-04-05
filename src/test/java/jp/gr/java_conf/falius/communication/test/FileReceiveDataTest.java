@@ -19,8 +19,6 @@ import java.util.concurrent.TimeoutException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.SwapClient;
 import jp.gr.java_conf.falius.communication.core.socket.NonBlockingClient;
@@ -32,7 +30,6 @@ import jp.gr.java_conf.falius.communication.test.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.test.helper.ServerHelper;
 
 public class FileReceiveDataTest {
-    private static Logger log = LoggerFactory.getLogger(FileReceiveDataTest.class);
     private static final String FILE_CONTENT = "test test test test";
     private static final String HOST = "localhost";
     private static final ServerHelper mServer = new EchoServer();
@@ -55,7 +52,6 @@ public class FileReceiveDataTest {
                 String methodName = method.getName();
                 String fileName = "test_" + methodName;
                 Path filePath = Paths.get(mOriginTmpDir.toString(), fileName);
-                log.debug("file path : {}", filePath.toString());
                 try (BufferedWriter bw = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE)) {
                     bw.write(FILE_CONTENT);
                 }

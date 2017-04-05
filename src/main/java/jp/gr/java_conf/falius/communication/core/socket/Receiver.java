@@ -7,9 +7,6 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
@@ -23,8 +20,6 @@ import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
  *
  */
 class Receiver {
-    private static final Logger log = LoggerFactory.getLogger(Receiver.class);
-
     enum Result {
         ERROR, UNFINISHED, FINISHED, DISCONNECT,
     }
@@ -63,11 +58,9 @@ class Receiver {
             try {
                 header = HeaderFactory.from(channel);
             } catch (IOException e) {
-                log.error("header reading error", e);
                 return Result.ERROR;
             }
             if (header == null) {
-                log.debug("header could not read. disconnect");
                 return Result.DISCONNECT;
             }
             entry = new Entry(header);
@@ -78,7 +71,6 @@ class Receiver {
 
         int tmp = entry.read(channel);
         if (tmp < 0) {
-            log.error("recieve read returns -1");
             return Result.ERROR;
         }
 
@@ -109,7 +101,6 @@ class Receiver {
         private Entry(Header header) {
             mHeader = header;
             mRemain = mHeader.allDataSize() - mHeader.size();
-            log.debug("all data size: {}", mHeader.allDataSize());
         }
 
         private void initItemData() {
@@ -128,7 +119,6 @@ class Receiver {
         private int read(SocketChannel channel) throws IOException {
             mHeader = mHeader.read(channel);
             if (!mHeader.isReadFinished()) {
-                log.debug("header unfinish reading");
                 return 0;
             }
             initItemData();
@@ -137,7 +127,6 @@ class Receiver {
             for (ByteBuffer itemBuf : mItemData) {
                 int tmp = channel.read(itemBuf);
                 if (tmp < 0) {
-                    log.error("entry read retuns -1");
                     return -1;
                 }
                 readed += tmp;

@@ -1,8 +1,5 @@
 package jp.gr.java_conf.falius.communication.core.socket;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.core.Server.OnAcceptListener;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.listener.OnSendListener;
@@ -17,7 +14,6 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  */
 class Remote {
-    private static final Logger log = LoggerFactory.getLogger(Remote.class);
     private final String mRemoteAddress;
     private final Swapper mSwapper;
     private final Receiver mReceiver = new Receiver();
@@ -40,7 +36,6 @@ class Remote {
     }
 
     public void addOnReceiveListener(OnReceiveListener listener) {
-        log.debug("remote add on receive listener: {}", listener);
         mOnReceiveListener = listener;
     }
 
@@ -49,7 +44,6 @@ class Remote {
     }
 
     public Receiver receiver() {
-        log.debug("add on receive listener to receiver : {}", mOnReceiveListener);
         mReceiver.addOnReceiveListener(mOnReceiveListener);
         return mReceiver;
     }

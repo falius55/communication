@@ -13,8 +13,6 @@ import java.util.concurrent.TimeoutException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.SwapClient;
 import jp.gr.java_conf.falius.communication.core.socket.NonBlockingClient;
@@ -25,7 +23,6 @@ import jp.gr.java_conf.falius.communication.test.helper.EchoServer;
 import jp.gr.java_conf.falius.communication.test.helper.ServerHelper;
 
 public class FileSendDataTest {
-    private static Logger log = LoggerFactory.getLogger(FileSendDataTest.class);
     private static final String PACKAGE_PATH
         = "src\\test\\java\\jp\\gr\\java_conf\\falius\\communication\\test";
     private static final String HOST = "localhost";

@@ -5,9 +5,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.core.Client;
 import jp.gr.java_conf.falius.communication.core.JITClient;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
@@ -61,7 +58,6 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  *
  */
 public class NonBlockingJITClient implements JITClient {
-    private static final Logger log = LoggerFactory.getLogger(NonBlockingJITClient.class);
     private final Client mClient;
     private final BlockingQueue<SendData> mSendDataQueue = new LinkedBlockingQueue<>();
 
@@ -113,7 +109,6 @@ public class NonBlockingJITClient implements JITClient {
      */
     @Override
     public void close() throws IOException {
-        log.debug("jit client close");
         mClient.close();
     }
 

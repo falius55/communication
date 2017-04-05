@@ -11,8 +11,6 @@ import java.util.concurrent.TimeoutException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.SwapClient;
 import jp.gr.java_conf.falius.communication.core.socket.NonBlockingClient;
@@ -24,7 +22,6 @@ import jp.gr.java_conf.falius.communication.test.helper.ServerHelper;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class BasicReceiveDataTest {
-    private static Logger log = LoggerFactory.getLogger(BasicReceiveDataTest.class);
     private static final String HOST = "localhost";
     private static final ServerHelper mServer = new EchoServer();
 
@@ -67,7 +64,6 @@ public class BasicReceiveDataTest {
         assertThat(receiveData.dataCount(), is(data.length));
         for (int i : new IntRange(receiveData.dataCount())) {
             String str = receiveData.getString();
-            log.debug("get string: {}", str);
         }
     }
 

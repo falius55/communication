@@ -15,8 +15,6 @@ import java.util.concurrent.TimeoutException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.Client;
 import jp.gr.java_conf.falius.communication.core.SwapClient;
@@ -34,7 +32,6 @@ import jp.gr.java_conf.falius.util.check.CheckList;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingClientTest {
-    private static Logger log = LoggerFactory.getLogger(NonBlockingClientTest.class);
     private static final String HOST = "localhost";
     private static final ServerHelper mServer = new EchoServer();
 
@@ -115,7 +112,7 @@ public class NonBlockingClientTest {
             @Override
             public void onDissconnect(String remote, Throwable cause) {
                 if (cause != null) {
-                    log.info("client disconnect : {}", cause.getMessage());
+                    System.out.printf("client disconnect : %s%n", cause.getMessage());
                 }
             }
 
@@ -224,9 +221,7 @@ public class NonBlockingClientTest {
             ReceiveData receiveData = future.get();
             assertThat(receiveData.dataCount(), is(sendData.length));
             for (int i : new IntRange(sendData.length)) {
-                log.info("data: {} : {}", i, sendData[i]);
                 String ret = receiveData.getString();
-                log.info("ret : {} : {}", i, ret);
                 assertThat(ret, is(sendData[i]));
             }
             assertThat(future.isDone(), is(true));
@@ -277,7 +272,7 @@ public class NonBlockingClientTest {
 
             @Override
             public void onDissconnect(String remote, Throwable cause) {
-                log.debug("start sender disconnect to {} by {}", remote, cause == null ? "null" : cause);
+                System.out.printf("start sender disconnect to %s by %s%n", remote, cause == null ? "null" : cause);
             }
 
         });

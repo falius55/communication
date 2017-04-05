@@ -16,8 +16,6 @@ import java.util.concurrent.TimeoutException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.JITClient;
 import jp.gr.java_conf.falius.communication.core.Server;
@@ -37,7 +35,6 @@ import jp.gr.java_conf.falius.util.check.CheckList;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
 public class NonBlockingJITClientTest {
-    private static final Logger log = LoggerFactory.getLogger(NonBlockingJITClientTest.class);
     private static final String HOST = "localhost";
     private static final int PORT = 10000;
     private static SocketServer mServer;
@@ -65,7 +62,7 @@ public class NonBlockingJITClientTest {
 
             @Override
             public void onDissconnect(String remote, Throwable cause) {
-                log.debug("server disconnect {} by {}", remote, cause == null ? "null" : cause.getMessage());
+                System.out.printf("server disconnect %s by %s%n", remote, cause == null ? "null" : cause.getMessage());
             }
 
         });
@@ -73,7 +70,7 @@ public class NonBlockingJITClientTest {
 
             @Override
             public void onShutdown() {
-                log.debug("server shutdown");
+                System.out.println("server shutdown");
             }
 
         });
@@ -81,7 +78,7 @@ public class NonBlockingJITClientTest {
 
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
-                log.debug("server on receive");
+                System.out.println("server on receive");
             }
 
             @Override
@@ -107,7 +104,6 @@ public class NonBlockingJITClientTest {
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
-                log.debug("ret: {}", ret);
                 list.check(ret);
                 assertThat(ret, isIn(data));
             }
@@ -135,8 +131,6 @@ public class NonBlockingJITClientTest {
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
-                log.debug("receive by {}", Thread.currentThread().getName());
-                log.debug("ret: {}", ret);
                 assertThat(list.isChecked(ret), is(false));
                 list.check(ret);
                 assertThat(ret, isIn(data));
@@ -172,8 +166,6 @@ public class NonBlockingJITClientTest {
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
-                log.debug("receive by {}", Thread.currentThread().getName());
-                log.debug("ret: {}", ret);
                 assertThat(list.isChecked(ret), is(false));
                 list.check(ret);
                 assertThat(ret, isIn(data));
@@ -216,7 +208,6 @@ public class NonBlockingJITClientTest {
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 assertThat(true, is(false)); // 一度でも通ったら失敗
                 String ret = receiveData.getString();
-                log.debug("ret: {}", ret);
                 assertThat(list.isChecked(ret), is(false));
                 list.check(ret);
                 assertThat(ret, isIn(data));
@@ -232,11 +223,8 @@ public class NonBlockingJITClientTest {
 
                 @Override
                 public void onReceive(String remoteAddress, ReceiveData receiveData) {
-                    log.debug("receive listener in new");
                     check.check("check"); // 一度でも通ったことの確認
                     String ret = receiveData.getString();
-                    log.debug("receive by {}", Thread.currentThread().getName());
-                    log.debug("ret: {}", ret);
                     assertThat(list.isChecked(ret), is(false));
                     list.check(ret);
                     assertThat(ret, isIn(data));
@@ -274,7 +262,6 @@ public class NonBlockingJITClientTest {
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
-                log.debug("ret: {}", ret);
                 assertThat(list.isChecked(ret), is(false));
                 list.check(ret);
                 assertThat(ret, isIn(data));
@@ -286,7 +273,6 @@ public class NonBlockingJITClientTest {
                 @Override
                 public void onDissconnect(String remote, Throwable cause) {
                     assertThat(check.isChecked("check"), is(false));
-                    log.debug("client disconnect by {}", cause == null ? "null" : cause.getMessage());
                     check.check("check");
                 }
 
@@ -316,8 +302,6 @@ public class NonBlockingJITClientTest {
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
-                log.debug("receive by {}", Thread.currentThread().getName());
-                log.debug("ret: {}", ret);
                 assertThat(list.isChecked(ret), is(false));
                 list.check(ret);
                 assertThat(ret, isIn(data));
@@ -356,8 +340,6 @@ public class NonBlockingJITClientTest {
             @Override
             public void onReceive(String remoteAddress, ReceiveData receiveData) {
                 String ret = receiveData.getString();
-                log.debug("receive by {}", Thread.currentThread().getName());
-                log.debug("ret: {}", ret);
                 assertThat(list.isChecked(ret), is(false));
                 list.check(ret);
                 assertThat(ret, isIn(data));

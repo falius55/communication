@@ -3,9 +3,6 @@ package jp.gr.java_conf.falius.communication.test.helper;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.core.SwapClient;
 import jp.gr.java_conf.falius.communication.core.socket.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
@@ -15,7 +12,6 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 
 public class OnceClient implements ClientHelper {
-    private static final Logger log = LoggerFactory.getLogger(OnceClient.class);
     private final String mHost;
     private final int mPort;
 
@@ -31,7 +27,7 @@ public class OnceClient implements ClientHelper {
 
             @Override
             public void onDissconnect(String remote, Throwable cause) {
-                log.debug("client disconnect by {}", cause == null ? "non" : cause.getMessage());
+                System.out.printf("client disconnect by %s%n", cause == null ? "non" : cause.getMessage());
             }
 
         });

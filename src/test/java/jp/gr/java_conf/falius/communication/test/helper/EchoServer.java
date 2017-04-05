@@ -2,9 +2,6 @@ package jp.gr.java_conf.falius.communication.test.helper;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jp.gr.java_conf.falius.communication.core.Server;
 import jp.gr.java_conf.falius.communication.core.socket.NonBlockingServer;
 import jp.gr.java_conf.falius.communication.core.socket.SocketServer;
@@ -17,7 +14,6 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 public class EchoServer implements ServerHelper {
-    private static final Logger log = LoggerFactory.getLogger(EchoServer.class);
     private static int mPort = 9001;
     private final SocketServer mServer;
 
@@ -54,7 +50,7 @@ public class EchoServer implements ServerHelper {
 
             @Override
             public void onDissconnect(String remote, Throwable cause) {
-                log.debug("server disconnect with {} by {}", remote, cause == null ? "null" : cause);
+                System.out.printf("server disconnect with %s by %s%n", remote, cause == null ? "null" : cause);
             }
 
         });
@@ -63,7 +59,7 @@ public class EchoServer implements ServerHelper {
 
             @Override
             public void onShutdown() {
-                log.info("server shutdown");
+                System.out.println("server shutdown");
             }
 
         });
@@ -72,7 +68,7 @@ public class EchoServer implements ServerHelper {
 
             @Override
             public void onAccept(String remoteAddress) {
-                log.debug("server accept from {}", remoteAddress);
+                System.out.printf("server accept from %s%n", remoteAddress);
             }
         });
 

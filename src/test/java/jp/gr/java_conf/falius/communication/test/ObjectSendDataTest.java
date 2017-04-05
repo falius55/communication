@@ -9,8 +9,6 @@ import java.util.concurrent.TimeoutException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.SwapClient;
 import jp.gr.java_conf.falius.communication.core.socket.NonBlockingClient;
@@ -23,7 +21,6 @@ import jp.gr.java_conf.falius.communication.test.helper.SerializableTest;
 import jp.gr.java_conf.falius.communication.test.helper.ServerHelper;
 
 public class ObjectSendDataTest {
-    private static Logger log = LoggerFactory.getLogger(ObjectSendDataTest.class);
     private static final String HOST = "localhost";
     private static final ServerHelper mServer = new EchoServer();
 
