@@ -17,6 +17,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.core.Client;
 import jp.gr.java_conf.falius.communication.core.SwapClient;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
@@ -82,11 +85,13 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  */
 public class NonBlockingClient implements SwapClient, Disconnectable {
+    private static final Logger log = LoggerFactory.getLogger(NonBlockingClient.class);
+
     private final String mServerHost;
     private final int mServerPort;
     private final long mPollTimeout;
     private final Swapper mSwapper;
-    private final Set<SelectionKey> mKeys = Collections.synchronizedSet(new HashSet<SelectionKey>());
+    private final Set<SelectionKey> mKeys = Collections.synchronizedSet(new HashSet<>());
 
     private ExecutorService mExecutor = null;
 
@@ -128,7 +133,9 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
 
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
+        log.debug("add on receve listener: {}", listener);
         mOnReceiveListener = listener;
+        log.debug("new mOnReceiveListener: {}", mOnReceiveListener);
     }
 
     @Override
@@ -169,6 +176,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
         channel.close();
         key.selector().wakeup();
 
+        log.debug("mOnDisconnectCallback: {}", mOnDisconnectCallback);
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(remote, cause);
         }
@@ -210,7 +218,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
      * @throws NullPointerException sendDataがnullの場合
      */
     @Override
-    public ReceiveData send(final SendData sendData) throws IOException, TimeoutException {
+    public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
         Objects.requireNonNull(sendData);
         return start(new OnceSwapper() {
 
@@ -230,6 +238,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
      */
     @Override
     public ReceiveData start(Swapper swapper) throws IOException, TimeoutException {
+        log.debug("client start");
         Objects.requireNonNull(swapper, "swapper is null");
         try (Selector selector = Selector.open(); SocketChannel channel = SocketChannel.open()) {
             Remote remote = connect(channel, swapper); // 接続はブロッキングモード
@@ -238,13 +247,16 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
                     new WritingHandler(this, remote, true));
 
             while (channel.isOpen()) {
+                log.debug("client in loop");
                 if (selector.select(mPollTimeout) > 0 || selector.selectedKeys().size() > 0) {
+                    log.debug("client selectedKeys: {}", selector.selectedKeys().size());
 
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
                         SelectionKey key = iter.next();
                         mKeys.add(key);
                         SocketHandler handler = (SocketHandler) key.attachment();
+                        log.debug("client handle");
                         handler.handle(key);
                         iter.remove();
                     }
@@ -254,6 +266,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
                             ((int) (double) mPollTimeout / 1000) + " sec.");
                 }
             }
+            log.debug("client end");
             return remote.receiver().getData();
         }
     }
@@ -266,7 +279,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
      * @throws IOException
      * @throws ConnectException 接続に失敗した場合
      */
-    private Remote connect(SocketChannel channel, final Swapper swapper) throws IOException {
+    private Remote connect(SocketChannel channel, Swapper swapper) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerHost, mServerPort);
         channel.connect(address);
 
@@ -282,6 +295,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
             }
         };
         Remote remote = new Remote(remoteAddress, swapperFactory);
+        log.debug("mOnReceiveListener to remote: {}", mOnReceiveListener);
         remote.addOnSendListener(mOnSendListener);
         remote.addOnReceiveListener(mOnReceiveListener);
         return remote;
