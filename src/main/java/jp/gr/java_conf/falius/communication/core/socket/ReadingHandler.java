@@ -52,8 +52,8 @@ class ReadingHandler implements SocketHandler {
                 mDisconnectable.disconnect(channel, key, null);
             }
 
-        } catch (Exception e) {
-            mDisconnectable.disconnect(channel, key, new IOException("reading handler exception", e));
+        } catch (Throwable e) {
+            mDisconnectable.disconnect(channel, key,  e);
         }
     }
 }

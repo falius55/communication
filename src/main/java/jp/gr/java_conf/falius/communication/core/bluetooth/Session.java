@@ -45,22 +45,28 @@ class Session implements Runnable, AutoCloseable {
     }
 
     public void run() {
-        try (Session session = this) {
+        try {
             while (mIsContinue) {
                 BluetoothHandler handler = mNextHandler;
                 handler.handle();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            disconnect(e);
+            return;
         }
 
+        disconnect(null);
     }
 
-    public void disconnect(Throwable cause) throws IOException {
+    public void disconnect(Throwable cause) {
         mIsContinue = false;
-        mIn.close();
-        mOut.close();
-        mChannel.close();
+        try {
+            mIn.close();
+            mOut.close();
+            mChannel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(mRemoteAddress, cause);
         }

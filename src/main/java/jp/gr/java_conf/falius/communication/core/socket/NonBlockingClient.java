@@ -41,7 +41,8 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *     start()メソッドの戻り値で渡されるReceiveDataオブジェクトには含まれていませんので注意してください。
  *
  * <p>
- *  startメソッドを実行する度に新しい接続を確立して通信します。
+ *  closeメソッドを実行するまでの間、sendメソッド及びstartメソッドは複数回実行することができます。<br>
+ *      sendメソッド、startメソッドを実行する度に新しい接続を確立して通信します。
  *
  *  <p>
  *  以下に、基本的な使用例を示します。

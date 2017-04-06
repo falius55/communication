@@ -14,6 +14,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.core.Server;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
@@ -82,6 +85,8 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  */
 public class NonBlockingServer implements SocketServer, Disconnectable {
+    private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);
+
     private final int mServerPort;
 
     private volatile ServerSocketChannel mServerSocketChannel = null;
@@ -186,6 +191,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         mServerSocketChannel.close();
         if (mExecutor != null) {
             mExecutor.shutdownNow();
+            log.info("executor shutdown");
         }
 
         if (mOnShutdownCallback != null) {
@@ -200,6 +206,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
             }
             mIsStarted = true;
         }
+        log.debug("exec");
         try (Selector selector = Selector.open();
                 ServerSocketChannel channel = ServerSocketChannel.open()) {
             mSelector = selector;
@@ -215,13 +222,17 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
                 // キーはselectedKeysに格納されたままになる
                 // 削除しないと、次回も再び同じキーで通知される
                 if (selector.select() > 0 || selector.selectedKeys().size() > 0) {
+                    log.debug("selector.selectedKeys: {}", selector.selectedKeys().size());
+
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
                         SelectionKey key = iter.next();
                         SocketHandler handler = (SocketHandler) key.attachment();
+                        log.debug("server handle");
                         handler.handle(key);
                         iter.remove();
                     }
+
                 }
             }
 
@@ -231,7 +242,9 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
 
     private void bind(ServerSocketChannel channel) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerPort);
+        log.info("bind to ... {} : {}", getLocalHostAddress(), address.getPort());
         channel.bind(address); // ポートが競合したら処理が返ってこない？
+        log.info("success binding");
     }
 
     @Override
@@ -258,7 +271,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
             InetAddress address = InetAddress.getLocalHost();
             return address.getHostAddress();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            log.error("get address error", e);
         }
         return null;
     }
