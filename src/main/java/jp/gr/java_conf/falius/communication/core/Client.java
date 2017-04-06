@@ -42,6 +42,7 @@ public interface Client extends Callable<ReceiveData>, AutoCloseable {
 
     void addOnConnectListener(OnConnectListener listener);
 
+    @Override
     void close() throws IOException;
 
     public interface OnConnectListener  {
