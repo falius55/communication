@@ -13,7 +13,7 @@ package jp.gr.java_conf.falius.communication.swapper;
  *
  */
 public abstract class RepeatSwapper implements Swapper {
-    private boolean isContinue = true;
+    private volatile boolean isContinue = true;
 
     /**
      *
