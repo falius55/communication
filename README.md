@@ -1,7 +1,7 @@
 # communication
 
 ## Description
-通信用のクラス群です。現在はソケットのノンブロック通信のみとなっています。
+通信用のクラス群です。現在はソケットのノンブロック通信およびBluetooth通信（サーバーのみ）となっています。
 
 ## Requirement
 依存関係はgradleで管理しています。JDKは基本的にjava8が必要ですが、タグ名に&がついているものはjava7でも動作するようにしています(Androidアプリでも使えるように)。
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.falius55:communication:1.4.1'
+    compile 'com.github.falius55:communication:1.4.3'
 }
 
 ```
@@ -27,8 +27,8 @@ dependencies {
 ```
 int port = 9001;
 /*
- * 受信データを受け取って送信データを返すメソッドを持った
- * Swapperインスタンスを返すファクトリをコンストラクタに渡す
+ * Swapperは受信データを受け取って送信データを返す。
+ * サーバーはそのSwapperを返すSwapperFactoryをコンストラクタに渡す。
  */
 try (Server server = new NonBlockingServer(port, new SwapperFactory(){
     @Override
@@ -67,11 +67,13 @@ try (Server server = new NonBlockingServer(port, new SwapperFactory(){
 String host = "localhost";
 int port = 9001;
 
-Client client = new NonBlockingClient(host, port);
+// SwapClientは送信から受信までの間をブロックする処理を行う際のインターフェース
+// 戻り値から受信データを受け取れる送信メソッドを実装している
+SwapClient client = new NonBlockingClient(host, port);
 SendData sendData = new BasicSendData();
 sendData.put("abcd");
 
-// NonBclockingClient#send(SendData)は送信が一回のみの場合の簡易メソッド
+// SwapClient#send(SendData)は送信が一回のみの場合の簡易メソッド
 ReceiveData receiveData = client.send(sendData);
 
 // データは送信相手がputした順序で格納されているので、
@@ -79,7 +81,8 @@ ReceiveData receiveData = client.send(sendData);
 System.out.println(receiveData.getString());  // -> "ABCD"
 System.out.println(receiveData.getInt());  // -> 4
 ```
-クライアントのsendメソッドは同一スレッドで動くので、下記のようにClient自体をCallableとして扱う方法もあります。
+SwapClient#sendメソッドは同一スレッドで動くので、下記のようにClient自体をCallableとして扱う方法もあります。
+Client#startOnNewThreadメソッドを使用すると下記と同じことができます。
 ```
 String host = "localhost";
 int port = 9001;
@@ -90,15 +93,15 @@ Client client = new NonBlockingClient(host, port, nwe OnceSwapper() {
         // クライアントは受信より先に送信する必要があるため、
         // まだ一度も送信していない段階では受信データにnullが入っており、
         // ここではreceiveDataは使えないことに注意
-        SendData sendData();
+        SendData sendData = new BasicSendData();
         sendData.put("abcd");
+        return sendData;
     }
 });
 
 client.addOnReceiveListener(new OnReceiveListener() {
     @Override
-    public void onReceive(String remoteAddress, int readBytes,
-        ReceiveData receiveData) {
+    public void onReceive(String remoteAddress, ReceiveData receiveData) {
         // 受信直後に呼ばれる
         System.out.println(receiveData.getString());  // -> "ABCD"
         System.out.println(receiveData.getInt());  // -> 4
@@ -107,7 +110,7 @@ client.addOnReceiveListener(new OnReceiveListener() {
 
 Future<ReceiveData> future = executor.submit(client);
 
-// startメソッドの戻り値に相当する最終受信データがFuture#getメソッドの戻り値で取得できる
+// sendメソッド、startメソッドの戻り値に相当する最終受信データがFuture#getメソッドの戻り値で取得できる
 // しかし、このケースではOnReceiveListener#onReceiveメソッド内で受信データを消費しているため
 // retの中身は空(retはnullではないが、ret.get()とするとnullが返ってくる)
 ReceiveData ret = future.get();
@@ -166,7 +169,7 @@ int repeatLen = 10;
 String host = "localhost";
 int port = 9001;
 
-Client client = new NonBlockingClient(host, port);
+SwapClient client = new NonBlockingClient(host, port);
 
 ReceiveData receiveData = client.start(new RepeatSwapper() {
     private int count = 0;
@@ -205,7 +208,7 @@ int repeatLen = 10;
 String host = "localhost";
 int port = 9001;
 
-Client client = new NonBlockingClient(host, port);
+SwapClient client = new NonBlockingClient(host, port);
 
 ReceiveData receiveData = client.start(new FixedRepeatSwapper(repeatLen) {
 
@@ -243,7 +246,7 @@ File file = new File("rcv.txt");
 fileData.getAndSave(file);  // 送信されてきたsample.txtの内容をrcv.txtという名前で保存
 ```
 扱えるデータ
-* ファイル
-* List, Map
-* Serializable
-* 配列
+* ファイル(FileSendData, FileReceiveData)
+* List, Map(CollectionSendData, CollectionReceiveData)
+* Serializable(ObjectSendData, ObjectReceiveData)
+* 配列(ArraySendData, ArrayReceiveData)
