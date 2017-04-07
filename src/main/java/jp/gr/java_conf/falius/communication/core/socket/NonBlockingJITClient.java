@@ -114,7 +114,6 @@ public class NonBlockingJITClient implements JITClient {
      */
     @Override
     public void close() throws IOException {
-        log.debug("jit client close");
         mClient.close();
     }
 

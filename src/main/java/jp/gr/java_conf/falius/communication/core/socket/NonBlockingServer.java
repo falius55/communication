@@ -194,12 +194,13 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         mServerSocketChannel.close();
         if (mExecutor != null) {
             mExecutor.shutdownNow();
-            log.info("executor shutdown");
+            log.debug("executor shutdown");
         }
 
         if (mOnShutdownCallback != null) {
             mOnShutdownCallback.onShutdown();
         }
+        log.info("server shutdown");
     }
 
     private void exec() throws IOException {
@@ -209,9 +210,9 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
             }
             mIsStarted = true;
         }
-        log.debug("exec");
         try (Selector selector = Selector.open();
                 ServerSocketChannel channel = ServerSocketChannel.open()) {
+            log.debug("open selecctor and channel");
             mSelector = selector;
             mServerSocketChannel = channel;
             bind(channel);
@@ -225,13 +226,11 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
                 // キーはselectedKeysに格納されたままになる
                 // 削除しないと、次回も再び同じキーで通知される
                 if (selector.select() > 0 || selector.selectedKeys().size() > 0) {
-                    log.debug("selector.selectedKeys: {}", selector.selectedKeys().size());
 
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
                         SelectionKey key = iter.next();
                         SocketHandler handler = (SocketHandler) key.attachment();
-                        log.debug("server handle");
                         handler.handle(key);
                         iter.remove();
                     }
@@ -279,7 +278,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
                 }
             }
         } catch (SocketException e) {
-            log.error("Could not get local address", e);
+            log.warn("Could not get local address", e);
         }
         return null;
     }

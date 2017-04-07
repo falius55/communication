@@ -44,8 +44,10 @@ class AcceptHandler implements SocketHandler {
         SocketChannel clientChannel = null;
         String remoteAddress = "";
         try {
+            log.debug("try accepting ...");
             clientChannel = ((ServerSocketChannel) key.channel()).accept();
             remoteAddress = clientChannel.socket().getRemoteSocketAddress().toString();
+            log.debug("success accept: {}", remoteAddress);
 
             Remote remote = new Remote(remoteAddress, mSwapperFactory);
             remote.addOnAcceptListener(mOnAcceptListener);

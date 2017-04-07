@@ -102,7 +102,6 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     @Override
     public Future<?> startOnNewThread() {
-        log.debug("start on new thread");
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -115,7 +114,6 @@ public class BluetoothServer implements Server, AutoCloseable {
     private void exec() {
         try {
             while (!mIsShutdowned) {
-                log.debug("in loop");
                 Session session = accept();
                 mExecutor.submit(session);
             }
@@ -129,9 +127,9 @@ public class BluetoothServer implements Server, AutoCloseable {
      * @return 接続されたたセッションを返す。
      */
     private Session accept() throws IOException {
-        log.debug("Accept");
+        log.debug("try accept ...");
         StreamConnection channel = mConnection.acceptAndOpen();
-        log.debug("Connect");
+        log.debug("success accept");
         if (mOnAcceptListener != null) {
             RemoteDevice remote = RemoteDevice.getRemoteDevice(channel);
             mOnAcceptListener.onAccept(remote.getBluetoothAddress());

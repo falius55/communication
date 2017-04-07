@@ -27,7 +27,7 @@ class ReadingHandler implements SocketHandler {
 
     @Override
     public void handle(SelectionKey key) throws  IOException {
-        log.debug("reading handle");
+        log.debug("{} reading handle", mIsClient ? "client" : "server");
         SocketChannel channel = (SocketChannel) key.channel();
 
         try {
@@ -61,7 +61,7 @@ class ReadingHandler implements SocketHandler {
 
         } catch (Throwable e) {
             mDisconnectable.disconnect(channel, key,  e);
-            log.error("handle error", e);
+            log.warn("reading handle error", e);
         }
     }
 }

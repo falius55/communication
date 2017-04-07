@@ -49,6 +49,7 @@ class Session implements Runnable, AutoCloseable {
     }
 
     public void run() {
+        log.debug("session start");
         try {
             while (mIsContinue) {
                 BluetoothHandler handler = mNextHandler;
@@ -56,14 +57,15 @@ class Session implements Runnable, AutoCloseable {
             }
         } catch (Throwable e) {
             disconnect(e);
-            log.error("handle error :\n{}", e.getMessage());
+            log.warn("handle error, session end ", e);
             return;
         }
 
         disconnect(null);
+        log.debug("session end");
     }
 
-    public void disconnect(Throwable cause) {
+    void disconnect(Throwable cause) {
         log.debug("session disconnect by {}", cause == null ? "null" : cause.getMessage());
         mIsContinue = false;
         try {
@@ -71,38 +73,38 @@ class Session implements Runnable, AutoCloseable {
             mOut.close();
             mChannel.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warn("error during disconnecting", e);
         }
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(mRemoteAddress, cause);
         }
     }
 
-    public void setHandler(BluetoothHandler handler) {
+    void setHandler(BluetoothHandler handler) {
         mNextHandler = handler;
     }
 
-    public void onSend() {
+    void onSend() {
         if (mOnSendListener != null) {
             mOnSendListener.onSend(mRemoteAddress);
         }
     }
 
-    public void onReceive(ReceiveData receiveData) {
+    void onReceive(ReceiveData receiveData) {
         if (mOnReceiveListener != null) {
             mOnReceiveListener.onReceive(mRemoteAddress, receiveData);
         }
     }
 
-    public InputStream getInputStream() throws IOException {
+    InputStream getInputStream() throws IOException {
         return mIn;
     }
 
-    public OutputStream getOutputStream() throws IOException {
+    OutputStream getOutputStream() throws IOException {
         return mOut;
     }
 
-    public SendData newSendData(ReceiveData latestReceiveData) throws Exception {
+    SendData newSendData(ReceiveData latestReceiveData) throws Exception {
         try {
             return mSwapper.swap(mRemoteAddress, latestReceiveData);
         } catch (Exception e) {
@@ -110,7 +112,7 @@ class Session implements Runnable, AutoCloseable {
         }
     }
 
-    public boolean doContinue() {
+    boolean doContinue() {
         return mSwapper.doContinue();
     }
 
