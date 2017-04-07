@@ -1,13 +1,16 @@
 package jp.gr.java_conf.falius.communication.core.socket;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -268,10 +271,15 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
     @Override
     public String getLocalHostAddress() {
         try {
-            InetAddress address = InetAddress.getLocalHost();
-            return address.getHostAddress();
-        } catch (UnknownHostException e) {
-            log.error("get address error", e);
+            for(NetworkInterface n: Collections.list(NetworkInterface.getNetworkInterfaces()) ) {
+                for (InetAddress addr : Collections.list(n.getInetAddresses())) {
+                    if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                        return addr.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            log.error("Could not get local address", e);
         }
         return null;
     }
