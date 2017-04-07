@@ -170,7 +170,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
 
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) throws IOException {
-        String remote = channel.socket().getInetAddress().toString();
+        String remote = channel.socket().getRemoteSocketAddress().toString();
         channel.close();
         key.selector().wakeup();
 
@@ -282,7 +282,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
         channel.connect(address);
         log.info("success conect");
 
-        String remoteAddress = channel.socket().getInetAddress().toString();
+        String remoteAddress = channel.socket().getRemoteSocketAddress().toString();
         if (mOnConnectListener != null) {
             mOnConnectListener.onConnect(remoteAddress);
         }
