@@ -282,7 +282,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
         channel.connect(address);
         log.info("success conect");
 
-        String remoteAddress = channel.getRemoteAddress().toString();
+        String remoteAddress = channel.socket().getInetAddress().toString();
         if (mOnConnectListener != null) {
             mOnConnectListener.onConnect(remoteAddress);
         }
