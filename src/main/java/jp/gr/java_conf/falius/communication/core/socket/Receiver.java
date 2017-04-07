@@ -7,6 +7,9 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
@@ -20,6 +23,7 @@ import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
  *
  */
 class Receiver {
+    private static final Logger log = LoggerFactory.getLogger(Receiver.class);
     enum Result {
         ERROR, UNFINISHED, FINISHED, DISCONNECT,
     }
@@ -58,9 +62,11 @@ class Receiver {
             try {
                 header = HeaderFactory.from(channel);
             } catch (IOException e) {
+                log.warn("header reading error", e);
                 return Result.ERROR;
             }
             if (header == null) {
+                log.warn("header could not read. disconnect");
                 return Result.DISCONNECT;
             }
             entry = new Entry(header);
@@ -71,6 +77,7 @@ class Receiver {
 
         int tmp = entry.read(channel);
         if (tmp < 0) {
+            log.warn("recieve read returns -1");
             return Result.ERROR;
         }
 
@@ -81,6 +88,7 @@ class Receiver {
                 mListener.onReceive(remoteAddress, getData());
             }
             mNonFinishedEntry = null;
+            log.debug("reading finish");
             return Result.FINISHED;
         } else {
             mNonFinishedEntry = entry;
@@ -127,6 +135,7 @@ class Receiver {
             for (ByteBuffer itemBuf : mItemData) {
                 int tmp = channel.read(itemBuf);
                 if (tmp < 0) {
+                    log.warn("entry read retuns -1");
                     return -1;
                 }
                 readed += tmp;

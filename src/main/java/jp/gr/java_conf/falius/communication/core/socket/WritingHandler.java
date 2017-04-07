@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 書き込み操作を行うハンドラ
  * @author "ymiyauchi"
  *
  */
 class WritingHandler implements SocketHandler {
+    private static final Logger log = LoggerFactory.getLogger(WritingHandler.class);
     private final Disconnectable mDisconnectable;
     private final Remote mRemote;
     private final boolean mIsClient;
@@ -23,6 +27,7 @@ class WritingHandler implements SocketHandler {
 
     @Override
     public void handle(SelectionKey key) throws IOException {
+        log.debug(" {} writing handle", mIsClient ? "client" : "server");
         SocketChannel channel = (SocketChannel) key.channel();
         try {
             if (!channel.isOpen()) {
@@ -40,6 +45,7 @@ class WritingHandler implements SocketHandler {
             }
 
             if (sender == null) {
+                log.debug("disconnect by send data returned null");
                 mDisconnectable.disconnect(channel, key, null);
                 return;
             }
@@ -59,6 +65,7 @@ class WritingHandler implements SocketHandler {
 
         } catch (Throwable e) {
             mDisconnectable.disconnect(channel, key, e);
+            log.warn("writing handler error", e);
         }
 
     }

@@ -7,6 +7,9 @@ import java.nio.IntBuffer;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 import jp.gr.java_conf.falius.communication.rcvdata.BasicReceiveData;
@@ -14,6 +17,7 @@ import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
 class BluetoothReadingHandler implements BluetoothHandler {
+    private static final Logger log = LoggerFactory.getLogger(BluetoothReadingHandler.class);
 
     private final Session mSession;
 
@@ -22,6 +26,7 @@ class BluetoothReadingHandler implements BluetoothHandler {
     }
 
     public void handle() throws Exception {
+        log.debug("reading handle");
         InputStream is = mSession.getInputStream();
         Header header = HeaderFactory.from(is);
         if (header == null) {

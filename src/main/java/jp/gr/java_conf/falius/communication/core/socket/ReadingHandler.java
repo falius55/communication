@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 読み込み処理を行うハンドラ
  * @author "ymiyauchi"
  *
  */
 class ReadingHandler implements SocketHandler {
+    private static final Logger log = LoggerFactory.getLogger(ReadingHandler.class);
     private final Disconnectable mDisconnectable;
     private final Remote mRemote;
     private final boolean mIsClient;
@@ -22,6 +26,7 @@ class ReadingHandler implements SocketHandler {
 
     @Override
     public void handle(SelectionKey key) throws  IOException {
+        log.debug("{} reading handle", mIsClient ? "client" : "server");
         SocketChannel channel = (SocketChannel) key.channel();
 
         try {
@@ -54,6 +59,7 @@ class ReadingHandler implements SocketHandler {
 
         } catch (Throwable e) {
             mDisconnectable.disconnect(channel, key,  e);
+            log.warn("reading handle error", e);
         }
     }
 }

@@ -14,6 +14,9 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.core.Server;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
@@ -31,6 +34,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  */
 public class BluetoothServer implements Server, AutoCloseable {
+    private static final Logger log = LoggerFactory.getLogger(BluetoothServer.class);
     // UUIDに-(ハイフン)はつけない
     private static final String serverUUID = "97d38833e31a4a718d8e4e44d052ce2b";
 
@@ -122,7 +126,9 @@ public class BluetoothServer implements Server, AutoCloseable {
      * @return 接続されたたセッションを返す。
      */
     private Session accept() throws IOException {
+        log.debug("try accept ...");
         StreamConnection channel = mConnection.acceptAndOpen();
+        log.debug("success accept");
         if (mOnAcceptListener != null) {
             RemoteDevice remote = RemoteDevice.getRemoteDevice(channel);
             mOnAcceptListener.onAccept(remote.getBluetoothAddress());
