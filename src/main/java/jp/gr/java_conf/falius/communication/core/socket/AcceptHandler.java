@@ -5,6 +5,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.gr.java_conf.falius.communication.core.Server;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.listener.OnSendListener;
@@ -19,6 +22,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  */
 class AcceptHandler implements SocketHandler {
+    private static final Logger log = LoggerFactory.getLogger(AcceptHandler.class);
     private final SwapperFactory mSwapperFactory;
     private final Disconnectable mDisconnectable;
 
@@ -42,6 +46,7 @@ class AcceptHandler implements SocketHandler {
         try {
             clientChannel = ((ServerSocketChannel) key.channel()).accept();
             remoteAddress = clientChannel.socket().getRemoteSocketAddress().toString();
+            log.info("accept: {}", remoteAddress);
 
             Remote remote = new Remote(remoteAddress, mSwapperFactory);
             remote.addOnAcceptListener(mOnAcceptListener);

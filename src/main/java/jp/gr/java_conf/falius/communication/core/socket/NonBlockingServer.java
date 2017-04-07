@@ -190,7 +190,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         mSelector.wakeup();
         mServerSocketChannel.close();
         if (mExecutor != null) {
-            mExecutor.shutdownNow();
+            mExecutor.shutdown();
             log.info("executor shutdown");
         }
 
@@ -222,7 +222,6 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
                 // キーはselectedKeysに格納されたままになる
                 // 削除しないと、次回も再び同じキーで通知される
                 if (selector.select() > 0 || selector.selectedKeys().size() > 0) {
-                    log.debug("selector.selectedKeys: {}", selector.selectedKeys().size());
 
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()) {
@@ -238,6 +237,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
 
         }
 
+        log.info("terminate server operation");
     }
 
     private void bind(ServerSocketChannel channel) throws IOException {
