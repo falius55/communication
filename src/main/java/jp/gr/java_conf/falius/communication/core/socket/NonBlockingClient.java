@@ -3,6 +3,7 @@ package jp.gr.java_conf.falius.communication.core.socket;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -170,12 +171,16 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
 
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) throws IOException {
-        String remote = channel.socket().getRemoteSocketAddress().toString();
+        SocketAddress remote = channel.socket().getRemoteSocketAddress();
+        if (remote == null) {
+            return;
+        }
+        String remoteAddress = remote.toString();
         channel.close();
         key.selector().wakeup();
 
         if (mOnDisconnectCallback != null) {
-            mOnDisconnectCallback.onDissconnect(remote, cause);
+            mOnDisconnectCallback.onDissconnect(remoteAddress, cause);
         }
 
         log.info("client disconnect");
