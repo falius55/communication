@@ -118,7 +118,7 @@ public class BluetoothServer implements Server, AutoCloseable {
                 mExecutor.submit(session);
             }
         } catch (IOException e) {
-            log.error("I/O error in exec : {}", e.getMessage());
+            log.error("I/O error in exec : ", e);
         }
     }
 
@@ -135,7 +135,7 @@ public class BluetoothServer implements Server, AutoCloseable {
             mOnAcceptListener.onAccept(remote.getBluetoothAddress());
         }
         return new Session(channel, mSwapperFactory.get(),
-                mOnSendListener, mOnReceiveListener, mOnDisconnectCallback);
+                mOnSendListener, mOnReceiveListener, mOnDisconnectCallback, false);
     }
 
     @Override
