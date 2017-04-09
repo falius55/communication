@@ -26,6 +26,7 @@ class Session implements Runnable, AutoCloseable {
     private final OnSendListener mOnSendListener;
     private final OnReceiveListener mOnReceiveListener;
     private final OnDisconnectCallback mOnDisconnectCallback;
+    private final boolean mIsClient;
 
     private final InputStream mIn;
     private final OutputStream mOut;
@@ -33,9 +34,11 @@ class Session implements Runnable, AutoCloseable {
 
     private boolean mIsContinue = true;
 
+    private ReceiveData mLatestData = null;
+
     Session(StreamConnection channel, Swapper swapper,
             OnSendListener onSendListener, OnReceiveListener onReceiveListener,
-            OnDisconnectCallback onDisconnectCallback) throws IOException {
+            OnDisconnectCallback onDisconnectCallback, boolean isClient) throws IOException {
         mChannel = channel;
         RemoteDevice remote = RemoteDevice.getRemoteDevice(channel);
         mRemoteAddress = remote.getBluetoothAddress();
@@ -45,19 +48,26 @@ class Session implements Runnable, AutoCloseable {
         mOnDisconnectCallback = onDisconnectCallback;
         mIn = channel.openInputStream();
         mOut = channel.openOutputStream();
-        mNextHandler = new BluetoothReadingHandler(this);
+        mIsClient = isClient;
     }
 
+    @Override
     public void run() {
         log.debug("session start");
         try {
+            if (mIsClient) {
+                mNextHandler = new BluetoothWritingHandler(this, mSwapper.swap(mRemoteAddress, null));
+            } else {
+                mNextHandler = new BluetoothReadingHandler(this);
+            }
+
             while (mIsContinue) {
                 BluetoothHandler handler = mNextHandler;
                 handler.handle();
             }
         } catch (Throwable e) {
             disconnect(e);
-            log.warn("handle error, session end ", e);
+            log.warn("running error, session end ", e);
             return;
         }
 
@@ -124,5 +134,17 @@ class Session implements Runnable, AutoCloseable {
     @Override
     public void close() throws IOException {
         disconnect(null);
+    }
+
+    void setData(ReceiveData receiveData) {
+        mLatestData = receiveData;
+    }
+
+    ReceiveData getData() {
+        return mLatestData;
+    }
+
+    boolean isClient() {
+        return mIsClient;
     }
 }

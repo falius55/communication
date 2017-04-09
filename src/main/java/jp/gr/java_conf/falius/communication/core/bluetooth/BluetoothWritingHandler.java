@@ -38,7 +38,7 @@ class BluetoothWritingHandler implements BluetoothHandler {
 
         mSession.onSend();
 
-        if (mSession.doContinue()) {
+        if (mSession.isClient() || mSession.doContinue()) {
             BluetoothHandler handler = new BluetoothReadingHandler(mSession);
             mSession.setHandler(handler);
         } else {
