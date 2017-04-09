@@ -32,7 +32,7 @@ class Session implements Runnable, AutoCloseable {
     private final OutputStream mOut;
     private BluetoothHandler mNextHandler;
 
-    private boolean mIsContinue = true;
+    private boolean mDoContinue = true;
 
     private ReceiveData mLatestData = null;
 
@@ -61,7 +61,7 @@ class Session implements Runnable, AutoCloseable {
                 mNextHandler = new BluetoothReadingHandler(this);
             }
 
-            while (mIsContinue) {
+            while (mDoContinue) {
                 BluetoothHandler handler = mNextHandler;
                 handler.handle();
             }
@@ -76,8 +76,11 @@ class Session implements Runnable, AutoCloseable {
     }
 
     void disconnect(Throwable cause) {
+        if (!mDoContinue) {
+            return;
+        }
         log.debug("session disconnect by {}", cause == null ? "null" : cause.getMessage());
-        mIsContinue = false;
+        mDoContinue = false;
         try {
             mIn.close();
             mOut.close();

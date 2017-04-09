@@ -23,6 +23,11 @@ class BluetoothWritingHandler implements BluetoothHandler {
 
     public void handle() throws IOException {
         log.debug("writing handle");
+        if (mSendData == null) {
+            mSession.disconnect(null);
+            return;
+        }
+
         OutputStream os = mSession.getOutputStream();
         Header header = HeaderFactory.from(mSendData);
         ByteBuffer headerBuf = header.toByteBuffer();

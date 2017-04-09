@@ -145,26 +145,29 @@ public class BluetoothClient implements SwapClient {
             Future<Set<RemoteDevice>> future = searcher.searchPairedDevice();
             System.out.println("search device");
             RemoteDevice[] devices = future.get().toArray(new RemoteDevice[0]);
+
             for (int i : new IntRange(devices.length)) {
                 System.out.printf("%d: %s%n", i, devices[i].getFriendlyName(true));
             }
-            int deviceNum;
+
             try (Scanner sc = new Scanner(System.in)) {
                 System.out.println("choose device number: ");
                 String line = sc.nextLine();
-                deviceNum = Integer.parseInt(line);
+                int deviceNum = Integer.parseInt(line);
+                selectedDevice = devices[deviceNum];
             }
 
-            selectedDevice = devices[deviceNum];
         }
 
         SwapClient client = new BluetoothClient(UUID, selectedDevice);
+
         SendData sendData = new BasicSendData();
         sendData.put("abcde");
+
         ReceiveData receiveData = client.send(sendData);
+
         String ret = receiveData.getString();
         System.out.println("ret: " + ret);
-        System.out.println("active thread: " + Thread.activeCount());
     }
 
 }
