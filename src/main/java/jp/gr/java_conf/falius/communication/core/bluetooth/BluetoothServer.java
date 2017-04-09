@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jp.gr.java_conf.falius.communication.core.Server;
+import jp.gr.java_conf.falius.communication.core.socket.NonBlockingServer;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.listener.OnSendListener;
@@ -29,14 +30,64 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
 
 /**
- * Bluetooth通信をするサーバーのクラスです。
+ * <p>
+ * Bluetooth通信をするサーバーのクラスです。{@link NonBlockingServer}と同じインターフェースで利用できます。
+ *
+ * <p>
+ * 以下に基本的な利用方法を示します。
+ * <pre>
+ * {@code
+ *        // NonBlockingServerとの違いは、ポート番号の代わりにUUIDを指定するということだけ
+ *        // UUIDに-(ハイフン)はつけない
+ *        final String UUID = "97d38833e31a4a718d8e4e44d052ce2b";
+ *
+ *        try (BluetoothServer server = new BluetoothServer(UUID, new SwapperFactory() {
+ *
+ *            public Swapper get() {
+ *                return new RepeatSwapper() {
+ *
+ *                    public SendData swap(String remoteAddress, ReceiveData receiveData) {
+ *                       String rcv = receiveData.getString();
+ *                       SendData sendData = new BasicSendData();
+ *                       sendData.put(rcv.toUpperCase());
+ *                       return sendData;
+ *                    }
+ *
+ *                };
+ *            }
+ *
+ *        }); Scanner sc = new Scanner(System.in)) {
+ *            server.addOnAcceptListener(new OnAcceptListener() {
+ *
+ *                public void onAccept(String remoteAddress) {
+ *                    log.debug("accept to {}", remoteAddress);
+ *                }
+ *
+ *            });
+ *
+ *            Future<?> future = server.startOnNewThread();
+ *
+ *            while (true) {
+ *                log.debug("main loop");
+ *                System.out.println("please type stop if you want to stop server");
+ *                if ((sc.nextLine()).equals("stop")) {
+ *                    break;
+ *                }
+ *            }
+ *
+ *        } catch (IOException e) {
+ *            e.printStackTrace();
+ *        }
+ * }
+ * </pre>
+ *
  * @author "ymiyauchi"
  *
  */
 public class BluetoothServer implements Server, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(BluetoothServer.class);
     // UUIDに-(ハイフン)はつけない
-    private static final String serverUUID = "97d38833e31a4a718d8e4e44d052ce2b";
+    private static final String UUID = "97d38833e31a4a718d8e4e44d052ce2b";
 
     private final ExecutorService mExecutor = Executors.newCachedThreadPool();
     private final SwapperFactory mSwapperFactory;
@@ -66,26 +117,41 @@ public class BluetoothServer implements Server, AutoCloseable {
         log.debug("server start");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnSendListener(OnSendListener listener) {
         mOnSendListener = listener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
         mOnReceiveListener = listener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnAcceptListener(Server.OnAcceptListener listener) {
         mOnAcceptListener = listener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnShutdownCallback(Server.OnShutdownCallback callback) {
         mOnShutdownCallback = callback;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
         mOnDisconnectCallback = callback;
@@ -100,6 +166,9 @@ public class BluetoothServer implements Server, AutoCloseable {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Future<?> startOnNewThread() {
         Runnable runnable = new Runnable() {
@@ -138,6 +207,9 @@ public class BluetoothServer implements Server, AutoCloseable {
                 mOnSendListener, mOnReceiveListener, mOnDisconnectCallback, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void shutdown() throws IOException {
         log.debug("shutdown");
@@ -158,7 +230,7 @@ public class BluetoothServer implements Server, AutoCloseable {
     }
 
     public static void main(String... strings) throws InterruptedException, ExecutionException {
-        try (BluetoothServer server = new BluetoothServer(serverUUID, new SwapperFactory() {
+        try (BluetoothServer server = new BluetoothServer(UUID, new SwapperFactory() {
 
             @Override
             public Swapper get() {

@@ -17,10 +17,6 @@ import jp.gr.java_conf.falius.communication.listener.OnSendListener;
  * インスタンスを作成した後、startOnNewThreadメソッドを実行することで起動します。
  *
  * <p>
- * 別のスレッドで起動するため、通信中に例外が発生しても検知できないことがあります。
- * 適宜startOnNewThreadメソッドの戻り値であるFutureオブジェクトを利用するなどして
- * 対応してください。
- * <p>
  * 特定の接続先との間で例外が発生した場合、捕捉してその接続先との通信を切断した上で
  * 続行します。
  */

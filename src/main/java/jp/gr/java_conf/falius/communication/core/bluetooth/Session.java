@@ -93,10 +93,6 @@ class Session implements Runnable, AutoCloseable {
         }
     }
 
-    void setHandler(BluetoothHandler handler) {
-        mNextHandler = handler;
-    }
-
     void onSend() {
         if (mOnSendListener != null) {
             mOnSendListener.onSend(mRemoteAddress);
@@ -137,6 +133,10 @@ class Session implements Runnable, AutoCloseable {
     @Override
     public void close() throws IOException {
         disconnect(null);
+    }
+
+    void setHandler(BluetoothHandler handler) {
+        mNextHandler = handler;
     }
 
     void setData(ReceiveData receiveData) {

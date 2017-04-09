@@ -13,10 +13,16 @@ import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
 
+import jp.gr.java_conf.falius.communication.core.bluetooth.BluetoothClient;
+
 /**
  * 付近からBluetooth機器を探索するクラスです。
- * @author "ymiyauchi"
+ *  ひとつのインスタンスにつき、探索は一回限り可能です。
+ *  <p>
+ *  取得したデバイスは{@link BluetoothClient}に渡します。
  *
+ *@see BluetoothClient
+ * @author "ymiyauchi"
  */
 public class DeviceSearcher implements AutoCloseable {
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
@@ -33,12 +39,14 @@ public class DeviceSearcher implements AutoCloseable {
 
     /**
      * ペアリング済のデバイスを付近から検索し、結果の集合をもつFutureを返します。
+     * 実行は非同期に行われます。
      * @return
      * @throws BluetoothStateException
+     * @throws IllegalStateException すでに探索が実行済の場合
      */
     public Future<Set<RemoteDevice>> searchPairedDevice() throws BluetoothStateException {
         if (mIsExecuted) {
-            throw new IllegalStateException("searchDevice() can not be executed again");
+            throw new IllegalStateException("searchPairedDevice() can not be executed again");
         }
         mIsExecuted = true;
 

@@ -10,6 +10,7 @@ import javax.bluetooth.RemoteDevice;
 
 import jp.gr.java_conf.falius.communication.core.Client;
 import jp.gr.java_conf.falius.communication.core.JITClient;
+import jp.gr.java_conf.falius.communication.core.socket.NonBlockingJITClient;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.listener.OnSendListener;
@@ -19,7 +20,13 @@ import jp.gr.java_conf.falius.communication.swapper.RepeatSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
+ * <p>
  * 任意のタイミングで送信データを供給することができるBluetooth通信におけるクライアントです。
+ *
+ * <p>
+ * コンストラクタにUUIDとリモートデバイスを指定すること以外は{@link NonBlockingJITClient}と同様です。
+ *
+ * @see NonBlockingJITClient
  * @author "ymiyauchi"
  *
  */
@@ -48,26 +55,41 @@ public class BluetoothJITClient implements JITClient {
         };
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Future<ReceiveData> startOnNewThread() {
         return mClient.startOnNewThread();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnSendListener(OnSendListener listener) {
         mClient.addOnSendListener(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
         mClient.addOnReceiveListener(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
         mClient.addOnDisconnectCallback(callback);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnConnectListener(OnConnectListener listener) {
         mClient.addOnConnectListener(listener);
@@ -83,6 +105,9 @@ public class BluetoothJITClient implements JITClient {
         return mClient.call();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void send(SendData sendData) throws IOException, TimeoutException {
         mSendDataQueue.add(sendData);
