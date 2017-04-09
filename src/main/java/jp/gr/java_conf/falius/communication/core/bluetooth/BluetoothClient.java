@@ -59,7 +59,7 @@ import jp.gr.java_conf.falius.util.range.IntRange;
  *                System.out.printf("%d: %s%n", i, devices[i].getFriendlyName(true));
  *            }
  *            try (Scanner sc = new Scanner(System.in)) {
- *                System.out.println("choose device number: ");
+ *                System.out.print("choose device number: ");
  *                String line = sc.nextLine();
  *                int deviceNum = Integer.parseInt(line);
  *                selectedDevice = devices[deviceNum];
@@ -123,9 +123,13 @@ public class BluetoothClient implements SwapClient {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NullPointerException 内部に保持されているSwapperがnull(コンストラクタにSwapperが渡されていない)の場合
      */
     @Override
     public Future<ReceiveData> startOnNewThread() {
+        Objects.requireNonNull(mSwapper);
+
         if (mExecutor == null) {
             synchronized (this) {
                 if (mExecutor == null) {
@@ -178,6 +182,8 @@ public class BluetoothClient implements SwapClient {
      */
     @Override
     public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
+        Objects.requireNonNull(sendData);
+
         return start(new OnceSwapper() {
 
             @Override

@@ -22,6 +22,7 @@ public interface SwapClient extends Client {
      * @return
      * @throws IOException
      * @throws TimeoutException
+     * @throws NullPointerException sendDataがnullの場合
      */
     ReceiveData send(SendData sendData) throws IOException, TimeoutException;
 
@@ -31,6 +32,7 @@ public interface SwapClient extends Client {
      * @return 最終受信データ。受信エラーなど、何らかの理由で受信が完了する前に接続が切れた場合はnull
      * @throws IOException
      * @throws TimeoutException
+     * @throws NullPointerException swapperがnullの場合
      */
     ReceiveData start(Swapper swapper) throws IOException, TimeoutException;
 

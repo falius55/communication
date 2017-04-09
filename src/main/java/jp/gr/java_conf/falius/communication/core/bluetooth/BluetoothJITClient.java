@@ -1,6 +1,7 @@
 package jp.gr.java_conf.falius.communication.core.bluetooth;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -110,6 +111,7 @@ public class BluetoothJITClient implements JITClient {
      */
     @Override
     public void send(SendData sendData) throws IOException, TimeoutException {
+        Objects.requireNonNull(sendData);
         mSendDataQueue.add(sendData);
     }
 

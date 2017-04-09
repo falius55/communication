@@ -57,18 +57,10 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *            }
  *
  *        }); Scanner sc = new Scanner(System.in)) {
- *            server.addOnAcceptListener(new OnAcceptListener() {
- *
- *                public void onAccept(String remoteAddress) {
- *                    log.debug("accept to {}", remoteAddress);
- *                }
- *
- *            });
  *
  *            Future<?> future = server.startOnNewThread();
  *
  *            while (true) {
- *                log.debug("main loop");
  *                System.out.println("please type stop if you want to stop server");
  *                if ((sc.nextLine()).equals("stop")) {
  *                    break;

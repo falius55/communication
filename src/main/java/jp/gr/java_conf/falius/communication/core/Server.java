@@ -62,7 +62,7 @@ public interface Server extends Callable<Throwable>, AutoCloseable {
     void close() throws IOException;
 
     /**
-     * このサーバーを安全に終了します。
+     * このサーバーを終了します。
      *
      * @throws IOException
      */

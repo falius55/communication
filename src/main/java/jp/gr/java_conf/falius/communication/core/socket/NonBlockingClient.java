@@ -170,9 +170,13 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NullPointerException 内部に保持されているSwapperがnull(コンストラクタにSwapperが渡されていない)の場合
      */
     @Override
     public Future<ReceiveData> startOnNewThread() {
+        Objects.requireNonNull(mSwapper);
+
         if (mExecutor == null) {
             synchronized (this) {
                 if (mExecutor == null) {
