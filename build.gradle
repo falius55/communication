@@ -32,6 +32,8 @@ dependencies {
     compile  "org.json:json:20160810"
     compile 'com.github.falius55:java-util:1.1.5&'
     compile "net.sf.bluecove:bluecove:2.1.1-SNAPSHOT"
+    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile 'org.slf4j:slf4j-log4j12:1.7.2'
 
     testCompile 'junit:junit:4.12', {
         transitive = false
@@ -45,7 +47,7 @@ test {
     }
 }
 
-mainClassName = 'jp.gr.java_conf.falius.communication.server.BluetoothServer'
+mainClassName = 'jp.gr.java_conf.falius.communication.core.bluetooth.BluetoothServer'
 
 run {
     standardInput = System.in
