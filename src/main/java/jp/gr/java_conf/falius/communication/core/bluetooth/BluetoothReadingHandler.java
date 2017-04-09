@@ -26,7 +26,7 @@ class BluetoothReadingHandler implements BluetoothHandler {
     }
 
     public void handle() throws Exception {
-        log.debug("reading handler");
+        log.debug("reading handle");
         InputStream is = mSession.getInputStream();
         Header header = HeaderFactory.from(is);
         if (header == null) {
@@ -39,17 +39,18 @@ class BluetoothReadingHandler implements BluetoothHandler {
             mSession.disconnect(null);
             return;
         }
-        log.debug("data get");
         ReceiveData data = entry.getData();
 
-        log.debug("on receive");
         mSession.onReceive(data);
+        mSession.setData(data);
 
-        log.debug("get sendData");
-        SendData sendData = mSession.newSendData(data);
-        log.debug("writing instance");
-        BluetoothHandler handler = new BluetoothWritingHandler(mSession, sendData);
-        mSession.setHandler(handler);
+        if (!mSession.isClient() || mSession.doContinue()) {
+            SendData sendData = mSession.newSendData(data);
+            BluetoothHandler handler = new BluetoothWritingHandler(mSession, sendData);
+            mSession.setHandler(handler);
+        } else {
+            mSession.disconnect(null);
+        }
     }
 
     /**

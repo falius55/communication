@@ -28,7 +28,7 @@ class WritingHandler implements SocketHandler {
 
     @Override
     public void handle(SelectionKey key) throws IOException {
-        log.debug("writing handle");
+        log.debug(" {} writing handle", mIsClient ? "client" : "server");
         SocketChannel channel = (SocketChannel) key.channel();
         try {
             if (!channel.isOpen()) {
@@ -47,7 +47,7 @@ class WritingHandler implements SocketHandler {
             }
 
             if (sender == null) {
-                log.info("disconnect by send data returned null");
+                log.debug("disconnect by send data returned null");
                 mDisconnectable.disconnect(channel, key, null);
                 return;
             }
@@ -55,7 +55,6 @@ class WritingHandler implements SocketHandler {
             Sender.Result result = sender.send(channel);
 
             if (result == Sender.Result.UNFINISHED) {
-                log.debug("!sender.isWrittenFinished()");
                 return;
             }
 
@@ -68,7 +67,7 @@ class WritingHandler implements SocketHandler {
 
         } catch (Throwable e) {
             mDisconnectable.disconnect(channel, key, e);
-            log.error("writing handler error", e);
+            log.warn("writing handler error", e);
         }
 
     }

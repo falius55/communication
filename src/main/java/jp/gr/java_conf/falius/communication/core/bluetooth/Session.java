@@ -26,16 +26,19 @@ class Session implements Runnable, AutoCloseable {
     private final OnSendListener mOnSendListener;
     private final OnReceiveListener mOnReceiveListener;
     private final OnDisconnectCallback mOnDisconnectCallback;
+    private final boolean mIsClient;
 
     private final InputStream mIn;
     private final OutputStream mOut;
     private BluetoothHandler mNextHandler;
 
-    private boolean mIsContinue = true;
+    private boolean mDoContinue = true;
+
+    private ReceiveData mLatestData = null;
 
     Session(StreamConnection channel, Swapper swapper,
             OnSendListener onSendListener, OnReceiveListener onReceiveListener,
-            OnDisconnectCallback onDisconnectCallback) throws IOException {
+            OnDisconnectCallback onDisconnectCallback, boolean isClient) throws IOException {
         mChannel = channel;
         RemoteDevice remote = RemoteDevice.getRemoteDevice(channel);
         mRemoteAddress = remote.getBluetoothAddress();
@@ -45,64 +48,76 @@ class Session implements Runnable, AutoCloseable {
         mOnDisconnectCallback = onDisconnectCallback;
         mIn = channel.openInputStream();
         mOut = channel.openOutputStream();
-        mNextHandler = new BluetoothReadingHandler(this);
+        mIsClient = isClient;
     }
 
+    @Override
     public void run() {
+        log.debug("session start");
         try {
-            while (mIsContinue) {
+            if (mIsClient) {
+                mNextHandler = new BluetoothWritingHandler(this, mSwapper.swap(mRemoteAddress, null));
+            } else {
+                mNextHandler = new BluetoothReadingHandler(this);
+            }
+
+            while (mDoContinue) {
                 BluetoothHandler handler = mNextHandler;
                 handler.handle();
             }
         } catch (Throwable e) {
             disconnect(e);
-            log.error("handle error :\n{}", e.getMessage());
+            log.warn("running error, session end ", e);
             return;
         }
 
         disconnect(null);
+        log.debug("session end");
     }
 
-    public void disconnect(Throwable cause) {
+    void disconnect(Throwable cause) {
+        if (!mDoContinue) {
+            return;
+        }
         log.debug("session disconnect by {}", cause == null ? "null" : cause.getMessage());
-        mIsContinue = false;
+        mDoContinue = false;
         try {
             mIn.close();
             mOut.close();
             mChannel.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warn("error during disconnecting", e);
         }
         if (mOnDisconnectCallback != null) {
             mOnDisconnectCallback.onDissconnect(mRemoteAddress, cause);
         }
     }
 
-    public void setHandler(BluetoothHandler handler) {
+    void setHandler(BluetoothHandler handler) {
         mNextHandler = handler;
     }
 
-    public void onSend() {
+    void onSend() {
         if (mOnSendListener != null) {
             mOnSendListener.onSend(mRemoteAddress);
         }
     }
 
-    public void onReceive(ReceiveData receiveData) {
+    void onReceive(ReceiveData receiveData) {
         if (mOnReceiveListener != null) {
             mOnReceiveListener.onReceive(mRemoteAddress, receiveData);
         }
     }
 
-    public InputStream getInputStream() throws IOException {
+    InputStream getInputStream() throws IOException {
         return mIn;
     }
 
-    public OutputStream getOutputStream() throws IOException {
+    OutputStream getOutputStream() throws IOException {
         return mOut;
     }
 
-    public SendData newSendData(ReceiveData latestReceiveData) throws Exception {
+    SendData newSendData(ReceiveData latestReceiveData) throws Exception {
         try {
             return mSwapper.swap(mRemoteAddress, latestReceiveData);
         } catch (Exception e) {
@@ -110,7 +125,7 @@ class Session implements Runnable, AutoCloseable {
         }
     }
 
-    public boolean doContinue() {
+    boolean doContinue() {
         return mSwapper.doContinue();
     }
 
@@ -122,5 +137,17 @@ class Session implements Runnable, AutoCloseable {
     @Override
     public void close() throws IOException {
         disconnect(null);
+    }
+
+    void setData(ReceiveData receiveData) {
+        mLatestData = receiveData;
+    }
+
+    ReceiveData getData() {
+        return mLatestData;
+    }
+
+    boolean isClient() {
+        return mIsClient;
     }
 }

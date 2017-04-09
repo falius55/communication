@@ -40,7 +40,6 @@ class Remote {
     }
 
     public void addOnReceiveListener(OnReceiveListener listener) {
-        log.debug("remote add on receive listener: {}", listener);
         mOnReceiveListener = listener;
     }
 
@@ -49,7 +48,6 @@ class Remote {
     }
 
     public Receiver receiver() {
-        log.debug("add on receive listener to receiver : {}", mOnReceiveListener);
         mReceiver.addOnReceiveListener(mOnReceiveListener);
         return mReceiver;
     }
