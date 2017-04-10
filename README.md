@@ -11,7 +11,7 @@ build.gradle
 ```
 repositories {
     maven { url 'https://jitpack.io' }
-    maven { url 'http://www.pyx4me.com/maven2-snapshot' }  // bluecoveに依存したbluetooth用サーバーのクラスが含まれるため(こちらは未テスト)
+    maven { url 'http://www.pyx4me.com/maven2-snapshot' }  // bluecoveに依存したbluetooth用サーバーのクラスが含まれるため
 }
 
 dependencies {
