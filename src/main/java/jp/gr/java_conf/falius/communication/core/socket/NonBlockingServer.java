@@ -193,7 +193,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         mSelector.wakeup();
         mServerSocketChannel.close();
         if (mExecutor != null) {
-            mExecutor.shutdownNow();
+            mExecutor.shutdown();
             log.debug("executor shutdown");
         }
 
@@ -267,6 +267,10 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         }
     }
 
+    /**
+     * ループバックアドレスではないIPv4アドレスを取得します。
+     * 取得に失敗するとnull
+     */
     @Override
     public String getLocalHostAddress() {
         try {

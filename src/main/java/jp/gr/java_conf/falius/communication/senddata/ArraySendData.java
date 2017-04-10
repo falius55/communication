@@ -5,7 +5,8 @@ import java.util.Arrays;
 import org.json.JSONArray;
 
 /**
- * 配列を送信する際に利用するSendData
+ * 配列を送信する際に利用するSejindDataです。
+ * 配列を１単位として送信します。
  * @author "ymiyauchi"
  *
  */

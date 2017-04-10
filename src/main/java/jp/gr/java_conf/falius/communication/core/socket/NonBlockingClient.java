@@ -126,21 +126,33 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
         mSwapper = swapper;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnSendListener(OnSendListener listener) {
         mOnSendListener = listener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
         mOnReceiveListener = listener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
         mOnDisconnectCallback = callback;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnConnectListener(Client.OnConnectListener listener) {
         mOnConnectListener = listener;
@@ -156,8 +168,15 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
         return start(mSwapper);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws NullPointerException 内部に保持されているSwapperがnull(コンストラクタにSwapperが渡されていない)の場合
+     */
     @Override
     public Future<ReceiveData> startOnNewThread() {
+        Objects.requireNonNull(mSwapper);
+
         if (mExecutor == null) {
             synchronized (this) {
                 if (mExecutor == null) {
