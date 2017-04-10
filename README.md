@@ -1,7 +1,7 @@
 # communication
 
 ## Description
-通信用のクラス群です。現在はソケットのノンブロック通信およびBluetooth通信（サーバーのみ）となっています。
+通信用のクラス群です。ソケットのノンブロック通信およびBluetooth通信を同じインターフェースで利用することができます。
 
 ## Requirement
 依存関係はgradleで管理しています。JDKは基本的にjava8が必要ですが、タグ名に&がついているものはjava7でも動作するようにしています(Androidアプリでも使えるように)。
@@ -11,19 +11,19 @@ build.gradle
 ```
 repositories {
     maven { url 'https://jitpack.io' }
-    maven { url 'http://www.pyx4me.com/maven2-snapshot' }  // bluecoveに依存したbluetooth用サーバーのクラスが含まれるため(こちらは未テスト)
+    maven { url 'http://www.pyx4me.com/maven2-snapshot' }  // bluecoveに依存したbluetooth用クラスが含まれるため
 }
 
 dependencies {
-    compile 'com.github.falius55:communication:1.4.3'
+    compile 'com.github.falius55:communication:1.5.0'
 }
 
 ```
 
 ## Usage
-基本的な使用例は下記の通りです。各クラスの詳細に関してはdoc/javadoc内のindex.htmlからjavadocがご覧になれます。
+基本的な使用例は下記の通りです。各クラスの詳細に関してはdoc/javadoc内のindex.htmlからjavadocが参照できます。※下記の例ではチェック例外はメソッドのthrows宣言で呼び出し元に投げている前提で省略しています。
 ### クライアントが送信した文字列をサーバーが大文字にした文字列と文字数を送り返す例
-#### サーバーサイド
+#### サーバー
 ```
 int port = 9001;
 /*
@@ -62,7 +62,7 @@ try (Server server = new NonBlockingServer(port, new SwapperFactory(){
     }
 }
 ```
-#### クライアントサイド
+#### クライアント
 ```
 String host = "localhost";
 int port = 9001;
@@ -109,15 +109,16 @@ client.addOnReceiveListener(new OnReceiveListener() {
 });
 
 Future<ReceiveData> future = executor.submit(client);
+// Future<ReceiveData> future = client.startOnNewThread();
 
 // sendメソッド、startメソッドの戻り値に相当する最終受信データがFuture#getメソッドの戻り値で取得できる
 // しかし、このケースではOnReceiveListener#onReceiveメソッド内で受信データを消費しているため
 // retの中身は空(retはnullではないが、ret.get()とするとnullが返ってくる)
 ReceiveData ret = future.get();
 ```
-### 送受信の度に値を繰り返しインクリメントしていく例
-
-#### サーバーサイド
+### RepeatSwapperで送受信の度に値を繰り返しインクリメントしていく例
+送受信を何度も繰り返し行うにはRepeatSwapperを使います。
+#### サーバー
 ```
 /*
  * 上の例と違うのはSwapperの種類とswapメソッド内での処理(回数管理)
@@ -163,7 +164,7 @@ try (Server server = new NonBlockingServer(port, new SwapperFactory() {
     }
 }
 ```
-#### クライアントサイド
+#### クライアント
 ```
 int repeatLen = 10;
 String host = "localhost";
@@ -229,6 +230,78 @@ ReceiveData receiveData = client.start(new FixedRepeatSwapper(repeatLen) {
 
 System.out.println(receiveData.getInt());  // -> 19
 ```
+### JITClientを使って任意のタイミングで送信
+上記のSwapperを使った送信データの作成方法では、送信のタイミングを制御したり送信データの作成を異なるスレッドから行うことはしづらくなります。また、接続を切断するタイミングもSwapperにより判断されるため、制御が面倒です。JITClientを使用することで、接続を維持して必要な時に送信データを作成して送信し、closeメソッドで接続を切断する、といったことが可能になります。
+```
+String host = "localhost";
+int port = 9001;
+
+// 実装クラスはNonBlockingClientではなくNonBlockingJITClient
+// OnReceiveListenerは必須
+JITClient client = new NonBlockingJITClient(host, port new OnReceiveListener() {
+    @Override
+    public void onReceive(Strin remote, ReceiveData data) {
+        System.out.println("receive: " + data.getString());
+    }
+});
+
+try {
+    for (int i = 0; i < 10; i++) {
+        Thread.sleep(i * 10);
+        SendData sendData = new BasicSendData();
+        sendData.put(i);
+        // JITClient#sendメソッドはスレッドセーフ
+        client.send();  // 戻り値はなし(void)
+    }
+} catch (InterruptedException e) {
+    e.printStackTrace();
+} finally {
+    client.close();
+}
+```
+### Bluetooth
+#### サーバー
+サーバーはServerの実装クラスをBluetoothServer(String uuid, SwapperFactory swapperFactory)にするだけで上記と同じ通信をブルートゥースで行うことができます。
+#### クライアント
+クライアントは付近から接続できるデバイスを探索する必要があるので、以下に使用例を示します。
+```
+final String UUID = "97d38833e31a4a718d8e4e44d052ce2b";
+
+// 接続先のデバイスを取得する。
+RemoteDevice selectedDevice;
+try (DeviceSearcher searcher = new DeviceSearcher()) {
+    // 付近からペアリング済のデバイスを探索する。
+    // 探索は非同期で行われるので、Futureを受け取る。
+    Future<Set<RemoteDevice>> future = searcher.searchPairedDevice();
+    System.out.println("search device");
+    RemoteDevice[] devices = future.get().toArray(new RemoteDevice[0]);
+
+    // デバイスを番号付きで表示し、標準入力で選択する。
+    for (int i = 0; i < devices.length; i++) {
+        System.out.printf("%d: %s%n", i, devices[i].getFriendlyName(true));
+    }
+    try (Scanner sc = new Scanner(System.in)) {
+        System.out.print("choose device number: ");
+        String line = sc.nextLine();
+        int deviceNum = Integer.parseInt(line);
+        selectedDevice = devices[deviceNum];
+    }
+
+}
+
+// クライアントのインスタンスを作成してしまえば後はNonBlockingClientと同じ
+SwapClient client = new BluetoothClient(UUID, selectedDevice);
+
+SendData sendData = new BasicSendData();
+sendData.put("abcde");
+
+ReceiveData receiveData = client.send(sendData);
+
+String ret = receiveData.getString();
+System.out.println("ret: " + ret);
+
+```
+ブルートゥース実装クライアントにはBluetoothJITClientもあり、こちらはBluetoothClientのJITClient実装です。
 ### 扱えるデータの拡張
 ExtendableSendData及びExtendableReceiveDataを継承したクラスを使うことで扱えるデータを増やすことができます。
 ```

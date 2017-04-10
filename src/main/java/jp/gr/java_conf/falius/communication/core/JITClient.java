@@ -14,9 +14,11 @@ public interface JITClient extends Client {
 
     /**
      * 送信データを供給します。実行して即座に送信されることまでは保証しません。
+     * このメソッドはスレッドセーフです。
      * @param sendData
      * @throws IOException
      * @throws TimeoutException
+     * @throws NullPointerException sendDataがnullの場合
      */
     void send(SendData sendData) throws IOException, TimeoutException;
 }

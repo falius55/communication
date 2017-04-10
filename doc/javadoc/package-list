@@ -1,5 +1,4 @@
 jp.gr.java_conf.falius.communication.core
-jp.gr.java_conf.falius.communication.core.bluetooth
 jp.gr.java_conf.falius.communication.core.socket
 jp.gr.java_conf.falius.communication.header
 jp.gr.java_conf.falius.communication.listener

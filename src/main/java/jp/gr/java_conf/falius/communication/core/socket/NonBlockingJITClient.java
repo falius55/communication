@@ -1,6 +1,7 @@
 package jp.gr.java_conf.falius.communication.core.socket;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,8 +25,8 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  * <p>
  * 送信データがない間はスレッドをブロックするため、必ずマルチスレッドで動作させてください。
  * <p>
- * sendメソッドはnullを返しますので、サーバーからの受信データを受け取る手段は{@link OnReceiveListener#onReceive}メソッド
- *     の引数に渡される{@link ReceiveData}のみとなります。
+ * サーバーからの受信データを受け取る手段は主に{@link OnReceiveListener#onReceive}メソッドの引数に
+ *     渡される{@link ReceiveData}からです。
  * <P>
  * 同一インスタンスを複数のスレッドで動作させた場合、sendメソッドによって与えられた送信データを各スレッドで分担して送信する
  *     ことになります。
@@ -75,9 +76,11 @@ public class NonBlockingJITClient implements JITClient {
     /**
      * 送信データを与えます。
      * 戻り値からは受信データを得られません。受信データはOnReceiveListener#onReceiveメソッドの引数から取得してください。
+     * @throws NullPointerException dataがnullの場合
      */
     @Override
     public void send(SendData data) {
+        Objects.requireNonNull(data);
         mSendDataQueue.add(data);
     }
 
@@ -85,7 +88,6 @@ public class NonBlockingJITClient implements JITClient {
         return new RepeatSwapper() {
             @Override
             public SendData swap(String remoteAddress, ReceiveData receiveData) {
-                SendData data;
                 try {
                     return mSendDataQueue.take();
                 } catch (InterruptedException e) {
