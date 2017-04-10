@@ -9,8 +9,8 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
 /**
  * 受信データを取得し送信データを送信するサイクルを最短で行うクライアントのインターフェースです。
- * このインターフェースで定義された送信メソッドは、接続が切断されるまで処理が戻ってこない同期メソッドです。
- * その代わりに、戻り値から受信データを受け取ることが可能になっています。
+ * このインターフェースで定義された送信メソッドは接続が切断されるまで処理が戻ってこない同期メソッドであり、
+ *     戻り値から受信データを受け取ることが可能になっています。
  * @author "ymiyauchi"
  *
  */
@@ -22,6 +22,7 @@ public interface SwapClient extends Client {
      * @return
      * @throws IOException
      * @throws TimeoutException
+     * @throws NullPointerException sendDataがnullの場合
      */
     ReceiveData send(SendData sendData) throws IOException, TimeoutException;
 
@@ -31,6 +32,7 @@ public interface SwapClient extends Client {
      * @return 最終受信データ。受信エラーなど、何らかの理由で受信が完了する前に接続が切れた場合はnull
      * @throws IOException
      * @throws TimeoutException
+     * @throws NullPointerException swapperがnullの場合
      */
     ReceiveData start(Swapper swapper) throws IOException, TimeoutException;
 

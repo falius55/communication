@@ -20,6 +20,7 @@ import javax.microedition.io.StreamConnection;
 import jp.gr.java_conf.falius.communication.core.Client;
 import jp.gr.java_conf.falius.communication.core.SwapClient;
 import jp.gr.java_conf.falius.communication.core.bluetooth.devicesearch.DeviceSearcher;
+import jp.gr.java_conf.falius.communication.core.socket.NonBlockingClient;
 import jp.gr.java_conf.falius.communication.listener.OnDisconnectCallback;
 import jp.gr.java_conf.falius.communication.listener.OnReceiveListener;
 import jp.gr.java_conf.falius.communication.listener.OnSendListener;
@@ -30,6 +31,61 @@ import jp.gr.java_conf.falius.communication.swapper.OnceSwapper;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 import jp.gr.java_conf.falius.util.range.IntRange;
 
+/**
+ * <p>
+ * Bluetooth通信を行うクライアントです。{@link NonBlockingClient}と同じインターフェースで利用できます。
+ *
+ * <p>
+ * コンストラクタに渡すRemoteDeviceは{@link DeviceSearcher}を利用すると容易に取得できます。
+ *
+ * <p>
+ * 以下に基本的な利用方法を示します。
+ * <pre>
+ * {@code
+ *
+ *        final String UUID = "97d38833e31a4a718d8e4e44d052ce2b";
+ *
+ *        // 接続先のデバイスを取得する。
+ *        RemoteDevice selectedDevice;
+ *        try (DeviceSearcher searcher = new DeviceSearcher()) {
+ *            // 付近からペアリング済のデバイスを探索する。
+ *            // 探索は非同期で行われるので、Futureを受け取る。
+ *            Future<Set<RemoteDevice>> future = searcher.searchPairedDevice();
+ *            System.out.println("search device");
+ *            RemoteDevice[] devices = future.get().toArray(new RemoteDevice[0]);
+ *
+ *            // デバイスを番号付きで表示し、標準入力で選択する。
+ *            for (int i = 0; i < devices.length; i++) {
+ *                System.out.printf("%d: %s%n", i, devices[i].getFriendlyName(true));
+ *            }
+ *            try (Scanner sc = new Scanner(System.in)) {
+ *                System.out.print("choose device number: ");
+ *                String line = sc.nextLine();
+ *                int deviceNum = Integer.parseInt(line);
+ *                selectedDevice = devices[deviceNum];
+ *            }
+ *
+ *        }
+ *
+ *        // クライアントのインスタンスを作成してしまえば後はNonBlockingClientと同じ
+ *        SwapClient client = new BluetoothClient(UUID, selectedDevice);
+ *
+ *        SendData sendData = new BasicSendData();
+ *        sendData.put("abcde");
+ *
+ *        ReceiveData receiveData = client.send(sendData);
+ *
+ *        String ret = receiveData.getString();
+ *        System.out.println("ret: " + ret);
+ * }
+ * </pre>
+ *
+ * @see DeviceSearcher
+ * @see NonBlockingClient
+ *
+ * @author "ymiyauchi"
+ *
+ */
 public class BluetoothClient implements SwapClient {
     private final String mRemoteURL;
     private final String mRemoteAddress;
@@ -48,6 +104,13 @@ public class BluetoothClient implements SwapClient {
         this(uuid, device, null);
     }
 
+    /**
+     *
+     * @param uuid -(ハイフンを除いた)UUIDの文字列
+     * @param device 接続先のサーバーを表すデバイス
+     * @param swapper
+     * @throws IOException 接続先リモートデバイスのＵＲＬ取得に失敗した場合
+     */
     public BluetoothClient(String uuid, RemoteDevice device, Swapper swapper) throws IOException {
         try {
             mRemoteURL = UrlDiscovery.getUrl(device, uuid);
@@ -58,8 +121,15 @@ public class BluetoothClient implements SwapClient {
         mSwapper = swapper;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws NullPointerException 内部に保持されているSwapperがnull(コンストラクタにSwapperが渡されていない)の場合
+     */
     @Override
     public Future<ReceiveData> startOnNewThread() {
+        Objects.requireNonNull(mSwapper);
+
         if (mExecutor == null) {
             synchronized (this) {
                 if (mExecutor == null) {
@@ -70,21 +140,33 @@ public class BluetoothClient implements SwapClient {
         return mExecutor.submit(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnSendListener(OnSendListener listener) {
         mOnSendListener = listener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
         mOnReceiveListener = listener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
         mOnDisconnectCallback = callback;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addOnConnectListener(OnConnectListener listener) {
         mOnConnectListener = listener;
@@ -95,8 +177,13 @@ public class BluetoothClient implements SwapClient {
         return start(mSwapper);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
+        Objects.requireNonNull(sendData);
+
         return start(new OnceSwapper() {
 
             @Override
@@ -106,8 +193,11 @@ public class BluetoothClient implements SwapClient {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ReceiveData start(Swapper swapper) throws IOException, TimeoutException {
+    public ReceiveData start(Swapper swapper) throws IOException {
         Objects.requireNonNull(swapper);
 
         StreamConnection channel = (StreamConnection) Connector.open(mRemoteURL);
