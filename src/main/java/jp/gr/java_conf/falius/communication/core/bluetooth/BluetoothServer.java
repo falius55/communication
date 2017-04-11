@@ -98,6 +98,7 @@ public class BluetoothServer implements Server, AutoCloseable {
     public BluetoothServer(String uuid, SwapperFactory swapperFactory) throws IOException {
         mUuid = uuid;
         mSwapperFactory = swapperFactory;
+        // - btspp:は PRCOMM 用なのでベースプロトコルによって変わる。
         mConnection = (StreamConnectionNotifier) Connector.open(
                 "btspp://localhost:" + mUuid,
                 Connector.READ_WRITE, true);
