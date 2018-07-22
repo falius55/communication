@@ -29,12 +29,21 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  *
  * @see NonBlockingJITClient
  * @author "ymiyauchi"
+ * @since 1.5.0
  *
  */
 public class BluetoothJITClient implements JITClient {
     private final Client mClient;
     private final BlockingQueue<SendData> mSendDataQueue = new LinkedBlockingQueue<>();
 
+    /**
+     *
+     * @param uuid
+     * @param device
+     * @param onReceiveListener
+     * @throws IOException
+     * @since 1.5.0
+     */
     public BluetoothJITClient(String uuid, RemoteDevice device,
             OnReceiveListener onReceiveListener) throws IOException {
         mClient = new BluetoothClient(uuid, device, createSwapper());
@@ -58,6 +67,7 @@ public class BluetoothJITClient implements JITClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public Future<ReceiveData> startOnNewThread() {
@@ -66,6 +76,7 @@ public class BluetoothJITClient implements JITClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public void addOnSendListener(OnSendListener listener) {
@@ -74,6 +85,7 @@ public class BluetoothJITClient implements JITClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
@@ -82,6 +94,7 @@ public class BluetoothJITClient implements JITClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
@@ -90,17 +103,24 @@ public class BluetoothJITClient implements JITClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public void addOnConnectListener(OnConnectListener listener) {
         mClient.addOnConnectListener(listener);
     }
 
+    /**
+     * @since 1.5.0
+     */
     @Override
     public void close() throws IOException {
         mClient.close();
     }
 
+    /**
+     * @since 1.5.0
+     */
     @Override
     public ReceiveData call() throws Exception {
         return mClient.call();
@@ -108,6 +128,7 @@ public class BluetoothJITClient implements JITClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public void send(SendData sendData) throws IOException, TimeoutException {

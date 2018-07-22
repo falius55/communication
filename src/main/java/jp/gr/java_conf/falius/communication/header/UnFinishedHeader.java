@@ -5,6 +5,12 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
 
+/**
+ *
+ * @author "ymiyauchi"
+ * @since 1.4.0
+ *
+ */
 class UnFinishedHeader implements Header {
     private static final IntBuffer EMPTY_INT_BUFFER = IntBuffer.allocate(0);
 
@@ -17,6 +23,7 @@ class UnFinishedHeader implements Header {
      * @param headerSize
      * @param allDataSize
      * @param headerBuf 必要な容量を確保した、空のバッファ
+     * @since 1.4.0
      */
     UnFinishedHeader(int headerSize, int allDataSize, ByteBuffer headerBuf) {
         mHeaderSize = headerSize;
@@ -24,6 +31,9 @@ class UnFinishedHeader implements Header {
         mHeaderBuf = headerBuf;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public Header read(SocketChannel channel) throws IOException {
         int tmp = channel.read(mHeaderBuf);
@@ -40,6 +50,9 @@ class UnFinishedHeader implements Header {
         return new FinishedHeader(mHeaderSize, mAllDataSize, dataSizes);
     }
 
+    /**
+     * @since 1.4.0
+     */
     static IntBuffer datasizesFromHeaderBuf(int headerSize, ByteBuffer headerBuf) {
         int dataCount = headerSize / 4 - 2;
         IntBuffer dataSizes = IntBuffer.allocate(dataCount);
@@ -50,26 +63,41 @@ class UnFinishedHeader implements Header {
         return dataSizes;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public int size() {
         return mHeaderSize;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public int allDataSize() {
         return mAllDataSize;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public IntBuffer dataSizeBuffer() {
         return EMPTY_INT_BUFFER;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public ByteBuffer toByteBuffer() {
         throw new IllegalStateException();
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public boolean isReadFinished() {
         return false;

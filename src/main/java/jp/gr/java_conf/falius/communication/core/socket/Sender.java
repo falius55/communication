@@ -21,6 +21,8 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
  * 接続の間ずっと共有されるReceiverオブジェクトとは異なり、こちらは一度の送信ごとに使い捨てとなります。
  * そのため、再利用はできません。
  * @author "ymiyauchi"
+ * @since 1.0
+ * @version 1.4.0
  *
  */
 class Sender {
@@ -61,6 +63,7 @@ class Sender {
      * @param channel 送信するチャネル
      * @return 送信予定のデータをすべて送信し終えた場合はFINISHED, まだ未送信のデータが残っていればUNFINISHED
      * @throws IOException
+     * @since 1.0
      */
     public final Result send(SocketChannel channel) throws IOException {
         channel.write(mData);

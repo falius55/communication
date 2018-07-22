@@ -84,6 +84,7 @@ import jp.gr.java_conf.falius.util.range.IntRange;
  * @see NonBlockingClient
  *
  * @author "ymiyauchi"
+ * @since 1.5.0
  *
  */
 public class BluetoothClient implements SwapClient {
@@ -100,6 +101,13 @@ public class BluetoothClient implements SwapClient {
 
     private final Swapper mSwapper;
 
+    /**
+     *
+     * @param uuid
+     * @param device
+     * @throws IOException
+     * @since 1.5.0
+     */
     public BluetoothClient(String uuid, RemoteDevice device) throws IOException {
         this(uuid, device, null);
     }
@@ -110,6 +118,7 @@ public class BluetoothClient implements SwapClient {
      * @param device 接続先のサーバーを表すデバイス
      * @param swapper
      * @throws IOException 接続先リモートデバイスのＵＲＬ取得に失敗した場合
+     * @since 1.5.0
      */
     public BluetoothClient(String uuid, RemoteDevice device, Swapper swapper) throws IOException {
         try {
@@ -125,6 +134,7 @@ public class BluetoothClient implements SwapClient {
      * {@inheritDoc}
      *
      * @throws NullPointerException 内部に保持されているSwapperがnull(コンストラクタにSwapperが渡されていない)の場合
+     * @since 1.5.0
      */
     @Override
     public Future<ReceiveData> startOnNewThread() {
@@ -142,6 +152,7 @@ public class BluetoothClient implements SwapClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public void addOnSendListener(OnSendListener listener) {
@@ -150,6 +161,7 @@ public class BluetoothClient implements SwapClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
@@ -158,6 +170,7 @@ public class BluetoothClient implements SwapClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
@@ -166,12 +179,16 @@ public class BluetoothClient implements SwapClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public void addOnConnectListener(OnConnectListener listener) {
         mOnConnectListener = listener;
     }
 
+    /**
+     * @since 1.5.0
+     */
     @Override
     public ReceiveData call() throws Exception {
         return start(mSwapper);
@@ -179,6 +196,7 @@ public class BluetoothClient implements SwapClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public ReceiveData send(SendData sendData) throws IOException, TimeoutException {
@@ -195,6 +213,7 @@ public class BluetoothClient implements SwapClient {
 
     /**
      * {@inheritDoc}
+     * @since 1.5.0
      */
     @Override
     public ReceiveData start(Swapper swapper) throws IOException {
@@ -213,6 +232,9 @@ public class BluetoothClient implements SwapClient {
         }
     }
 
+    /**
+     * @since 1.5.0
+     */
     @Override
     public void close() throws IOException {
         if (mExecutor != null) {

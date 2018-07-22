@@ -12,11 +12,15 @@ import java.util.Queue;
 /**
  * 送信データを格納するクラスです。
  * @author "ymiyauchi"
+ * @since 1.4.0
  *
  */
 public class BasicSendData implements SendData {
     private final Queue<ByteBuffer> mData = new ArrayDeque<>();
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public final BasicSendData put(ByteBuffer buf) {
         if (!buf.hasRemaining()) {
@@ -26,12 +30,18 @@ public class BasicSendData implements SendData {
         return this;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public final BasicSendData put(ByteBuffer[] bufs) {
         mData.addAll(Arrays.asList(bufs));
         return this;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public BasicSendData put(byte[] bytes) {
         ByteBuffer buf = ByteBuffer.allocate(bytes.length);
@@ -40,11 +50,17 @@ public class BasicSendData implements SendData {
         return put(buf);
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public BasicSendData put(String str) {
         return put(str.getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public BasicSendData put(int num) {
         ByteBuffer buf = ByteBuffer.allocate(4);
@@ -53,6 +69,9 @@ public class BasicSendData implements SendData {
         return put(buf);
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public BasicSendData put(long num) {
         ByteBuffer buf = ByteBuffer.allocate(8);
@@ -61,6 +80,9 @@ public class BasicSendData implements SendData {
         return put(buf);
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public BasicSendData put(double num) {
         ByteBuffer buf = ByteBuffer.allocate(8);
@@ -69,6 +91,9 @@ public class BasicSendData implements SendData {
         return put(buf);
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public BasicSendData put(float num) {
         ByteBuffer buf = ByteBuffer.allocate(4);
@@ -77,11 +102,17 @@ public class BasicSendData implements SendData {
         return put(buf);
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public BasicSendData put(boolean bl) {
         return put(bl ? 1 : 0);
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public BasicSendData put(InputStream is) throws IOException {
         final int READ_SIZE = 4096 * 2;
@@ -106,16 +137,25 @@ public class BasicSendData implements SendData {
         return put(result);
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public Iterator<ByteBuffer> iterator() {
         return mData.iterator();
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public int size() {
         return mData.size();
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public boolean hasRemain() {
         for (ByteBuffer elem : this) {

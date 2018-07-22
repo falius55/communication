@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 書き込み操作を行うハンドラ
  * @author "ymiyauchi"
+ * @since 1.0
  *
  */
 class WritingHandler implements SocketHandler {
@@ -26,6 +27,10 @@ class WritingHandler implements SocketHandler {
         mIsClient = isClient;
     }
 
+    /**
+     * {@inheritDoc}
+     * @since 1.0
+     */
     @Override
     public void handle(SelectionKey key) throws IOException {
         log.debug(" {} writing handle", mIsClient ? "client" : "server");

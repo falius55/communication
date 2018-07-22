@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 読み込み処理を行うハンドラ
  * @author "ymiyauchi"
+ * @since 1.0
  *
  */
 class ReadingHandler implements SocketHandler {
@@ -25,6 +26,9 @@ class ReadingHandler implements SocketHandler {
         mIsClient = isClient;
     }
 
+    /**
+     * @since 1.0
+     */
     @Override
     public void handle(SelectionKey key) throws  IOException {
         log.debug("{} reading handle", mIsClient ? "client" : "server");

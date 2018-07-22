@@ -13,6 +13,12 @@ import org.json.JSONObject;
 
 import jp.gr.java_conf.falius.util.range.IntRange;
 
+/**
+ *
+ * @author "ymiyauchi"
+ * @since 1.4.0
+ *
+ */
 public class CollectionReceiveData extends ExtendableReceiveData {
 
     public CollectionReceiveData(ReceiveData receiveData) {
@@ -23,6 +29,7 @@ public class CollectionReceiveData extends ExtendableReceiveData {
      *
      * @return
      * @throws WrongMethodTypeException Listに変換できないデータをこのメソッドで取得しようとした場合
+     * @since 1.4.0
      */
     public List<String> getList() {
         String jsonString = getString();
@@ -46,6 +53,7 @@ public class CollectionReceiveData extends ExtendableReceiveData {
      *
      * @return
      * @throws WrongMethodTypeException Mapに変換できないデータをこのメソッドで取得しようとした場合
+     * @since 1.4.0
      */
     public Map<String, String> getMap() {
         String jsonString = getString();

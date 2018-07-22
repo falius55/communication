@@ -20,6 +20,8 @@ import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
  * 複数データの受信を管理するクラスです
  * Senderとは異なり、一度の通信の間保持されます。
  * @author "ymiyauchi"
+ * @since 1.0
+ * @version 1.4.0
  *
  */
 class Receiver {
@@ -34,6 +36,11 @@ class Receiver {
 
     private OnReceiveListener mListener = null;
 
+    /**
+     *
+     * @param listener
+     * @since 1.0
+     */
     public void addOnReceiveListener(OnReceiveListener listener) {
         mListener = listener;
     }
@@ -52,6 +59,7 @@ class Receiver {
      * @return すべての受信データを読み取ればFINISHED, まだ受信していないデータが残った状態で終わったなら
      * UNFINISHED, 通信が途切れるなどして受信できなかった場合にはERROR
      * @throws IOException チャネルからの読み取りで例外が発生した場合
+     * @since 1.0
      */
     public Result receive(SocketChannel channel) throws IOException {
         // もし送信側がByteBufferの配列を使って送信してきても、
@@ -100,7 +108,7 @@ class Receiver {
     /**
      * 一度の受信単位
      * @author "ymiyauchi"
-     *
+     * @since 1.0
      */
     private static class Entry {
         private Header mHeader;

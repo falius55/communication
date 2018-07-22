@@ -12,6 +12,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  * このインターフェースで定義された送信メソッドは接続が切断されるまで処理が戻ってこない同期メソッドであり、
  *     戻り値から受信データを受け取ることが可能になっています。
  * @author "ymiyauchi"
+ * @since 1.4.3
  *
  */
 public interface SwapClient extends Client {
@@ -23,6 +24,7 @@ public interface SwapClient extends Client {
      * @throws IOException
      * @throws TimeoutException
      * @throws NullPointerException sendDataがnullの場合
+     * @since 1.4.3
      */
     ReceiveData send(SendData sendData) throws IOException, TimeoutException;
 
@@ -33,6 +35,7 @@ public interface SwapClient extends Client {
      * @throws IOException
      * @throws TimeoutException
      * @throws NullPointerException swapperがnullの場合
+     * @since 1.4.3
      */
     ReceiveData start(Swapper swapper) throws IOException, TimeoutException;
 
@@ -40,6 +43,7 @@ public interface SwapClient extends Client {
      * 同一スレッドで実行されている場合は処理の終了タイミングはSwapperにより判断され、自動で終了処理が行われます。
      * 内部にスレッiドプールを作成する場合({@link Client#startOnNewThread}および{@link Client#call}を実行する場合)
      *     にのみ明示的に実行する必要があります。
+     * @since 1.4.3
      */
     @Override
     void close() throws IOException;

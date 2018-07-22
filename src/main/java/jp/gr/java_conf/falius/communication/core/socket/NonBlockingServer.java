@@ -86,6 +86,8 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  * 二度目以降に実行したタスクは{@link IllegalStateException}によって実行を停止します
  * (startOnNewThreadメソッドの戻り値であるFutureのgetメソッドによって実際に投げられるのはExecutionException)
  *
+ * @since 1.0
+ *
  */
 public class NonBlockingServer implements SocketServer, Disconnectable {
     private static final Logger log = LoggerFactory.getLogger(NonBlockingServer.class);
@@ -104,26 +106,48 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
 
     private volatile boolean mIsStarted = false;
 
+    /**
+     *
+     * @param serverPort
+     * @param swapperFactory
+     * @since 1.0
+     */
     public NonBlockingServer(int serverPort, SwapperFactory swapperFactory) {
         mServerPort = serverPort;
         mAcceptHandler = new AcceptHandler(this, swapperFactory);
     }
 
+    /**
+     * {@inheritDoc}
+     * @since 1.0
+     */
     @Override
     public void addOnSendListener(OnSendListener listener) {
         mAcceptHandler.addOnSendListener(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     * @since 1.0
+     */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
         mAcceptHandler.addOnReceiveListener(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     * @since 1.0
+     */
     @Override
     public void addOnAcceptListener(Server.OnAcceptListener listener) {
         mAcceptHandler.addOnAcceptListener(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     * @since 1.0
+     */
     @Override
     public void addOnShutdownCallback(Server.OnShutdownCallback callback) {
         mOnShutdownCallback = callback;
@@ -138,6 +162,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
      * 独自に作成したスレッドで実行する際に利用します。
      * しかし、同一インスタンスを並列実行することは想定されていませんので注意してください。
      * @return null
+     * @since 1.0
      */
     @Override
     public Throwable call() throws IOException {
@@ -146,7 +171,9 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
     }
 
     /**
+     * {@inheritDoc}
      * @throws IllegalStateException すでに実行済にもかかわらず実行した場合
+     * @since 1.0
      */
     @Override
     public Future<?> startOnNewThread() {
@@ -178,12 +205,16 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
 
     /**
      * shutdownメソッドと同義です。
+     * @since 1.0
      */
     @Override
     public void close() throws IOException {
         shutdown();
     }
 
+    /**
+     * @since 1.0
+     */
     @Override
     public void shutdown() throws IOException {
         if (mServerSocketChannel == null || mSelector == null) {
@@ -203,6 +234,10 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         log.info("server shutdown");
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     private void exec() throws IOException {
         synchronized (this) {
             if (mIsStarted) {
@@ -242,6 +277,11 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
 
     }
 
+    /**
+     *
+     * @param channel
+     * @throws IOException
+     */
     private void bind(ServerSocketChannel channel) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerPort);
         log.info("bind to ... {} : {}", getLocalHostAddress(), address.getPort());
@@ -249,6 +289,9 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         log.info("success binding");
     }
 
+    /**
+     * @since 1.0
+     */
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) {
         try {
@@ -270,6 +313,7 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
     /**
      * ループバックアドレスではないIPv4アドレスを取得します。
      * 取得に失敗するとnull
+     * @since 1.4.3
      */
     @Override
     public String getLocalHostAddress() {
@@ -287,6 +331,9 @@ public class NonBlockingServer implements SocketServer, Disconnectable {
         return null;
     }
 
+    /**
+     * @since 1.4.3
+     */
     @Override
     public int getPort() {
         return mServerPort;

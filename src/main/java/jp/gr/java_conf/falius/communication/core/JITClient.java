@@ -8,6 +8,7 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
 /**
  * 接続を維持し、任意のタイミングで送信データを供給する形で利用するクライアントのインターフェースです。
  * @author "ymiyauchi"
+ * @since 1.4.3
  *
  */
 public interface JITClient extends Client {
@@ -19,6 +20,7 @@ public interface JITClient extends Client {
      * @throws IOException
      * @throws TimeoutException
      * @throws NullPointerException sendDataがnullの場合
+     * @since 1.4.3
      */
     void send(SendData sendData) throws IOException, TimeoutException;
 }

@@ -15,18 +15,25 @@ import java.util.Queue;
  * {@inheritDoc}
  *
  * @author "ymiyauchi"
+ * @since 1.4.0
  */
 public class BasicReceiveData implements ReceiveData {
     private final static ByteBuffer[] EMPTY_BUFFER_ARRAY = new ByteBuffer[0];
     private final CharsetDecoder DECODER = StandardCharsets.UTF_8.newDecoder();
     private final Queue<ByteBuffer> mData;
 
+    /**
+     *
+     * @param data
+     * @since 1.4.0
+     */
     public BasicReceiveData(Queue<ByteBuffer> data) {
         mData = data;
     }
 
     /**
      * @return 保持している受信データがあればそのデータ。なければnull
+     * @since 1.4.0
      */
     @Override
     public ByteBuffer get() {
@@ -34,6 +41,9 @@ public class BasicReceiveData implements ReceiveData {
         return data;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public ByteBuffer[] getAll() {
         ByteBuffer[] ret = mData.toArray(EMPTY_BUFFER_ARRAY);
@@ -41,11 +51,17 @@ public class BasicReceiveData implements ReceiveData {
         return ret;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public int dataCount() {
         return mData.size();
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public void clear() {
         mData.clear();
@@ -53,6 +69,7 @@ public class BasicReceiveData implements ReceiveData {
 
     /**
      * @throws WrongMethodTypeException
+     * @since 1.4.0
      */
     @Override
     public String getString() {
@@ -68,6 +85,9 @@ public class BasicReceiveData implements ReceiveData {
         }
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public int getInt() {
         ByteBuffer buf = get();
@@ -83,6 +103,9 @@ public class BasicReceiveData implements ReceiveData {
         }
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public long getLong() {
         ByteBuffer buf = get();
@@ -98,6 +121,9 @@ public class BasicReceiveData implements ReceiveData {
         }
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public double getDouble() {
         ByteBuffer buf = get();
@@ -113,6 +139,9 @@ public class BasicReceiveData implements ReceiveData {
         }
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public float getFloat() {
         ByteBuffer buf = get();
@@ -128,11 +157,17 @@ public class BasicReceiveData implements ReceiveData {
         }
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public boolean getBoolean() {
         return getInt() == 1;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public void getAndOutput(OutputStream os) throws IOException {
         ByteBuffer buf = get();

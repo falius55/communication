@@ -19,6 +19,8 @@ import jp.gr.java_conf.falius.communication.listener.OnSendListener;
  * <p>
  * 特定の接続先との間で例外が発生した場合、捕捉してその接続先との通信を切断した上で
  * 続行します。
+ *
+ * @since 1.0
  */
 public interface Server extends Callable<Throwable>, AutoCloseable {
 
@@ -26,6 +28,7 @@ public interface Server extends Callable<Throwable>, AutoCloseable {
      * 受信直後に実行するリスナーを登録します。
      *
      * @param listener
+     * @since 1.0
      */
     void addOnReceiveListener(OnReceiveListener listener);
 
@@ -33,18 +36,21 @@ public interface Server extends Callable<Throwable>, AutoCloseable {
      * 送信直後に実行するリスナーを登録します。
      *
      * @param listener
+     * @since 1.0
      */
     void addOnSendListener(OnSendListener listener);
 
     /**
      * 新しい接続要求を受け入れた際に実行するリスナーを登録します。
      * @param callback
+     * @since 1.0
      */
     void addOnAcceptListener(Server.OnAcceptListener callback);
 
     /**
      * shutdownメソッドを呼び出した際に実行されるリスナーを登録します。
      * @param callback
+     * @since 1.0
      */
     void addOnShutdownCallback(Server.OnShutdownCallback callback);
 
@@ -52,12 +58,14 @@ public interface Server extends Callable<Throwable>, AutoCloseable {
      * 新しいスレッドでこのサーバーを起動します。
      *
      * @return
+     * @since 1.0
      */
     Future<?> startOnNewThread();
 
     /**
      * shutdownメソッドと同義です。try-with-resources文で利用することもできます。
      * @throws IOException
+     * @since 1.0
      */
     void close() throws IOException;
 
@@ -65,6 +73,7 @@ public interface Server extends Callable<Throwable>, AutoCloseable {
      * このサーバーを終了します。
      *
      * @throws IOException
+     * @since 1.0
      */
     void shutdown() throws IOException;
 
@@ -80,25 +89,34 @@ public interface Server extends Callable<Throwable>, AutoCloseable {
      * 動き続けますので、例外発生とともにサーバーが落ちるようにするにはこのOnDisconnectCallbackの
      * 中でサーバーをclose()する必要があります。
      * @param callback
+     * @since 1.4.0
      */
     void addOnDisconnectCallback(OnDisconnectCallback callback);
 
     /**
      * 新しい接続要求を受け入れた際に実行されるリスナー
+     * @since 1.0
      */
     interface OnAcceptListener {
 
         /**
          *
          * @param remoteAddress 受け入れたリモートアドレス
+         * @since 1.0
          */
         void onAccept(String remoteAddress);
     }
 
     /**
      * shutdownメソッドを実行した際に実行されるリスナー
+     * @since 1.0
      */
     interface OnShutdownCallback {
+
+        /**
+         *
+         * @since 1.0
+         */
         void onShutdown();
     }
 }

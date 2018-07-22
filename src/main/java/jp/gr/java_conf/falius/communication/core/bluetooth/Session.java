@@ -17,6 +17,12 @@ import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 import jp.gr.java_conf.falius.communication.swapper.Swapper;
 
+/**
+ *
+ * @author "ymiyauchi"
+ * @since 1.4.1
+ *
+ */
 class Session implements Runnable, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(Session.class);
 
@@ -36,6 +42,17 @@ class Session implements Runnable, AutoCloseable {
 
     private ReceiveData mLatestData = null;
 
+    /**
+     *
+     * @param channel
+     * @param swapper
+     * @param onSendListener
+     * @param onReceiveListener
+     * @param onDisconnectCallback
+     * @param isClient
+     * @throws IOException
+     * @since 1.4.1
+     */
     Session(StreamConnection channel, Swapper swapper,
             OnSendListener onSendListener, OnReceiveListener onReceiveListener,
             OnDisconnectCallback onDisconnectCallback, boolean isClient) throws IOException {
@@ -51,6 +68,9 @@ class Session implements Runnable, AutoCloseable {
         mIsClient = isClient;
     }
 
+    /**
+     * @since 1.4.1
+     */
     @Override
     public void run() {
         log.debug("session start");
@@ -75,6 +95,11 @@ class Session implements Runnable, AutoCloseable {
         log.debug("session end");
     }
 
+    /**
+     *
+     * @param cause
+     * @since 1.4.1
+     */
     void disconnect(Throwable cause) {
         if (!mDoContinue) {
             return;
@@ -93,26 +118,53 @@ class Session implements Runnable, AutoCloseable {
         }
     }
 
+    /**
+     * @since 1.4.1
+     */
     void onSend() {
         if (mOnSendListener != null) {
             mOnSendListener.onSend(mRemoteAddress);
         }
     }
 
+    /**
+     *
+     * @param receiveData
+     * @since 1.4.1
+     */
     void onReceive(ReceiveData receiveData) {
         if (mOnReceiveListener != null) {
             mOnReceiveListener.onReceive(mRemoteAddress, receiveData);
         }
     }
 
+    /**
+     *
+     * @return
+     * @throws IOException
+     * @since 1.4.1
+     */
     InputStream getInputStream() throws IOException {
         return mIn;
     }
 
+    /**
+     *
+     * @return
+     * @since 1.4.1
+     * @throws IOException
+     */
     OutputStream getOutputStream() throws IOException {
         return mOut;
     }
 
+    /**
+     *
+     * @param latestReceiveData
+     * @return
+     * @throws Exception
+     * @since 1.4.1
+     */
     SendData newSendData(ReceiveData latestReceiveData) throws Exception {
         try {
             return mSwapper.swap(mRemoteAddress, latestReceiveData);
@@ -121,20 +173,36 @@ class Session implements Runnable, AutoCloseable {
         }
     }
 
+    /**
+     *
+     * @return
+     * @since 1.4.1
+     */
     boolean doContinue() {
         return mSwapper.doContinue();
     }
 
+    /**
+     * @since 1.4.1
+     */
     @Override
     public String toString() {
         return mChannel.toString();
     }
 
+    /**
+     * @since 1.4.1
+     */
     @Override
     public void close() throws IOException {
         disconnect(null);
     }
 
+    /**
+     *
+     * @param handler
+     * @since 1.4.1
+     */
     void setHandler(BluetoothHandler handler) {
         mNextHandler = handler;
     }

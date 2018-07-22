@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.NoSuchElementException;
 
 /**
- * 受信データを保持するクラスです。
+ * 受信データを保持するクラスのインターフェースです。
  * SendDataによって送信された際に利用します。
  *
  * <p>
@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
  * の戻り値で渡されるReceiverオブジェクトには含まれていませんので注意してください(startメソッドの戻り値も同様)。
  *
  * @author "ymiyauchi"
+ * @since 1.4.0
  *
  */
 public interface ReceiveData {
@@ -38,18 +39,21 @@ public interface ReceiveData {
      * 保持しているデータの個数を返します。
      * getXXXメソッドを呼ぶ度に保持しているデータの個数は減少します。
      * @return
+     * @since 1.4.0
      */
     int dataCount();
 
     /**
      * データ１単位をバイト列で取得します。
      * @return 次の保持データのバイト列。保持データがなければnull
+     * @since 1.4.0
      */
     ByteBuffer get();
 
     /**
      * 保持しているデータを一括して受け取ります。
      * @return
+     * @since 1.4.0
      */
     ByteBuffer[] getAll();
 
@@ -59,6 +63,7 @@ public interface ReceiveData {
      * UTF-8でデコードされます。
      * @return
      * @throws WrongMethodTypeException デコードできないデータをこのメソッドで取得しようとした場合
+     * @since 1.4.0
      */
     String getString();
 
@@ -67,6 +72,7 @@ public interface ReceiveData {
      * @return データ１単位の最初の4バイトを整数とした値。
      * @throws NoSuchElementException 保持しているデータがない場合
      * @throws WrongMethodTypeException データが4バイトより少ないのにこのメソッドでデータを取得しようとした場合
+     * @since 1.4.0
      */
     int getInt();
 
@@ -75,6 +81,7 @@ public interface ReceiveData {
      * @return データ１単位の最初の8バイトを整数とした値。
      * @throws NoSuchElementException 保持しているデータがない場合
      * @throws WrongMethodTypeException データが8バイトより少ないのにこのメソッドでデータを取得しようとした場合
+     * @since 1.4.0
      */
     long getLong();
 
@@ -83,6 +90,7 @@ public interface ReceiveData {
      * @return データ１単位の最初の8バイトをdouble値とした値。
      * @throws NoSuchElementException 保持しているデータがない場合
      * @throws WrongMethodTypeException データが8バイトより少ないのにこのメソッドでデータを取得しようとした場合
+     * @since 1.4.0
      */
     double getDouble();
 
@@ -91,6 +99,7 @@ public interface ReceiveData {
      * @return データ１単位の最初の4バイトをfloat値とした値。
      * @throws NoSuchElementException 保持しているデータがない場合
      * @throws WrongMethodTypeException データが4バイトより少ないのにこのメソッドでデータを取得しようとした場合
+     * @since 1.4.0
      */
     float getFloat();
 
@@ -98,6 +107,7 @@ public interface ReceiveData {
      * データ１単位を真偽値として取得します。
      * SendData#putBooleanに対応した値を返しますが、それ以外の方法で与えられた値に対する結果は保証しません。
      * @return
+     * @since 1.4.0
      */
     boolean getBoolean();
 
@@ -106,11 +116,13 @@ public interface ReceiveData {
      * 保持しているデータがなければ何もしません。
      * @param os
      * @throws IOException
+     * @since 1.4.0
      */
     void getAndOutput(OutputStream os) throws IOException;
 
     /**
      * 保持しているデータをすべて削除し、このオブジェクトの保持データを空にします。
+     * @since 1.4.0
      */
     void clear();
 }

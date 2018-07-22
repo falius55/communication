@@ -11,16 +11,31 @@ import jp.gr.java_conf.falius.communication.header.Header;
 import jp.gr.java_conf.falius.communication.header.HeaderFactory;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
+/**
+ *
+ * @author "ymiyauchi"
+ * @since 1.4.2
+ *
+ */
 class BluetoothWritingHandler implements BluetoothHandler {
     private static final Logger log = LoggerFactory.getLogger(BluetoothWritingHandler.class);
     private final Session mSession;
     private final SendData mSendData;
 
+    /**
+     *
+     * @param session
+     * @param data
+     * @since 1.4.2
+     */
     BluetoothWritingHandler(Session session, SendData data) {
         mSession = session;
         mSendData = data;
     }
 
+    /**
+     * @since 1.4.2
+     */
     public void handle() throws IOException {
         log.debug("writing handle");
         if (mSendData == null) {

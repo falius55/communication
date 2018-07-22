@@ -29,6 +29,7 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
  * 利用できます。
  *
  * @author "ymiyauchi"
+ * @since 1.0
  *
  */
 public interface Swapper {
@@ -51,6 +52,8 @@ public interface Swapper {
      *<p>
      * クライアントに限り、最初の一度だけreceiveDataにnullが渡されますので注意してください。
      *
+     * @since 1.0
+     *
      */
     SendData swap(String remoteAddress, ReceiveData receiveData) throws Exception;
 
@@ -58,6 +61,7 @@ public interface Swapper {
      * 通信を続けるかどうかを返すメソッドです。
      * このメソッドはクライアントでは受信直後、サーバーでは送信直後に呼ばれ、falseとなった時点で接続を切断します。
      * @return 通信を続けるかどうか
+     * @since 1.0
      */
     boolean doContinue();
 }

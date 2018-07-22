@@ -10,6 +10,7 @@ package jp.gr.java_conf.falius.communication.swapper;
  * ReceiveDataオブジェクトを利用するか、あるいはClient#startメソッドの戻り値として取得できる、
  * 最後に受信したデータが格納されたReceiveDataオブジェクトを利用する必要があります。
  * @author "ymiyauchi"
+ * @since 1.0
  *
  */
 public abstract class RepeatSwapper implements Swapper {
@@ -22,11 +23,16 @@ public abstract class RepeatSwapper implements Swapper {
      * 送信、受信共にswapメソッドが同数呼ばれるようにしてこのメソッドを
      * 呼び出してください。
      * サーバーはその直後、クライアントはもう一度受信した上で接続が切断されます。
+     * @since 1.0
      */
     protected final void finish() {
         isContinue = false;
     }
 
+    /**
+     * {@inheritDoc}
+     * @since 1.0
+     */
     @Override
     public final boolean doContinue() {
         return isContinue;

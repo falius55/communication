@@ -15,6 +15,7 @@ import jp.gr.java_conf.falius.communication.senddata.SendData;
  * ヘッダを作成するファクトリクラス
  * 相手がすでに切断していて読み取りができない場合はnullを返します。
  * @author "ymiyauchi"
+ * @since 1.4.0
  *
  */
 public class HeaderFactory {
@@ -24,6 +25,7 @@ public class HeaderFactory {
      *
      * @param data
      * @return 読み取りが完全に終わったヘッダ
+     * @since 1.4.0
      */
     public static Header from(SendData data) {
         IntBuffer buf = IntBuffer.allocate(data.size());
@@ -46,6 +48,7 @@ public class HeaderFactory {
      * @param channel
      * @return 読み取りが完全に終わったヘッダ、あるいはまだ読み取りが完全に終わっていないヘッダ
      * @throws IOException ヘッダの読み込みエラーが起きた場合、８バイト未満しか読み込めなかった場合
+     * @since 1.4.0
      */
     public static Header from(SocketChannel channel) throws IOException {
         ByteBuffer headerSizeBuf = ByteBuffer.allocate(8);

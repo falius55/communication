@@ -19,6 +19,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *
  *  リスナーはいつでも変更することが可能ですが、新しいリスナーは変更後に開始された接続から有効になります。
  * @author "ymiyauchi"
+ * @since 1.4.3
  *
  */
 class AcceptHandler implements SocketHandler {
@@ -30,16 +31,28 @@ class AcceptHandler implements SocketHandler {
     private OnSendListener mOnSendListener = null;
     private OnReceiveListener mOnReceiveListener = null;
 
+    /**
+     *
+     * @param disconnectable
+     * @param swapperFactory
+     * @since 1.4.3
+     */
     AcceptHandler(Disconnectable disconnectable, SwapperFactory swapperFactory) {
         mDisconnectable = disconnectable;
         mSwapperFactory = swapperFactory;
     }
 
+    /**
+     * @since 1.4.3
+     */
     @Override
     public void handle(SelectionKey key) throws IOException {
         accept(key);
     }
 
+    /**
+     * @since 1.4.3
+     */
     public void accept(SelectionKey key) throws IOException {
         SocketChannel clientChannel = null;
         String remoteAddress = "";
@@ -67,14 +80,23 @@ class AcceptHandler implements SocketHandler {
         }
     }
 
+    /**
+     * @since 1.4.3
+     */
     public void addOnSendListener(OnSendListener listener) {
         mOnSendListener = listener;
     }
 
+    /**
+     * @since 1.4.3
+     */
     public void addOnReceiveListener(OnReceiveListener listener) {
         mOnReceiveListener = listener;
     }
 
+    /**
+     * @since 1.4.3
+     */
     public void addOnAcceptListener(Server.OnAcceptListener listener) {
         mOnAcceptListener = listener;
     }

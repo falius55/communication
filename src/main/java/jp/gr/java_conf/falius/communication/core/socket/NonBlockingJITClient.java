@@ -59,6 +59,7 @@ import jp.gr.java_conf.falius.communication.swapper.Swapper;
  * {@link close}メソッドが呼ばれるまで接続を維持しているので、送信データを供給するタイミングに制限はありません。
  *
  * @author "ymiyauchi"
+ * @since 1.4.1
  *
  */
 public class NonBlockingJITClient implements JITClient {
@@ -71,6 +72,7 @@ public class NonBlockingJITClient implements JITClient {
      * @param serverHost
      * @param port
      * @param onReceiveListener
+     * @since 1.4.1
      */
     public NonBlockingJITClient(String serverHost, int port, OnReceiveListener onReceiveListener) {
         mClient = new NonBlockingClient(serverHost, port, createSwapper());
@@ -81,6 +83,7 @@ public class NonBlockingJITClient implements JITClient {
      * 送信データを与えます。
      * 戻り値からは受信データを得られません。受信データはOnReceiveListener#onReceiveメソッドの引数から取得してください。
      * @throws NullPointerException dataがnullの場合
+     * @since 1.4.1
      */
     @Override
     public void send(SendData data) {
@@ -88,6 +91,11 @@ public class NonBlockingJITClient implements JITClient {
         mSendDataQueue.add(data);
     }
 
+    /**
+     *
+     * @return
+     * @since 1.4.1
+     */
     private Swapper createSwapper() {
         return new RepeatSwapper() {
             @Override
@@ -104,6 +112,7 @@ public class NonBlockingJITClient implements JITClient {
     /**
      * 新たなスレッドで新規に接続を確立して通信を行います。
      * @return 新規に確立した接続における最終受信データを含むFutureオブジェクト
+     * @since 1.4.1
      */
     @Override
     public Future<ReceiveData> startOnNewThread() {
@@ -112,32 +121,48 @@ public class NonBlockingJITClient implements JITClient {
 
     /**
      * 確立した接続をすべて切断します。
+     * @since 1.4.1
      */
     @Override
     public void close() throws IOException {
         mClient.close();
     }
 
+    /**
+     * @since 1.4.1
+     */
     @Override
     public ReceiveData call() throws Exception {
         return mClient.call();
     }
 
+    /**
+     * @since 1.4.1
+     */
     @Override
     public void addOnSendListener(OnSendListener listener) {
         mClient.addOnSendListener(listener);
     }
 
+    /**
+     * @since 1.4.1
+     */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
         mClient.addOnReceiveListener(listener);
     }
 
+    /**
+     * @since 1.4.1
+     */
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
         mClient.addOnDisconnectCallback(callback);
     }
 
+    /**
+     * @since 1.4.2
+     */
     @Override
     public void addOnConnectListener(Client.OnConnectListener listener) {
         mClient.addOnConnectListener(listener);

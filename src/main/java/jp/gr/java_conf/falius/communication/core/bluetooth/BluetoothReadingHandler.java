@@ -16,15 +16,29 @@ import jp.gr.java_conf.falius.communication.rcvdata.BasicReceiveData;
 import jp.gr.java_conf.falius.communication.rcvdata.ReceiveData;
 import jp.gr.java_conf.falius.communication.senddata.SendData;
 
+/**
+ *
+ * @author "ymiyauchi"
+ * @since 1.4.2
+ *
+ */
 class BluetoothReadingHandler implements BluetoothHandler {
     private static final Logger log = LoggerFactory.getLogger(BluetoothReadingHandler.class);
 
     private final Session mSession;
 
+    /**
+     *
+     * @param session
+     * @since 1.4.2
+     */
     BluetoothReadingHandler(Session session) {
         mSession = session;
     }
 
+    /**
+     * @since 1.4.2
+     */
     public void handle() throws Exception {
         log.debug("reading handle");
         InputStream is = mSession.getInputStream();
@@ -56,6 +70,7 @@ class BluetoothReadingHandler implements BluetoothHandler {
     /**
      * 一度の受信単位
      * @author "ymiyauchi"
+     * @since 1.4.2
      *
      */
     private static class Entry {

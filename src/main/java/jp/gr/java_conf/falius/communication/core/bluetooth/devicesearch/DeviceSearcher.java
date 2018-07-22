@@ -21,8 +21,9 @@ import jp.gr.java_conf.falius.communication.core.bluetooth.BluetoothClient;
  *  <p>
  *  取得したデバイスは{@link BluetoothClient}に渡します。
  *
- *@see BluetoothClient
+ * @see BluetoothClient
  * @author "ymiyauchi"
+ * @since 1.5.0
  */
 public class DeviceSearcher implements AutoCloseable {
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
@@ -31,6 +32,11 @@ public class DeviceSearcher implements AutoCloseable {
     private final DeviceDiscovery mDiscovery;
     private boolean mIsExecuted = false;
 
+    /**
+     *
+     * @throws BluetoothStateException
+     * @since 1.5.0
+     */
     public DeviceSearcher() throws BluetoothStateException {
         LocalDevice localDevice = LocalDevice.getLocalDevice();
         mAgent = localDevice.getDiscoveryAgent();
@@ -43,6 +49,7 @@ public class DeviceSearcher implements AutoCloseable {
      * @return
      * @throws BluetoothStateException
      * @throws IllegalStateException すでに探索が実行済の場合
+     * @since 1.5.0
      */
     public Future<Set<RemoteDevice>> searchPairedDevice() throws BluetoothStateException {
         if (mIsExecuted) {
@@ -63,6 +70,9 @@ public class DeviceSearcher implements AutoCloseable {
         return mExecutor.submit(callable);
     }
 
+    /**
+     * @since 1.5.0
+     */
     @Override
     public void close() {
         mExecutor.shutdown();

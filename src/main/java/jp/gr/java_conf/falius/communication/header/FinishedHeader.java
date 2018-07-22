@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 受信時に読み取りが完全に完了したヘッダ、あるいは書き込み時のヘッダを表すクラス
  * @author "ymiyauchi"
+ * @since 1.4.0
  *
  */
 class FinishedHeader implements Header {
@@ -19,28 +20,47 @@ class FinishedHeader implements Header {
     private final int mAllDataSize;  // ヘッダー含む全データサイズ
     private final IntBuffer mItemDataSizes;  // 各アイテムごとのデータサイズ
 
+    /**
+     *
+     * @param headerSize
+     * @param allDataSize
+     * @param itemDataSizes
+     * @since 1.4.0
+     */
     FinishedHeader(int headerSize, int allDataSize, IntBuffer itemDataSizes) {
         mHeaderSize = headerSize;
         mAllDataSize = allDataSize;
         mItemDataSizes = itemDataSizes.asReadOnlyBuffer();
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public int size() {
         return mHeaderSize;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public int allDataSize() {
         return mAllDataSize;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public IntBuffer dataSizeBuffer() {
         mItemDataSizes.rewind();
         return mItemDataSizes;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public ByteBuffer toByteBuffer() {
         // ヘッダーのサイズ(自身を含む), 全データのサイズ(ヘッダーを含む), データ１のサイズ, データ２のサイズ...
@@ -56,12 +76,18 @@ class FinishedHeader implements Header {
         return ret;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public Header read(SocketChannel channel) {
         // empty
         return this;
     }
 
+    /**
+     * @since 1.4.0
+     */
     @Override
     public boolean isReadFinished() {
         return true;

@@ -5,17 +5,25 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SocketChannel;
 
+/**
+ *
+ * @author "ymiyauchi"
+ * @since 1.4.0
+ *
+ */
 public interface Header {
 
     /**
      * ヘッダ自体のサイズを返します。
      * @return
+     * @since 1.4.0
      */
     int size();
 
     /**
      * ヘッダ自体も含む、すべてのデータのサイズを返します。
      * @return
+     * @since 1.4.0
      */
     int allDataSize();
 
@@ -24,6 +32,7 @@ public interface Header {
      * ヘッダ自体のサイズは含まれません。
      * ヘッダの読み取りが最後まで終わっていない場合は常に空のバッファが返されます。
      * @return
+     * @since 1.4.0
      */
     IntBuffer dataSizeBuffer();
 
@@ -31,6 +40,7 @@ public interface Header {
      *
      * @return
      * @throws IllegalStateException ヘッダの読み取りが完全に終わっていない場合
+     * @since 1.4.0
      */
     ByteBuffer toByteBuffer();
 
@@ -44,12 +54,14 @@ public interface Header {
      * @param channel
      * @return 読み取りが終わったヘッダ、あるいは読み取りが終わっていないヘッダ
      * @throws IOException
+     * @since 1.4.0
      */
     Header read(SocketChannel channel) throws IOException;
 
     /**
      * このヘッダが最後まで読み取りが終わったかどうかの真偽値を返します。
      * @return
+     * @since 1.4.0
      */
     boolean isReadFinished();
 }

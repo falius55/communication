@@ -82,6 +82,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  *  この場合、送受信がそれぞれ一度のみの場合はstartOnNewThreadメソッドの戻り値である{@link Future}オブジェクトから
  *  受信データを取得することもできます。
  * @author "ymiyauchi"
+ * @since 1.0
  *
  */
 public class NonBlockingClient implements SwapClient, Disconnectable {
@@ -100,6 +101,12 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
     private OnDisconnectCallback mOnDisconnectCallback = null;
     private Client.OnConnectListener mOnConnectListener = null;
 
+    /**
+     *
+     * @param serverHost
+     * @param serverPort
+     * @since 1.0
+     */
     public NonBlockingClient(String serverHost, int serverPort) {
         this(serverHost, serverPort, 0L);
     }
@@ -108,6 +115,13 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
         this(serverHost, serverPort, timeout, null);
     }
 
+    /**
+     *
+     * @param serverHost
+     * @param serverPort
+     * @param swapper
+     * @since 1.0
+     */
     public NonBlockingClient(String serverHost, int serverPort, Swapper swapper) {
         this(serverHost, serverPort, 0L, swapper);
     }
@@ -128,6 +142,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
 
     /**
      * {@inheritDoc}
+     * @since 1.0
      */
     @Override
     public void addOnSendListener(OnSendListener listener) {
@@ -136,6 +151,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
 
     /**
      * {@inheritDoc}
+     * @since 1.0
      */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
@@ -144,6 +160,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.0
      */
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
@@ -152,6 +169,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.2
      */
     @Override
     public void addOnConnectListener(Client.OnConnectListener listener) {
@@ -159,8 +177,10 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
     }
 
     /**
+     * {@inheritDoc}
      * @throws IOException
      * @throws NullPointerException コンストラクタにSwapperが渡されていない場合
+     * @since 1.0
      */
     @Override
     public ReceiveData call() throws IOException, TimeoutException {
@@ -170,6 +190,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.3
      *
      * @throws NullPointerException 内部に保持されているSwapperがnull(コンストラクタにSwapperが渡されていない)の場合
      */
@@ -187,6 +208,10 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
         return mExecutor.submit(this);
     }
 
+    /**
+     * {@inheritDoc}
+     * @since 1.0
+     */
     @Override
     public void disconnect(SocketChannel channel, SelectionKey key, Throwable cause) throws IOException {
         String remote = channel.socket().getInetAddress().toString();
@@ -210,6 +235,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
      * また、異なるスレッドで実行している場合に外から処理を止める場合にも利用できます
      * (リスナー内で処理がブロックされている場合などを除き、タスクを終了できます)。
      * @throws IOException
+     * @since 1.4.1
      */
     @Override
     public void close() throws IOException {
@@ -254,6 +280,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
      * @throws ConnectException 接続に失敗した場合
      * @throws IOException その他入出力エラーが発生した場合
      * @throws TimeoutException 接続がタイムアウトした場合
+     * @since 1.0
      */
     @Override
     public ReceiveData start(Swapper swapper) throws IOException, TimeoutException {
@@ -294,6 +321,7 @@ public class NonBlockingClient implements SwapClient, Disconnectable {
      * @return
      * @throws IOException
      * @throws ConnectException 接続に失敗した場合
+     * @since 1.0
      */
     private Remote connect(SocketChannel channel, Swapper swapper) throws IOException {
         InetSocketAddress address = new InetSocketAddress(mServerHost, mServerPort);

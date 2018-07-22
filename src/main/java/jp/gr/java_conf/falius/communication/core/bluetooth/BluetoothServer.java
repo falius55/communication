@@ -74,6 +74,7 @@ import jp.gr.java_conf.falius.communication.swapper.SwapperFactory;
  * </pre>
  *
  * @author "ymiyauchi"
+ * @since 1.4.1
  *
  */
 public class BluetoothServer implements Server, AutoCloseable {
@@ -95,6 +96,13 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     private StreamConnectionNotifier mConnection = null;
 
+    /**
+     *
+     * @param uuid
+     * @param swapperFactory
+     * @throws IOException
+     * @since 1.4.1
+     */
     public BluetoothServer(String uuid, SwapperFactory swapperFactory) throws IOException {
         mUuid = uuid;
         mSwapperFactory = swapperFactory;
@@ -111,6 +119,7 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.1
      */
     @Override
     public void addOnSendListener(OnSendListener listener) {
@@ -119,6 +128,7 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.1
      */
     @Override
     public void addOnReceiveListener(OnReceiveListener listener) {
@@ -127,6 +137,7 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.1
      */
     @Override
     public void addOnAcceptListener(Server.OnAcceptListener listener) {
@@ -135,6 +146,7 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.1
      */
     @Override
     public void addOnShutdownCallback(Server.OnShutdownCallback callback) {
@@ -143,6 +155,7 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.1
      */
     @Override
     public void addOnDisconnectCallback(OnDisconnectCallback callback) {
@@ -151,6 +164,7 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     /**
      * @return null
+     * @since 1.4.1
      */
     @Override
     public Throwable call() throws IOException {
@@ -160,6 +174,7 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.1
      */
     @Override
     public Future<?> startOnNewThread() {
@@ -201,6 +216,7 @@ public class BluetoothServer implements Server, AutoCloseable {
 
     /**
      * {@inheritDoc}
+     * @since 1.4.1
      */
     @Override
     public void shutdown() throws IOException {
@@ -216,6 +232,9 @@ public class BluetoothServer implements Server, AutoCloseable {
         }
     }
 
+    /**
+     * @since 1.4.1
+     */
     @Override
     public void close() throws IOException {
         shutdown();
